@@ -131,16 +131,30 @@ input::placeholder { color: #56618a; }
 .timer.running .tclock { color: var(--amber); }
 .timer .tclock.done { color: var(--red); }
 .timer .tname { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.tname-input {
+  background: #0e1220; border: 1px solid var(--line); color: var(--text);
+  border-radius: 7px; padding: 6px 9px; font-size: 13px; font-weight: 600;
+  width: 100%; margin-bottom: 8px;
+}
+.tname-input:focus { outline: none; border-color: var(--accent); }
+.tname-input::placeholder { color: #56618a; font-weight: 400; }
 
 /* Toast / notifications MJ */
-.toasts { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 50; width: min(480px, 92vw); }
+.toasts { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 50; width: min(480px, 92vw); max-height: 92vh; overflow-y: auto; }
 .toast {
   background: linear-gradient(180deg, #2a2038 0%, #1c1830 100%);
   border: 1px solid var(--amber); border-left: 4px solid var(--amber);
   color: var(--amber-soft); padding: 14px 18px; border-radius: 10px;
   font-size: 16px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.5);
   animation: toastIn .3s ease-out;
+  display: flex; align-items: center; gap: 12px;
 }
+.toast-text { flex: 1; }
+.toast-close {
+  background: transparent; border: none; color: inherit; cursor: pointer;
+  font-size: 15px; line-height: 1; opacity: .65; padding: 4px 6px; border-radius: 6px;
+}
+.toast-close:hover { opacity: 1; background: rgba(255,255,255,.1); }
 .toast.timer { border-color: var(--accent); border-left-color: var(--accent); color: #bcd0ff; }
 .toast.end { border-color: var(--green); border-left-color: var(--green); color: #a7ecc9; }
 .toast.out { animation: toastOut .4s ease-in forwards; }

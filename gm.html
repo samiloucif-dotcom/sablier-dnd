@@ -121,7 +121,7 @@
         div.className = 'timer';
         div.id = 'timer-' + i;
         div.innerHTML =
-          '<div class="tname"></div>' +
+          '<input type="text" class="tname-input" data-name placeholder="Nom du minuteur…" maxlength="60">' +
           '<div class="tclock" data-clock>05:00</div>' +
           '<div class="row" style="margin-top:8px">' +
             '<input type="number" data-min min="0" max="180" value="5" title="minutes">' +
@@ -133,7 +133,11 @@
             '<button data-pause>⏸</button>' +
             '<button data-reset class="ghost">↺</button>' +
           '</div>';
-        div.querySelector('.tname').textContent = t.label;
+        const nameInput = div.querySelector('[data-name]');
+        nameInput.value = t.label;
+        const saveName = () => sendAction({ action: 'timerSetLabel', index: i, label: nameInput.value.trim() });
+        nameInput.addEventListener('change', saveName);
+        nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') nameInput.blur(); });
         div.querySelector('[data-set]').addEventListener('click', () => {
           const m = parseInt(div.querySelector('[data-min]').value, 10) || 0;
           const s = parseInt(div.querySelector('[data-sec]').value, 10) || 0;
@@ -152,6 +156,8 @@
         const div = document.getElementById('timer-' + i);
         if (!div) return;
         div.classList.toggle('running', t.running);
+        const nameInput = div.querySelector('[data-name]');
+        if (nameInput && document.activeElement !== nameInput) nameInput.value = t.label;
         const c = div.querySelector('[data-clock]');
         c.textContent = fmt(t.remainingMs);
         c.classList.toggle('done', !t.running && t.remainingMs <= 0);
@@ -163,9 +169,17 @@
     function showToast(text, kind) {
       const t = document.createElement('div');
       t.className = 'toast ' + (kind || '');
-      t.textContent = text;
+      const span = document.createElement('span');
+      span.className = 'toast-text';
+      span.textContent = text;
+      const x = document.createElement('button');
+      x.className = 'toast-close';
+      x.setAttribute('aria-label', 'Fermer');
+      x.textContent = '✕';
+      x.addEventListener('click', () => { t.classList.add('out'); setTimeout(() => t.remove(), 300); });
+      t.appendChild(span);
+      t.appendChild(x);
       toasts.appendChild(t);
-      setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 6000);
     }
 
     /* ----- Synchronisation ----- */

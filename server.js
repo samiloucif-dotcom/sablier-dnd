@@ -140,6 +140,11 @@ function handleAction(body) {
     case 'removeReminder':
       state.reminders = state.reminders.filter((r) => r.id !== Number(body.id));
       break;
+    case 'timerSetLabel': {
+      const t = state.timers[Number(body.index)];
+      if (t) t.label = String(body.label || '').slice(0, 60) || t.label;
+      break;
+    }
     case 'timerSetDuration': {
       const t = state.timers[Number(body.index)];
       if (t) {
