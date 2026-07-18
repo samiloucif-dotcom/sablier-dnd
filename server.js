@@ -86,6 +86,16 @@ function adjustMain(deltaMs) {
   const rem = clamp(mainRemaining() + deltaMs, 0, TOTAL_MS);
   if (state.running) state.endsAt = now() + rem;
   else state.remainingMs = rem;
+  // Répercuter le saut temporel sur les minuteurs secrets en cours :
+  // avancer (deltaMs < 0) réduit leur temps restant, reculer l'augmente.
+  for (const t of state.timers) {
+    if (t.running) {
+      t.endsAt += deltaMs;
+    } else if (t.remainingMs > 0 && t.remainingMs < t.durationMs) {
+      // minuteur démarré puis mis en pause : décalé aussi, borné à [0, durée]
+      t.remainingMs = clamp(t.remainingMs + deltaMs, 0, t.durationMs);
+    }
+  }
 }
 
 function handleAction(body) {

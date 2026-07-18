@@ -2,6 +2,17 @@
 
 Petite application web à deux interfaces, synchronisées en temps réel.
 
+## 🌐 En ligne (Render)
+
+- **Joueurs** : https://sablier-dnd.onrender.com/
+- **MJ** : https://sablier-dnd.onrender.com/gm
+- Dépôt GitHub : https://github.com/samiloucif-dotcom/sablier-dnd
+
+Note : sur le plan gratuit, le serveur « s'endort » après 15 min sans visite.
+La première ouverture peut donc prendre ~50 s à démarrer — ouvre le lien quelques
+minutes avant la partie. Pendant le jeu, les allers-retours des joueurs le
+maintiennent éveillé. À chaque réveil, le sablier repart à 60:00.
+
 ## Lancer l'application
 
 1. Installer [Node.js](https://nodejs.org) (une seule fois).
