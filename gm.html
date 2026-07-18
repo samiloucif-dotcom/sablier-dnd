@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MJ — Sablier</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="toasts" id="toasts"></div>
+
+  <div class="gm-page">
+    <div class="gm-head">
+      <div class="hourglass-wrap"><div id="hg"></div></div>
+      <div>
+        <h1>Maître du Jeu</h1>
+        <div class="big-clock" id="clock">60:00</div>
+        <span class="status-pill status-paused" id="status">En pause</span>
+      </div>
+      <div class="spacer"></div>
+      <a class="mj-link" style="position:static" href="/" target="_blank">Ouvrir la vue joueur ↗</a>
+    </div>
+
+    <div class="grid">
+      <!-- Contrôles principaux -->
+      <div class="card">
+        <h2>Sablier principal</h2>
+        <div class="row">
+          <button class="primary wide" id="toggle">⏸ Pause</button>
+          <button class="warn" id="reset">↺ Reset</button>
+        </div>
+        <div class="row">
+          <span class="label">Avancer&nbsp;:</span>
+          <button data-skip="60000">+1 min</button>
+          <button data-skip="120000">+2 min</button>
+          <button data-skip="300000">+5 min</button>
+        </div>
+        <div class="row">
+          <span class="label">Reculer&nbsp;:</span>
+          <button data-rewind="60000">−1 min</button>
+          <button data-rewind="120000">−2 min</button>
+          <button data-rewind="300000">−5 min</button>
+        </div>
+      </div>
+
+      <!-- Rappels -->
+      <div class="card">
+        <h2>Rappels (temps restant)</h2>
+        <div class="row">
+          <input type="number" id="remMin" min="0" max="60" placeholder="min" value="30">
+          <input type="text" id="remText" placeholder="ex : barrière levée">
+          <button class="primary" id="addRem">Ajouter</button>
+        </div>
+        <ul class="reminder-list" id="remList"></ul>
+      </div>
+
+      <!-- Minuteurs secrets -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <h2>Minuteurs secrets (invisibles aux joueurs)</h2>
+        <div class="grid" id="timers"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    const hg = document.getElementById('hg');
+    hg.innerHTML = hourglassSVG('gm');
+    hg.querySelector('svg').classList.add('small');
+    const svg = hg.querySelector('svg');
+    const clock = document.getElementById('clock');
+    const statusEl = document.getElementById('status');
+    const toasts = document.getElementById('toasts');
+
+    // Débloque l'audio dès la première interaction du MJ
+    document.body.addEventListener('click', unlockAudio, { once: true });
+
+    /* ----- Contrôles principaux ----- */
+    document.getElementById('toggle').addEventListener('click', () => sendAction({ action: 'toggle' }));
+    document.getElementById('reset').addEventListener('click', () => sendAction({ action: 'reset' }));
+    document.querySelectorAll('[data-skip]').forEach((b) =>
+      b.addEventListener('click', () => sendAction({ action: 'skip', ms: +b.dataset.skip })));
+    document.querySelectorAll('[data-rewind]').forEach((b) =>
+      b.addEventListener('click', () => sendAction({ action: 'rewind', ms: +b.dataset.rewind })));
+
+    /* ----- Rappels ----- */
+    document.getElementById('addRem').addEventListener('click', () => {
+      const min = parseInt(document.getElementById('remMin').value, 10);
+      const text = document.getElementById('remText').value.trim();
+      if (isNaN(min) || !text) return;
+      sendAction({ action: 'addReminder', atMs: min * 60000, text });
+      document.getElementById('remText').value = '';
+    });
+    document.getElementById('remText').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('addRem').click();
+    });
+
+    function renderReminders(list) {
+      const el = document.getElementById('remList');
+      el.innerHTML = '';
+      list.forEach((r) => {
+        const li = document.createElement('li');
+        li.className = 'reminder-item' + (r.fired ? ' fired' : '');
+        li.innerHTML =
+          '<span class="at">' + fmt(r.atMs) + '</span>' +
+          '<span class="txt"></span>' +
+          '<button class="del warn">✕</button>';
+        li.querySelector('.txt').textContent = r.text;
+        li.querySelector('.del').addEventListener('click', () =>
+          sendAction({ action: 'removeReminder', id: r.id }));
+        el.appendChild(li);
+      });
+    }
+
+    /* ----- Minuteurs secrets ----- */
+    let timersBuilt = false;
+    function buildTimers(timers) {
+      const wrap = document.getElementById('timers');
+      timers.forEach((t, i) => {
+        const div = document.createElement('div');
+        div.className = 'timer';
+        div.id = 'timer-' + i;
+        div.innerHTML =
+          '<div class="tname"></div>' +
+          '<div class="tclock" data-clock>05:00</div>' +
+          '<div class="row" style="margin-top:8px">' +
+            '<input type="number" data-min min="0" max="180" value="5" title="minutes">' +
+            '<input type="number" data-sec min="0" max="59" value="0" title="secondes">' +
+            '<button data-set class="ghost">Régler</button>' +
+          '</div>' +
+          '<div class="row" style="margin-top:6px">' +
+            '<button data-start class="primary wide">▶ Lancer</button>' +
+            '<button data-pause>⏸</button>' +
+            '<button data-reset class="ghost">↺</button>' +
+          '</div>';
+        div.querySelector('.tname').textContent = t.label;
+        div.querySelector('[data-set]').addEventListener('click', () => {
+          const m = parseInt(div.querySelector('[data-min]').value, 10) || 0;
+          const s = parseInt(div.querySelector('[data-sec]').value, 10) || 0;
+          sendAction({ action: 'timerSetDuration', index: i, durationMs: (m * 60 + s) * 1000 });
+        });
+        div.querySelector('[data-start]').addEventListener('click', () => sendAction({ action: 'timerStart', index: i }));
+        div.querySelector('[data-pause]').addEventListener('click', () => sendAction({ action: 'timerPause', index: i }));
+        div.querySelector('[data-reset]').addEventListener('click', () => sendAction({ action: 'timerReset', index: i }));
+        wrap.appendChild(div);
+      });
+      timersBuilt = true;
+    }
+    function renderTimers(timers) {
+      if (!timersBuilt) buildTimers(timers);
+      timers.forEach((t, i) => {
+        const div = document.getElementById('timer-' + i);
+        if (!div) return;
+        div.classList.toggle('running', t.running);
+        const c = div.querySelector('[data-clock]');
+        c.textContent = fmt(t.remainingMs);
+        c.classList.toggle('done', !t.running && t.remainingMs <= 0);
+        div.querySelector('[data-start]').textContent = t.running ? '▶ En cours' : '▶ Lancer';
+      });
+    }
+
+    /* ----- Toasts / notifications ----- */
+    function showToast(text, kind) {
+      const t = document.createElement('div');
+      t.className = 'toast ' + (kind || '');
+      t.textContent = text;
+      toasts.appendChild(t);
+      setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 6000);
+    }
+
+    /* ----- Synchronisation ----- */
+    startSync({
+      onState(s) {
+        renderReminders(s.reminders);
+        renderTimers(s.timers);
+        statusEl.textContent = s.running ? 'En cours' : 'En pause';
+        statusEl.className = 'status-pill ' + (s.running ? 'status-running' : 'status-paused');
+        document.getElementById('toggle').textContent = s.running ? '⏸ Pause' : '▶ Reprendre';
+      },
+      onFrame(rem, s) {
+        updateHourglass(svg, 1 - rem / s.totalMs, s.running);
+        clock.textContent = fmt(rem);
+      },
+      onEvent(e) {
+        if (e.kind === 'reminder') { playAlert('reminder'); showToast('🔔  ' + e.text, ''); }
+        else if (e.kind === 'timer') { playAlert('timer'); showToast('⏱  ' + e.text + ' terminé', 'timer'); }
+        else if (e.kind === 'end') { playAlert('end'); showToast('🏁  Le sablier est vide', 'end'); }
+      },
+    });
+  </script>
+</body>
+</html>

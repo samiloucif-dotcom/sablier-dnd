@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Le Sablier</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="player-page" id="page">
+    <button class="sound-btn" id="soundBtn">🔔 Activer le son</button>
+    <div class="hourglass-wrap" id="hg"></div>
+    <div class="digital" id="clock">60:00</div>
+    <div class="paused-badge">En pause</div>
+    <a class="mj-link" href="/gm">Interface MJ →</a>
+  </div>
+  <div class="flash" id="flash"></div>
+
+  <script src="/app.js"></script>
+  <script>
+    const hg = document.getElementById('hg');
+    hg.innerHTML = hourglassSVG('player');
+    const svg = hg.querySelector('svg');
+    const clock = document.getElementById('clock');
+    const page = document.getElementById('page');
+    const flash = document.getElementById('flash');
+    const soundBtn = document.getElementById('soundBtn');
+
+    soundBtn.addEventListener('click', () => {
+      unlockAudio();
+      playAlert('reminder'); // petit bip de confirmation
+      soundBtn.classList.add('hidden');
+    });
+
+    function doFlash() {
+      flash.classList.remove('go');
+      void flash.offsetWidth;
+      flash.classList.add('go');
+    }
+
+    startSync({
+      onState(s) {
+        page.classList.toggle('paused', !s.running);
+      },
+      onFrame(rem, s) {
+        updateHourglass(svg, 1 - rem / s.totalMs, s.running);
+        clock.textContent = fmt(rem);
+      },
+      onEvent(e) {
+        // Les joueurs entendent uniquement les alertes de minuteurs et la fin du sablier.
+        if (e.kind === 'timer' || e.kind === 'end') {
+          playAlert(e.kind);
+          doFlash();
+        }
+      },
+    });
+  </script>
+</body>
+</html>
