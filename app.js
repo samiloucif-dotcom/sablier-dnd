@@ -2,30 +2,54 @@
 
 /* ---------- Audio (WebAudio, aucun fichier requis) ---------- */
 let audioCtx = null;
+var soundMuted = false;      // basculé par l'interface joueur
+let masterGain = null;
 function unlockAudio() {
   if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 1.0;
+      masterGain.connect(audioCtx.destination);
+    } catch (e) { return; }
   }
   if (audioCtx.state === 'suspended') audioCtx.resume();
 }
+// une "note" = fondamentale + octave inférieure pour un son riche et fort
 function tone(freq, start, dur, vol, type) {
   if (!audioCtx) return;
   const t = audioCtx.currentTime + start;
-  const o = audioCtx.createOscillator();
+  const peak = vol || 0.7;
   const g = audioCtx.createGain();
-  o.type = type || 'sine';
-  o.frequency.value = freq;
-  o.connect(g); g.connect(audioCtx.destination);
+  g.connect(masterGain || audioCtx.destination);
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol || 0.3, t + 0.012);
+  g.gain.exponentialRampToValueAtTime(peak, t + 0.014);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.start(t); o.stop(t + dur + 0.03);
+  [[freq, type || 'sine', 1], [freq / 2, 'sine', 0.5], [freq * 2, 'triangle', 0.28]].forEach(function (v) {
+    const o = audioCtx.createOscillator();
+    const og = audioCtx.createGain();
+    o.type = v[1]; o.frequency.value = v[0]; og.gain.value = v[2];
+    o.connect(og); og.connect(g);
+    o.start(t); o.stop(t + dur + 0.04);
+  });
 }
 function playAlert(kind) {
+  if (soundMuted) return;
   unlockAudio();
-  if (kind === 'timer') { tone(880, 0, 0.18, 0.3); tone(1175, 0.18, 0.22, 0.3); tone(1568, 0.4, 0.3, 0.28); }
-  else if (kind === 'reminder') { tone(660, 0, 0.16, 0.28); tone(660, 0.22, 0.2, 0.28); }
-  else if (kind === 'end') { tone(523, 0, 0.3, 0.3); tone(392, 0.28, 0.5, 0.3); }
+  const V = 0.75;
+  if (kind === 'timer') {
+    // triade ascendante urgente, jouée deux fois
+    [0, 0.55].forEach(function (o) {
+      tone(988, o, 0.24, V); tone(1319, o + 0.17, 0.24, V); tone(1760, o + 0.34, 0.34, V);
+    });
+  } else if (kind === 'reminder') {
+    // « ding-dong » clair, deux fois
+    [0, 0.62].forEach(function (o) {
+      tone(784, o, 0.30, V, 'triangle'); tone(1047, o + 0.24, 0.40, V, 'triangle');
+    });
+  } else if (kind === 'end') {
+    tone(523, 0, 0.5, V); tone(392, 0.42, 0.7, V); tone(262, 0.9, 1.1, V);
+  }
 }
 
 /* ---------- Formatage ---------- */

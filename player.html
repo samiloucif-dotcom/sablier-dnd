@@ -12,26 +12,22 @@
 
     <div class="stage">
       <div class="hg-frame" id="hgFrame">
-        <svg class="sand" id="sand" viewBox="0 0 848 1264" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <svg class="sand" id="sand" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <defs>
-            <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="amber" gradientUnits="userSpaceOnUse" x1="0" y1="382" x2="0" y2="1135">
               <stop offset="0%"  stop-color="#ffe6a6"/>
               <stop offset="45%" stop-color="#f2b74e"/>
-              <stop offset="100%" stop-color="#c07d24"/>
-            </linearGradient>
-            <linearGradient id="amberBot" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"  stop-color="#f7c667"/>
-              <stop offset="100%" stop-color="#b16e1e"/>
+              <stop offset="100%" stop-color="#bd7822"/>
             </linearGradient>
             <filter id="sglow" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="5" result="b"/>
+              <feGaussianBlur stdDeviation="6" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
           <g id="sandG" filter="url(#sglow)">
-            <rect id="sandTop" x="240" y="285" width="356" height="0" fill="url(#amber)"/>
-            <rect id="sandBot" x="240" y="955" width="356" height="0" fill="url(#amberBot)"/>
-            <rect id="stream" x="414" y="632" width="6" height="0" fill="#ffd77a"/>
+            <path id="sandTop" fill="url(#amber)" d=""/>
+            <path id="sandBot" fill="url(#amber)" d=""/>
+            <rect id="stream" x="509" y="769" width="6" height="0" fill="#ffd77a"/>
             <g id="particles"></g>
           </g>
         </svg>
@@ -45,8 +41,8 @@
 
   <script src="/app.js"></script>
   <script>
-    // Géométrie du verre (coordonnées viewBox 848x1264, mesurées sur le cadre)
-    var GT = 285, NECK = 632, GB = 955, SX = 240, SW = 356, CX = 417;
+    // Géométrie du verre (viewBox 1024x1536, mesurée sur le cadre FINAL)
+    var GT = 382, NECK = 769, GB = 1135, SX = 305, SW = 412, CX = 512;
     var sandTop = document.getElementById('sandTop');
     var sandBot = document.getElementById('sandBot');
     var stream  = document.getElementById('stream');
@@ -60,30 +56,46 @@
     var particles = [];
     var lastTs = 0;
 
+    // Sable en forme d'ampoule : surface concave (haut) / monticule (bas)
+    function sandPath(surfY, baseY, curve, mound){
+      var x0 = SX, x1 = SX + SW;
+      var ctrlY = mound ? (surfY - curve) : (surfY + curve);
+      return 'M'+x0+','+baseY+' L'+x0+','+surfY+' Q'+CX+','+ctrlY+' '+x1+','+surfY+' L'+x1+','+baseY+' Z';
+    }
+
+    // Bouton son : 1er clic = activer, ensuite bascule activé / coupé
+    var soundReady = false;
     soundBtn.addEventListener('click', function () {
-      unlockAudio(); playAlert('reminder'); soundBtn.classList.add('hidden');
+      if (!soundReady) { unlockAudio(); soundReady = true; soundMuted = false; playAlert('reminder'); }
+      else { soundMuted = !soundMuted; if (!soundMuted) { unlockAudio(); playAlert('reminder'); } }
+      updateSoundBtn();
     });
+    function updateSoundBtn(){
+      if (!soundReady) { soundBtn.textContent = '🔔 Activer le son'; soundBtn.classList.remove('off'); }
+      else if (soundMuted) { soundBtn.textContent = '🔕 Son coupé'; soundBtn.classList.add('off'); }
+      else { soundBtn.textContent = '🔊 Son activé'; soundBtn.classList.remove('off'); }
+    }
+
     function doFlash(){ flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }
 
     function spawnParticle(yFill){
       var c = document.createElementNS(NS,'circle');
-      c.setAttribute('r',(1.6+Math.random()*1.6).toFixed(2));
+      c.setAttribute('r',(2.0+Math.random()*2.0).toFixed(2));
       c.setAttribute('fill','#ffd77a');
       pg.appendChild(c);
-      particles.push({el:c, x:CX+(Math.random()*8-4), y:NECK, v:260+Math.random()*120, tgt:yFill});
+      particles.push({el:c, x:CX+(Math.random()*10-5), y:NECK, v:320+Math.random()*160, tgt:yFill});
     }
 
     function renderSand(rem, s){
       var f = Math.max(0, Math.min(1, 1 - rem / s.totalMs));
       var running = s.running;
       var ySurf = GT + f*(NECK-GT);
-      sandTop.setAttribute('y', ySurf);
-      sandTop.setAttribute('height', Math.max(0, NECK-ySurf));
       var yFill = GB - f*(GB-NECK);
-      sandBot.setAttribute('y', yFill);
-      sandBot.setAttribute('height', Math.max(0, GB-yFill));
+      var dipT   = Math.min(52, (NECK-ySurf)*0.55);
+      var moundB = Math.min(64, (GB-yFill)*0.55);
+      sandTop.setAttribute('d', sandPath(ySurf, NECK, dipT, false));
+      sandBot.setAttribute('d', sandPath(yFill, GB, moundB, true));
 
-      // filet de sable + particules
       var flowing = running && f > 0.001 && f < 0.999;
       if (flowing){
         stream.setAttribute('y', NECK);
@@ -100,7 +112,6 @@
         p.el.setAttribute('cx',p.x.toFixed(1)); p.el.setAttribute('cy',p.y.toFixed(1));
       }
 
-      // lueur rouge dans les 5 dernières minutes, pulsation dans la dernière
       sandG.classList.toggle('danger', rem <= 5*60*1000);
       sandG.classList.toggle('critical', rem <= 60*1000 && rem > 0);
     }

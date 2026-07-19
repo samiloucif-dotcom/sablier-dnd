@@ -51,8 +51,8 @@ html, body {
 .stage { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .hg-frame {
   position: relative;
-  height: min(82vh, 660px);
-  aspect-ratio: 848 / 1264;
+  height: min(82vh, 680px);
+  aspect-ratio: 1024 / 1536;
 }
 .hg-frame .sand, .hg-frame .frame-img {
   position: absolute; inset: 0; width: 100%; height: 100%;
@@ -93,6 +93,7 @@ html, body {
   padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;
 }
 .sound-btn.hidden { display: none; }
+.sound-btn.off { opacity: 0.6; border-color: var(--line); }
 
 .flash { position: fixed; inset: 0; background: var(--amber); opacity: 0; pointer-events: none; }
 .flash.go { animation: flash .6s ease-out; }
