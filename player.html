@@ -9,48 +9,107 @@
 <body>
   <div class="player-page" id="page">
     <button class="sound-btn" id="soundBtn">🔔 Activer le son</button>
-    <div class="hourglass-wrap" id="hg"></div>
-    <div class="digital" id="clock">60:00</div>
-    <div class="paused-badge">En pause</div>
+
+    <div class="stage">
+      <div class="hg-frame" id="hgFrame">
+        <svg class="sand" id="sand" viewBox="0 0 848 1264" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs>
+            <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#ffe6a6"/>
+              <stop offset="45%" stop-color="#f2b74e"/>
+              <stop offset="100%" stop-color="#c07d24"/>
+            </linearGradient>
+            <linearGradient id="amberBot" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#f7c667"/>
+              <stop offset="100%" stop-color="#b16e1e"/>
+            </linearGradient>
+            <filter id="sglow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g id="sandG" filter="url(#sglow)">
+            <rect id="sandTop" x="240" y="285" width="356" height="0" fill="url(#amber)"/>
+            <rect id="sandBot" x="240" y="955" width="356" height="0" fill="url(#amberBot)"/>
+            <rect id="stream" x="414" y="632" width="6" height="0" fill="#ffd77a"/>
+            <g id="particles"></g>
+          </g>
+        </svg>
+        <img class="frame-img" src="/frame_hourglass.png" alt="Sablier" draggable="false">
+      </div>
+      <div class="digital" id="clock">60:00</div>
+      <div class="paused-badge">En pause</div>
+    </div>
   </div>
   <div class="flash" id="flash"></div>
 
   <script src="/app.js"></script>
   <script>
-    const hg = document.getElementById('hg');
-    hg.innerHTML = hourglassSVG('player');
-    const svg = hg.querySelector('svg');
-    const clock = document.getElementById('clock');
-    const page = document.getElementById('page');
-    const flash = document.getElementById('flash');
-    const soundBtn = document.getElementById('soundBtn');
+    // Géométrie du verre (coordonnées viewBox 848x1264, mesurées sur le cadre)
+    var GT = 285, NECK = 632, GB = 955, SX = 240, SW = 356, CX = 417;
+    var sandTop = document.getElementById('sandTop');
+    var sandBot = document.getElementById('sandBot');
+    var stream  = document.getElementById('stream');
+    var sandG   = document.getElementById('sandG');
+    var pg      = document.getElementById('particles');
+    var clock   = document.getElementById('clock');
+    var page    = document.getElementById('page');
+    var flash   = document.getElementById('flash');
+    var soundBtn= document.getElementById('soundBtn');
+    var NS = "http://www.w3.org/2000/svg";
+    var particles = [];
+    var lastTs = 0;
 
-    soundBtn.addEventListener('click', () => {
-      unlockAudio();
-      playAlert('reminder'); // petit bip de confirmation
-      soundBtn.classList.add('hidden');
+    soundBtn.addEventListener('click', function () {
+      unlockAudio(); playAlert('reminder'); soundBtn.classList.add('hidden');
     });
+    function doFlash(){ flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }
 
-    function doFlash() {
-      flash.classList.remove('go');
-      void flash.offsetWidth;
-      flash.classList.add('go');
+    function spawnParticle(yFill){
+      var c = document.createElementNS(NS,'circle');
+      c.setAttribute('r',(1.6+Math.random()*1.6).toFixed(2));
+      c.setAttribute('fill','#ffd77a');
+      pg.appendChild(c);
+      particles.push({el:c, x:CX+(Math.random()*8-4), y:NECK, v:260+Math.random()*120, tgt:yFill});
+    }
+
+    function renderSand(rem, s){
+      var f = Math.max(0, Math.min(1, 1 - rem / s.totalMs));
+      var running = s.running;
+      var ySurf = GT + f*(NECK-GT);
+      sandTop.setAttribute('y', ySurf);
+      sandTop.setAttribute('height', Math.max(0, NECK-ySurf));
+      var yFill = GB - f*(GB-NECK);
+      sandBot.setAttribute('y', yFill);
+      sandBot.setAttribute('height', Math.max(0, GB-yFill));
+
+      // filet de sable + particules
+      var flowing = running && f > 0.001 && f < 0.999;
+      if (flowing){
+        stream.setAttribute('y', NECK);
+        stream.setAttribute('height', Math.max(0, yFill-NECK));
+        stream.style.display = 'block';
+      } else { stream.style.display = 'none'; }
+
+      var now = performance.now();
+      var dt = lastTs ? Math.min(0.05,(now-lastTs)/1000) : 0; lastTs = now;
+      if (flowing && Math.random() < 0.7) spawnParticle(yFill);
+      for (var i=particles.length-1;i>=0;i--){
+        var p=particles[i]; p.y += p.v*dt;
+        if (p.y >= p.tgt-2 || p.y > GB){ p.el.remove(); particles.splice(i,1); continue; }
+        p.el.setAttribute('cx',p.x.toFixed(1)); p.el.setAttribute('cy',p.y.toFixed(1));
+      }
+
+      // lueur rouge dans les 5 dernières minutes, pulsation dans la dernière
+      sandG.classList.toggle('danger', rem <= 5*60*1000);
+      sandG.classList.toggle('critical', rem <= 60*1000 && rem > 0);
     }
 
     startSync({
-      onState(s) {
-        page.classList.toggle('paused', !s.running);
-      },
-      onFrame(rem, s) {
-        updateHourglass(svg, 1 - rem / s.totalMs, s.running);
-        clock.textContent = fmt(rem);
-      },
-      onEvent(e) {
-        // Les joueurs entendent uniquement les alertes de minuteurs et la fin du sablier.
-        if (e.kind === 'timer' || e.kind === 'end') {
-          playAlert(e.kind);
-          doFlash();
-        }
+      onState: function (s) { page.classList.toggle('paused', !s.running); },
+      onFrame: function (rem, s) { renderSand(rem, s); clock.textContent = fmt(rem); },
+      onEvent: function (e) {
+        if (e.kind === 'timer' || e.kind === 'end') { playAlert(e.kind); doFlash(); }
       },
     });
   </script>

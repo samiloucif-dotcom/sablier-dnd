@@ -18,7 +18,12 @@ const os = require('os');
 const PORT = process.env.PORT || 3000;
 const TOTAL_MS = 60 * 60 * 1000; // 1 heure
 const PUBLIC = __dirname;
-const STATIC = { '/app.js': 'app.js', '/style.css': 'style.css' };
+const STATIC = {
+  '/app.js': 'app.js',
+  '/style.css': 'style.css',
+  '/frame_hourglass.png': 'frame_hourglass.png',
+  '/hall_bg.jpg': 'hall_bg.jpg',
+};
 
 let nextEventId = 1;
 let nextReminderId = 1;
@@ -202,7 +207,7 @@ function snapshot() {
   };
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
 
 function serveFile(res, file) {
   fs.readFile(file, (err, data) => {
