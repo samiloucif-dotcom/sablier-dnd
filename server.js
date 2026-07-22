@@ -21,12 +21,14 @@ const PUBLIC = __dirname;
 const STATIC = {
   '/app.js': 'app.js',
   '/style.css': 'style.css',
+  '/data.js': 'data.js',
   '/frame_hourglass.png': 'frame_hourglass.png',
   '/hall_bg.jpg': 'hall_bg.jpg',
 };
 
 let nextEventId = 1;
 let nextReminderId = 1;
+let nextImproId = 1;
 
 const state = {
   totalMs: TOTAL_MS,
@@ -42,6 +44,8 @@ const state = {
     endsAt: null,
   })),
   events: [],                   // {id, kind:'timer'|'reminder'|'end', text}
+  overrides: {},                // cockpit MJ : nom -> {lieu, act} (dérogations au plan)
+  improEvents: [],              // cockpit MJ : {id, min, who, lieu, act} (événements à la volée)
 };
 
 const now = () => Date.now();
@@ -127,6 +131,7 @@ function handleAction(body) {
       state.remainingMs = TOTAL_MS;
       state.endsAt = null;
       state.reminders.forEach((r) => (r.fired = false));
+      state.overrides = {}; // reset de boucle : tous les PNJ reviennent au plan
       break;
     case 'skip': // avancer dans le temps => réduire le temps restant
       adjustMain(-Math.abs(Number(body.ms) || 0));
@@ -185,6 +190,32 @@ function handleAction(body) {
       }
       break;
     }
+    /* ----- Cockpit MJ : dérogations & événements à la volée ----- */
+    case 'setOverride': {
+      const name = String(body.name || '').slice(0, 60);
+      if (name) state.overrides[name] = {
+        lieu: String(body.lieu || '').slice(0, 80),
+        act: String(body.act || '').slice(0, 200),
+      };
+      break;
+    }
+    case 'clearOverride':
+      delete state.overrides[String(body.name || '')];
+      break;
+    case 'addImpro': {
+      state.improEvents.push({
+        id: nextImproId++,
+        min: clamp(Number(body.min) || 0, 0, 60),
+        who: String(body.who || '').slice(0, 60) || null,
+        lieu: String(body.lieu || '').slice(0, 80),
+        act: String(body.act || '').slice(0, 200),
+      });
+      if (state.improEvents.length > 100) state.improEvents.shift();
+      break;
+    }
+    case 'removeImpro':
+      state.improEvents = state.improEvents.filter((e) => e.id !== Number(body.id));
+      break;
     default:
       break;
   }
@@ -203,11 +234,13 @@ function snapshot() {
       remainingMs: timerRemaining(t),
     })),
     events: state.events.slice(-30),
+    overrides: state.overrides,
+    improEvents: state.improEvents,
     serverNow: now(),
   };
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
 
 function serveFile(res, file) {
   fs.readFile(file, (err, data) => {
@@ -234,6 +267,11 @@ const server = http.createServer((req, res) => {
     }
     // fichiers statiques autorisés (app.js, style.css)
     if (STATIC[pathname]) return serveFile(res, path.join(PUBLIC, STATIC[pathname]));
+    // portraits du cockpit MJ (public/portraits/*.webp), nom décodé et sécurisé
+    if (pathname.startsWith('/portraits/')) {
+      const name = path.basename(decodeURIComponent(pathname));
+      return serveFile(res, path.join(PUBLIC, 'public', 'portraits', name));
+    }
     res.writeHead(404);
     return res.end('Not found');
   }

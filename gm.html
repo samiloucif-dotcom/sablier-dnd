@@ -3,8 +3,144 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MJ — Sablier</title>
+  <title>MJ — Cockpit · Your First Hour at School</title>
   <link rel="stylesheet" href="/style.css">
+  <style>
+    /* ================= Cockpit MJ ================= */
+    .gm-page{max-width:1720px}
+    .violet{--violet:#a78bfa}
+    :root{--violet:#a78bfa}
+    .tranche-pill{font-size:13px;padding:5px 14px;border-radius:20px;background:rgba(232,181,89,.14);color:var(--amber);letter-spacing:1px;font-weight:600;border:1px solid rgba(232,181,89,.3)}
+    .lvl-pill{font-size:12px;padding:4px 12px;border-radius:20px;background:rgba(91,140,255,.14);color:var(--accent);letter-spacing:1px;font-weight:600}
+    .lvl-pill.lvl5{background:rgba(70,201,139,.14);color:var(--green)}
+    .big-clock.danger{color:var(--red);text-shadow:0 0 16px rgba(232,104,122,.5)}
+    .repet-bar{display:flex;gap:10px;align-items:center;background:rgba(167,139,250,.10);border:1px dashed var(--violet);border-radius:10px;padding:6px 12px;font-size:12.5px;color:var(--violet)}
+    .repet-bar input[type=range]{width:200px;accent-color:var(--violet)}
+    .repet-bar .rclock{font-variant-numeric:tabular-nums;font-weight:700}
+
+    .layout{display:grid;grid-template-columns:198px minmax(0,1fr) 430px;gap:14px;align-items:start;margin-bottom:16px}
+    @media(max-width:1420px){.layout{grid-template-columns:180px minmax(0,1fr)}.events-card{grid-column:1/-1}}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+    .minicol{position:sticky;top:12px;padding:12px}
+    .mini-lieu{border:1px solid var(--line);border-radius:9px;padding:8px 9px;margin-bottom:7px;cursor:pointer;background:#0e1220;transition:all .13s}
+    .mini-lieu:hover{border-color:var(--amber)}
+    .mini-lieu .ml-name{font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+    .mini-lieu .ml-count{color:var(--amber);font-size:11px}
+    .mini-lieu .ml-who{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:3px}
+
+    .tabs{display:flex;gap:8px;margin-bottom:13px}
+    .tab{padding:8px 18px;border-radius:9px;font-size:13.5px;font-weight:600;letter-spacing:.4px}
+    .tab.on{background:rgba(232,181,89,.15);border-color:var(--amber);color:var(--amber)}
+
+    .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+    .token{background:#0e1220;border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;display:flex;flex-direction:column;padding:0}
+    .token:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+    .token.active-event{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 0 16px rgba(232,181,89,.3)}
+    .token.deviated{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 14px rgba(232,104,122,.3)}
+    .portrait{width:100%;height:118px;object-fit:cover;object-position:50% 10%;background:#222b40;display:block}
+    .token.active-event .portrait{animation:glow 1.6s ease-in-out infinite}
+    @keyframes glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+    .tbody{padding:7px 8px 8px;display:flex;flex-direction:column;gap:4px}
+    .tname{font-weight:700;font-size:13.5px;line-height:1.1;text-align:center;margin-bottom:2px}
+    .loc{font-size:11px;line-height:1.35;display:flex;gap:4px;align-items:baseline}
+    .loc .ico{flex-shrink:0}
+    .loc.now{color:var(--text)}
+    .loc.dev{color:var(--red)}
+    .loc.next{color:var(--muted)}
+    .loc.next b{color:var(--amber);font-weight:600}
+    .ghost{color:#56618a;text-decoration:line-through;font-size:10.5px}
+    .lieu-link{color:var(--accent);cursor:pointer;text-decoration:none;border-bottom:1px dotted rgba(91,140,255,.5)}
+    .lieu-link:hover{color:#8fb1ff}
+    .badge-new{position:absolute;top:6px;right:6px;background:var(--amber);color:#1a1408;font-size:10px;font-weight:800;border-radius:9px;padding:2px 7px;letter-spacing:.5px;z-index:2}
+    .badge-dev{position:absolute;top:6px;left:6px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:9px;padding:2px 7px;letter-spacing:.5px;z-index:2}
+    .staff-sep{grid-column:1/-1;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--violet);margin-top:6px;display:flex;align-items:center;gap:10px}
+    .staff-sep::after{content:"";flex:1;height:1px;background:var(--line)}
+    .token.staff .tname{color:var(--violet)}
+
+    .lieux-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+    .lieu-card{background:#0e1220;border:1px solid var(--line);border-radius:12px;padding:12px 14px;transition:box-shadow .3s}
+    .lieu-card.focus{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 0 22px rgba(232,181,89,.35)}
+    .lieu-head{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
+    .lieu-head .ln{font-size:15px;font-weight:700}
+    .etage-badge{font-size:10px;background:rgba(91,140,255,.14);color:var(--accent);border-radius:10px;padding:2px 9px;letter-spacing:1px;font-weight:700}
+    .occ{display:flex;gap:8px;align-items:center;padding:5px 6px;border-radius:8px;margin-bottom:4px;cursor:pointer}
+    .occ:hover{background:rgba(91,140,255,.08)}
+    .occ img{width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:50% 12%;border:1px solid var(--line);flex-shrink:0}
+    .occ .on{font-size:12.5px;font-weight:700;flex-shrink:0}
+    .occ .oa{font-size:11.5px;color:var(--muted);line-height:1.3}
+    .occ.is-new .on{color:var(--amber)}
+    .arrivals{margin-top:8px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px;color:var(--muted)}
+    .arrivals b{color:var(--amber)}
+
+    .events-card{position:sticky;top:12px}
+    .twin{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .event{border-left:3px solid var(--amber);padding:6px 9px;margin-bottom:7px;background:#0e1220;border-radius:0 8px 8px 0;font-size:12px;line-height:1.4}
+    .event .who{color:var(--amber);font-weight:700;cursor:pointer}
+    .event .who:hover{text-decoration:underline}
+    .event.next-ev{border-left-color:#3a4666}
+    .event.next-ev .who{color:var(--accent)}
+    .event.impro{border-left-color:var(--violet);background:rgba(167,139,250,.07)}
+    .event.impro .who{color:var(--violet)}
+    .event .del-ev{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 3px}
+    .event .del-ev:hover{color:var(--red)}
+    .empty{color:var(--muted);font-size:12px;font-style:italic}
+    .next-label{color:var(--muted);font-size:10.5px;margin-bottom:7px}
+    .impro-form{border:1px dashed var(--violet);border-radius:9px;padding:9px 10px;margin-top:10px;display:flex;flex-direction:column;gap:7px}
+    .impro-form input,.impro-form select{background:#141824;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:12.5px;width:100%}
+    .impro-form .if-row{display:flex;gap:6px}
+    .impro-form .if-row input[type=number]{width:74px;flex:none;text-align:center}
+    .btn-impro{background:rgba(167,139,250,.14);border-color:rgba(167,139,250,.45);color:var(--violet);width:100%}
+
+    .strip{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-bottom:16px}
+    .cell{background:#0e1220;border:1px solid var(--line);border-radius:8px;padding:7px 4px;text-align:center;transition:all .15s;font-size:11px;color:var(--muted)}
+    .cell.now{background:rgba(232,181,89,.16);border-color:var(--amber);color:var(--amber);font-weight:700}
+    .cell .n{display:block;font-size:15px;font-weight:700;color:var(--text);margin-top:2px}
+    .cell.now .n{color:var(--amber)}
+    .cell .n.zero{color:#3d4763}
+    .cell.clickable{cursor:pointer}
+    .cell.clickable:hover{border-color:var(--accent)}
+
+    .overlay{position:fixed;inset:0;background:rgba(4,6,10,.55);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+    .overlay.open{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;right:-540px;width:min(530px,94vw);height:100vh;background:linear-gradient(180deg,#1d2334 0%,#12161f 100%);border-left:1px solid var(--line);z-index:50;transition:right .25s ease;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+    .drawer.open{right:0}
+    .d-head{display:flex;gap:14px;padding:18px 20px 14px;border-bottom:1px solid var(--line);align-items:center;background:rgba(0,0,0,.2)}
+    .d-avatar{width:74px;height:74px;border-radius:50%;object-fit:cover;object-position:50% 12%;border:2px solid var(--amber);flex-shrink:0}
+    .d-head h3{margin:0;font-size:21px}
+    .d-head .ult{color:var(--amber);font-size:13px;font-weight:600;letter-spacing:.5px}
+    .d-head .meta{color:var(--muted);font-size:12px;margin-top:3px}
+    .d-close{margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:6px 10px}
+    .d-close:hover{color:var(--text)}
+    .d-body{overflow-y:auto;padding:16px 20px 30px;flex:1}
+    .statgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:12px}
+    .stat{background:#0e1220;border:1px solid var(--line);border-radius:9px;text-align:center;padding:7px 2px}
+    .stat .lbl{font-size:9.5px;color:var(--muted);letter-spacing:1px}
+    .stat .val{font-size:17px;font-weight:700}
+    .stat .mod{font-size:11.5px;color:var(--amber)}
+    .vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+    .vital{background:#0e1220;border:1px solid var(--line);border-radius:9px;text-align:center;padding:8px 4px}
+    .vital .lbl{font-size:9.5px;color:var(--muted);letter-spacing:1px}
+    .vital .val{font-size:16px;font-weight:700;color:var(--amber-soft)}
+    .sec{margin-bottom:13px}
+    .sec h4{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--muted);margin:0 0 7px;display:flex;align-items:center;gap:8px}
+    .sec h4::after{content:"";flex:1;height:1px;background:var(--line)}
+    .sec ul{margin:0;padding:0;list-style:none}
+    .sec li{font-size:12.5px;line-height:1.45;padding:5px 8px;background:#0e1220;border:1px solid #232b3d;border-radius:7px;margin-bottom:5px}
+    .sec li b{color:var(--amber-soft)}
+    .quote{font-style:italic;color:var(--muted);font-size:12.5px;border-left:3px solid var(--amber);padding:4px 10px;margin-top:4px}
+    .d-loc{background:rgba(232,181,89,.08);border:1px solid rgba(232,181,89,.25);border-radius:9px;padding:9px 12px;font-size:12.5px;line-height:1.5;margin-bottom:13px}
+    .d-loc b{color:var(--amber)}
+    .lvl-switch{display:flex;gap:6px;margin-bottom:13px}
+    .lvl-switch button{flex:1;font-size:12px;padding:6px}
+    .lvl-switch button.on{background:rgba(70,201,139,.15);border-color:var(--green);color:var(--green)}
+    .notes-staff{font-size:13px;line-height:1.6;color:var(--text);background:#0e1220;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+    .dev-form{background:#0e1220;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:13px;display:flex;flex-direction:column;gap:8px}
+    .dev-form select,.dev-form input{background:#141824;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:13px;width:100%}
+    .dev-form .df-row{display:flex;gap:7px}
+    .btn-dev{background:rgba(232,104,122,.14);border-color:rgba(232,104,122,.45);color:var(--red)}
+    .btn-plan{background:rgba(70,201,139,.12);border-color:rgba(70,201,139,.4);color:var(--green)}
+  </style>
 </head>
 <body>
   <div class="toasts" id="toasts"></div>
@@ -13,37 +149,70 @@
     <div class="gm-head">
       <div class="hourglass-wrap"><div id="hg"></div></div>
       <div>
-        <h1>Maître du Jeu</h1>
+        <h1>Maître du Jeu — Cockpit</h1>
         <div class="big-clock" id="clock">60:00</div>
         <span class="status-pill status-paused" id="status">En pause</span>
       </div>
+      <span class="tranche-pill" id="tranchePill">Tranche 0–5</span>
+      <span class="lvl-pill" id="lvlPill">Primes niv. 4</span>
       <div class="spacer"></div>
-      <a class="mj-link" style="position:static" href="/" target="_blank">Ouvrir la vue joueur ↗</a>
+      <div class="repet-bar" id="repetBar">
+        <label style="display:flex;gap:6px;align-items:center;cursor:pointer">
+          <input type="checkbox" id="repetToggle"> 🎬 Mode répétition
+        </label>
+        <span id="repetControls" style="display:none">
+          <input type="range" id="repetScrub" min="0" max="3600" value="0" step="5">
+          <span class="rclock" id="repetClock">00:00</span>
+        </span>
+      </div>
+      <a class="mj-link" style="position:static" href="/" target="_blank">Vue joueur ↗</a>
     </div>
 
-    <div class="grid">
-      <!-- Contrôles principaux -->
-      <div class="card">
-        <h2>Sablier principal</h2>
-        <div class="row">
-          <button class="primary wide" id="toggle">⏸ Pause</button>
-          <button class="warn" id="reset">↺ Reset</button>
-        </div>
-        <div class="row">
-          <span class="label">Avancer&nbsp;:</span>
-          <button data-skip="60000">+1 min</button>
-          <button data-skip="120000">+2 min</button>
-          <button data-skip="300000">+5 min</button>
-        </div>
-        <div class="row">
-          <span class="label">Reculer&nbsp;:</span>
-          <button data-rewind="60000">−1 min</button>
-          <button data-rewind="120000">−2 min</button>
-          <button data-rewind="300000">−5 min</button>
-        </div>
+    <!-- Contrôles du vrai sablier -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="row">
+        <button class="primary" id="toggle">⏸ Pause</button>
+        <button class="warn" id="reset" title="Reset sablier + retour au plan de tous les PNJ">↺ Reset boucle</button>
+        <span class="label" style="margin-left:14px">Avancer :</span>
+        <button data-skip="60000">+1</button>
+        <button data-skip="120000">+2</button>
+        <button data-skip="300000">+5 min</button>
+        <span class="label" style="margin-left:8px">Reculer :</span>
+        <button data-rewind="60000">−1</button>
+        <button data-rewind="120000">−2</button>
+        <button data-rewind="300000">−5 min</button>
+      </div>
+    </div>
+
+    <!-- ============ COCKPIT ============ -->
+    <div class="layout">
+      <div class="card minicol">
+        <h2>📍 Lieux occupés</h2>
+        <div id="miniLieux"></div>
       </div>
 
-      <!-- Rappels -->
+      <div class="card">
+        <div class="tabs">
+          <button class="tab on" id="tabPersos" onclick="setTab('persos')">👥 Personnages</button>
+          <button class="tab" id="tabLieux" onclick="setTab('lieux')">🏰 Lieux</button>
+        </div>
+        <div class="board" id="boardPersos"></div>
+        <div class="lieux-board" id="boardLieux" style="display:none"></div>
+      </div>
+
+      <div class="card events-card">
+        <div class="twin">
+          <div><h2>⚡ Cette tranche</h2><div id="nowEvents"></div></div>
+          <div><h2>⏭ Prochaine</h2><div id="nextLabel" class="next-label"></div><div id="nextEvents"></div></div>
+        </div>
+        <div class="impro-form" id="improForm"></div>
+      </div>
+    </div>
+
+    <div class="strip" id="strip"></div>
+
+    <!-- Rappels + minuteurs secrets (existant) -->
+    <div class="grid">
       <div class="card">
         <h2>Rappels (temps restant)</h2>
         <div class="row">
@@ -53,69 +222,362 @@
         </div>
         <ul class="reminder-list" id="remList"></ul>
       </div>
-
-      <!-- Minuteurs secrets -->
-      <div class="card" style="grid-column: 1 / -1;">
+      <div class="card">
         <h2>Minuteurs secrets (invisibles aux joueurs)</h2>
         <div class="grid" id="timers"></div>
       </div>
     </div>
   </div>
 
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer"></aside>
+
   <script src="/app.js"></script>
+  <script src="/data.js"></script>
   <script>
-    const hg = document.getElementById('hg');
+    /* ================= Base (sablier, horloge) ================= */
+    const $ = (id) => document.getElementById(id);
+    const hg = $('hg');
     hg.innerHTML = hourglassSVG('gm');
     hg.querySelector('svg').classList.add('small');
     const svg = hg.querySelector('svg');
-    const clock = document.getElementById('clock');
-    const statusEl = document.getElementById('status');
-    const toasts = document.getElementById('toasts');
-
-    // Débloque l'audio dès la première interaction du MJ
+    const clock = $('clock');
+    const statusEl = $('status');
+    const toasts = $('toasts');
     document.body.addEventListener('click', unlockAudio, { once: true });
 
-    /* ----- Contrôles principaux ----- */
-    document.getElementById('toggle').addEventListener('click', () => sendAction({ action: 'toggle' }));
-    document.getElementById('reset').addEventListener('click', () => sendAction({ action: 'reset' }));
+    $('toggle').addEventListener('click', () => sendAction({ action: 'toggle' }));
+    $('reset').addEventListener('click', () => sendAction({ action: 'reset' }));
     document.querySelectorAll('[data-skip]').forEach((b) =>
       b.addEventListener('click', () => sendAction({ action: 'skip', ms: +b.dataset.skip })));
     document.querySelectorAll('[data-rewind]').forEach((b) =>
       b.addEventListener('click', () => sendAction({ action: 'rewind', ms: +b.dataset.rewind })));
 
-    /* ----- Rappels ----- */
-    document.getElementById('addRem').addEventListener('click', () => {
-      const min = parseInt(document.getElementById('remMin').value, 10);
-      const text = document.getElementById('remText').value.trim();
+    /* ================= Cockpit : état ================= */
+    const DATA = MJ_DATA;
+    const ALL = [...DATA.order, ...DATA.staffOrder];
+    let overrides = {}, improEvents = [];
+    let selected = null, curTab = 'persos', focusLieu = null, lastTi = -1;
+    let realElapsedMs = 0;               // temps écoulé réel (depuis le serveur)
+    let repet = false, simMs = 0;        // mode répétition (local, n'affecte pas les joueurs)
+
+    const esc = (s) => (s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const escJS = (s) => (s ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const short = (t, n = 32) => !t ? '' : (t.length > n ? t.slice(0, n - 1) + '…' : t);
+    const lieuLink = (l) => `<a class="lieu-link" onclick="event.stopPropagation();showLieu('${escJS(l)}')">${esc(l)}</a>`;
+    const MODIF = (v) => v == null ? '' : (v >= 10 ? '+' : '') + Math.floor((v - 10) / 2);
+
+    const cockpitMs = () => repet ? simMs : realElapsedMs;
+    const curMin = () => Math.min(60, Math.floor(cockpitMs() / 60000));
+    function trancheIdx(min) { for (let i = DATA.tranches.length - 1; i >= 0; i--) { if (min >= DATA.tranches[i].start) return i; } return 0; }
+
+    function effCell(name, ti, live = true) {
+      const plan = DATA.timeline[name][ti];
+      if (live && !repet && overrides[name]) return { lieu: overrides[name].lieu, act: overrides[name].act, new: false, dev: true, plan };
+      return { ...plan, dev: false, plan };
+    }
+    function nextEvent(name, ti) {
+      const cells = DATA.timeline[name];
+      for (let i = ti + 1; i < cells.length; i++) { if (cells[i].new) return { min: DATA.tranches[i].start, lieu: cells[i].lieu, act: cells[i].act }; }
+      return null;
+    }
+    function occupancy(ti) {
+      const map = {};
+      ALL.forEach((n) => {
+        const c = effCell(n, ti);
+        if (c.lieu === '?') return;
+        (map[c.lieu] ??= []).push({ name: n, act: c.act, isNew: c.new, dev: c.dev });
+      });
+      return map;
+    }
+    function lieuxSorted(map) {
+      const known = DATA.lieux.map((l) => l.n).filter((n) => map[n]);
+      const extra = Object.keys(map).filter((n) => !DATA.lieux.some((l) => l.n === n));
+      return [...known, ...extra];
+    }
+    const etageOf = (n) => (DATA.lieux.find((l) => l.n === n) || {}).etage || '';
+
+    /* ================= Onglets & vue lieux ================= */
+    function setTab(t) {
+      curTab = t;
+      $('tabPersos').classList.toggle('on', t === 'persos');
+      $('tabLieux').classList.toggle('on', t === 'lieux');
+      $('boardPersos').style.display = t === 'persos' ? '' : 'none';
+      $('boardLieux').style.display = t === 'lieux' ? '' : 'none';
+    }
+    function showLieu(l) {
+      focusLieu = l;
+      setTab('lieux');
+      renderLieux();
+      const el = document.querySelector(`[data-lieu="${CSS.escape(l)}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /* ================= Rendus cockpit ================= */
+    function renderPersos() {
+      const ti = trancheIdx(curMin());
+      let html = '';
+      const tokenHTML = (name, staff) => {
+        const c = DATA.chars[name];
+        const cell = effCell(name, ti);
+        const nxt = nextEvent(name, ti);
+        return `<div class="token ${staff ? 'staff' : ''} ${cell.new ? 'active-event' : ''} ${cell.dev ? 'deviated' : ''}" onclick="openSheet('${escJS(name)}')" title="${esc(cell.lieu)} — ${esc(cell.act)}">
+          ${cell.new ? '<span class="badge-new">ACTION</span>' : ''}
+          ${cell.dev ? '<span class="badge-dev">DÉVIÉ</span>' : ''}
+          <img class="portrait" src="${encodeURI(c.portrait || '')}" alt="" loading="lazy" onerror="this.style.opacity=.15">
+          <div class="tbody">
+            <div class="tname">${esc(c.nom)}</div>
+            <div class="loc now ${cell.dev ? 'dev' : ''}"><span class="ico">📍</span><span>${lieuLink(cell.lieu)}${cell.act ? ` · ${esc(short(cell.act, 26))}` : ''}</span></div>
+            ${cell.dev ? `<div class="ghost">plan : ${esc(cell.plan.lieu)}${cell.plan.act ? ` · ${esc(short(cell.plan.act, 20))}` : ''}</div>` : ''}
+            <div class="loc next"><span class="ico">➜</span><span>${nxt ? `<b>min ${nxt.min}</b> · ${lieuLink(nxt.lieu)}` : 'reste sur place'}</span></div>
+          </div>
+        </div>`;
+      };
+      DATA.order.forEach((n) => html += tokenHTML(n, false));
+      html += `<div class="staff-sep">Staff & entités</div>`;
+      DATA.staffOrder.forEach((n) => html += tokenHTML(n, true));
+      $('boardPersos').innerHTML = html;
+    }
+
+    function renderLieux() {
+      const ti = trancheIdx(curMin());
+      const map = occupancy(ti);
+      const nextMap = ti + 1 < DATA.tranches.length ? occupancy(ti + 1) : {};
+      let html = '';
+      lieuxSorted(map).forEach((l) => {
+        const occ = map[l];
+        const arrivals = (nextMap[l] || []).filter((p) => !occ.some((o) => o.name === p.name)).map((p) => p.name);
+        const departs = occ.filter((o) => nextMap[l] && !nextMap[l].some((p) => p.name === o.name)).map((o) => o.name);
+        html += `<div class="lieu-card ${focusLieu === l ? 'focus' : ''}" data-lieu="${esc(l)}">
+          <div class="lieu-head"><span class="ln">${esc(l)}</span><span class="etage-badge">${esc(etageOf(l))}</span><span style="margin-left:auto;color:var(--muted);font-size:11px">${occ.length} pers.</span></div>
+          ${occ.map((o) => `<div class="occ ${o.isNew ? 'is-new' : ''}" onclick="openSheet('${escJS(o.name)}')">
+            <img src="${encodeURI(DATA.chars[o.name].portrait || '')}" onerror="this.style.opacity=.15">
+            <div><div class="on" ${o.dev ? 'style="color:var(--red)"' : ''}>${esc(o.name)}${o.isNew ? ' ⚡' : ''}${o.dev ? ' 📌' : ''}</div><div class="oa">${esc(o.act) || '—'}</div></div>
+          </div>`).join('')}
+          ${arrivals.length || departs.length ? `<div class="arrivals">${arrivals.length ? `<b>➜ Arrivent</b> (tranche suivante) : ${arrivals.map(esc).join(', ')}` : ''}${arrivals.length && departs.length ? '<br>' : ''}${departs.length ? `<b>⇠ Partent</b> : ${departs.map(esc).join(', ')}` : ''}</div>` : ''}
+        </div>`;
+      });
+      $('boardLieux').innerHTML = html || `<div class="empty">Aucun lieu occupé.</div>`;
+    }
+
+    function renderMini() {
+      const map = occupancy(trancheIdx(curMin()));
+      $('miniLieux').innerHTML = lieuxSorted(map).map((l) => `
+        <div class="mini-lieu" onclick="showLieu('${escJS(l)}')">
+          <div class="ml-name"><span>${esc(l)}</span><span class="ml-count">${map[l].length}</span></div>
+          <div class="ml-who">${map[l].map((o) => esc(o.name)).join(' · ')}</div>
+        </div>`).join('');
+    }
+
+    function improIn(idx) {
+      const t = DATA.tranches[idx];
+      return improEvents.filter((e) => e.min >= t.start && e.min < t.end).sort((a, b) => a.min - b.min);
+    }
+    function renderEvents() {
+      const ti = trancheIdx(curMin());
+      const list = (idx, cls) => {
+        let h = '';
+        improIn(idx).forEach((e) => {
+          h += `<div class="event impro ${cls}"><button class="del-ev" onclick="delImpro(${e.id})" title="Supprimer">✕</button><b>min ${e.min}</b>${e.who ? ` · <span class="who" onclick="openSheet('${escJS(e.who)}')">${esc(e.who)}</span>` : ''} · ${lieuLink(e.lieu)}${e.act ? ` — ${esc(e.act)}` : ''}</div>`;
+        });
+        ALL.forEach((n) => {
+          const c = DATA.timeline[n][idx];
+          if (c.new) h += `<div class="event ${cls}"><span class="who" onclick="openSheet('${escJS(n)}')">${esc(n)}</span> · ${lieuLink(c.lieu)}${c.act ? ` — ${esc(c.act)}` : ''}</div>`;
+        });
+        return h || `<div class="empty">Rien de nouveau — tout continue.</div>`;
+      };
+      $('nowEvents').innerHTML = list(ti, '');
+      if (ti + 1 < DATA.tranches.length) {
+        const t = DATA.tranches[ti + 1];
+        $('nextLabel').textContent = t.label === '60 (reset)' ? '⟲ reset (min 60)' : `min ${t.start} → ${t.end}`;
+        $('nextEvents').innerHTML = list(ti + 1, 'next-ev');
+      } else {
+        $('nextLabel').textContent = '';
+        $('nextEvents').innerHTML = `<div class="empty">Fin de boucle.</div>`;
+      }
+      renderImproForm();
+    }
+    function renderImproForm() {
+      if (document.activeElement && $('improForm').contains(document.activeElement)) return;
+      $('improForm').innerHTML = `
+        <div style="font-size:11px;color:var(--violet);letter-spacing:1px;text-transform:uppercase">⚡ Événement à la volée</div>
+        <div class="if-row">
+          <input type="number" id="ivMin" min="0" max="60" value="${Math.min(60, curMin() + 5)}" title="Minute">
+          <select id="ivWho"><option value="">— personne —</option>${ALL.map((n) => `<option>${esc(n)}</option>`).join('')}</select>
+        </div>
+        <div class="if-row"><select id="ivLieu">${DATA.lieux.map((l) => `<option>${esc(l.n)}</option>`).join('')}</select></div>
+        <input type="text" id="ivAct" placeholder="ex : la garde de la Citadelle arrive…">
+        <button class="btn-impro" onclick="addImpro()">+ Ajouter</button>`;
+    }
+
+    function renderStrip() {
+      const ti = trancheIdx(curMin());
+      $('strip').innerHTML = DATA.tranches.map((t, i) => {
+        let n = 0;
+        ALL.forEach((k) => { if (DATA.timeline[k][i].new) n++; });
+        const ni = improIn(i).length;
+        const click = repet ? `class="cell clickable ${i === ti ? 'now' : ''}" onclick="simJump(${t.start * 60000})"` : `class="cell ${i === ti ? 'now' : ''}"`;
+        return `<div ${click}>${t.label === '60 (reset)' ? 'reset' : t.label}<span class="n ${n || ni ? '' : 'zero'}">${n || '·'}${ni ? `<span style="color:var(--violet)"> +${ni}</span>` : ''}</span></div>`;
+      }).join('');
+    }
+
+    function refreshCockpit() { renderPersos(); renderLieux(); renderMini(); renderEvents(); renderStrip(); if (selected) openSheet(selected); }
+
+    /* ================= Actions serveur (dérogations & impro) ================= */
+    function applyDev(name) {
+      sendAction({ action: 'setOverride', name, lieu: $('dvLieu').value, act: $('dvAct').value.trim() })
+        .then((s) => { if (s) { overrides = s.overrides || {}; refreshCockpit(); openSheet(name); } });
+    }
+    function backToPlan(name) {
+      sendAction({ action: 'clearOverride', name })
+        .then((s) => { if (s) { overrides = s.overrides || {}; refreshCockpit(); openSheet(name); } });
+    }
+    function addImpro() {
+      sendAction({ action: 'addImpro', min: +$('ivMin').value || 0, who: $('ivWho').value, lieu: $('ivLieu').value, act: $('ivAct').value.trim() })
+        .then((s) => { if (s) { improEvents = s.improEvents || []; renderEvents(); renderStrip(); } });
+    }
+    function delImpro(id) {
+      sendAction({ action: 'removeImpro', id })
+        .then((s) => { if (s) { improEvents = s.improEvents || []; renderEvents(); renderStrip(); } });
+    }
+
+    /* ================= Fiche personnage ================= */
+    function splitList(s) { return s ? s.split(/\s+·\s+|\n+/).filter((x) => x.trim() && x.trim() !== '—') : []; }
+    function secHTML(title, s) {
+      const items = splitList(s);
+      if (!items.length) return '';
+      return `<div class="sec"><h4>${title}</h4><ul>${items.map((i) => `<li>${esc(i).replace(/^([^:—(]{2,38})(\s*[:—])/, '<b>$1</b>$2')}</li>`).join('')}</ul></div>`;
+    }
+    function openDevForm(name) {
+      const o = overrides[name];
+      const cur = effCell(name, trancheIdx(curMin()));
+      $('devZone').innerHTML = `
+        <div class="dev-form">
+          <div style="font-size:11px;color:var(--red);letter-spacing:1px;text-transform:uppercase">📌 Dévier ${esc(name)}</div>
+          <div class="df-row"><select id="dvLieu">${DATA.lieux.map((l) => `<option ${l.n === (o ? o.lieu : cur.lieu) ? 'selected' : ''}>${esc(l.n)}</option>`).join('')}</select></div>
+          <input type="text" id="dvAct" value="${esc(o ? o.act : '')}" placeholder="ex : suit les joueurs vers la serre…">
+          <div class="df-row">
+            <button class="btn-dev" style="flex:1" onclick="applyDev('${escJS(name)}')">Appliquer</button>
+            <button onclick="openSheet('${escJS(name)}')">Annuler</button>
+          </div>
+        </div>`;
+    }
+    function openSheet(name) {
+      selected = name;
+      const c = DATA.chars[name];
+      const ti = trancheIdx(curMin());
+      const cell = effCell(name, ti);
+      const nxt = nextEvent(name, ti);
+      const devBtns = `<div style="display:flex;gap:7px;margin:-4px 0 13px">
+          ${overrides[name]
+            ? `<button class="btn-plan" style="flex:1" onclick="backToPlan('${escJS(name)}')">↩ Retour au plan</button><button class="btn-dev" style="flex:1" onclick="openDevForm('${escJS(name)}')">📌 Modifier la déviation</button>`
+            : `<button class="btn-dev" style="flex:1" onclick="openDevForm('${escJS(name)}')">📌 Dévier (les joueurs ont perturbé le plan)</button>`}
+        </div><div id="devZone"></div>`;
+      const locHTML = `<div class="d-loc" ${cell.dev ? 'style="border-color:rgba(232,104,122,.5)"' : ''}>📍 <b>Maintenant :</b> ${lieuLink(cell.lieu)}${cell.act ? ` — ${esc(cell.act)}` : ''}${cell.dev ? ` <span style="color:var(--red);font-weight:700">[DÉVIÉ]</span><br><span class="ghost">plan : ${esc(cell.plan.lieu)}${cell.plan.act ? ` — ${esc(cell.plan.act)}` : ''}</span>` : ''}<br>➜ <b>Ensuite :</b> ${nxt ? `min ${nxt.min} — ${lieuLink(nxt.lieu)}${nxt.act ? ` — ${esc(nxt.act)}` : ''}` : 'reste sur place'}</div>${devBtns}`;
+      let body;
+      if (c.type === 'staff') {
+        body = `${locHTML}<div class="sec"><h4>Notes MJ</h4><div class="notes-staff">${esc(c.notes)}</div></div>`;
+      } else {
+        const auto = curMin() >= 30 ? 'v5' : 'v4';
+        const v = c[window.__forceV || auto] || c.v5 || c.v4;
+        const hasStats = v && Object.values(v.stats).some((x) => x != null);
+        const rolesHTML = c.roles && c.roles.length
+          ? `<div class="sec"><h4>🎭 Rôles secrets possibles</h4><div style="display:flex;gap:6px;flex-wrap:wrap">${c.roles.map((r) => `<span style="background:rgba(167,139,250,.14);color:var(--violet);border:1px solid rgba(167,139,250,.35);border-radius:14px;padding:3px 11px;font-size:11.5px;font-weight:600">${esc(r)}</span>`).join('')}</div></div>` : '';
+        if (!hasStats) {
+          body = `${locHTML}${rolesHTML}
+          <div class="notes-staff" style="border-style:dashed;color:var(--muted)">📝 Fiche à compléter dans <b>character_sheet_data.xlsx</b> puis régénérer (08_Outil_MJ/gen_data.py). Exemples complets : Askii, Balerion, Bardik.</div>
+          ${c.quote ? `<div class="quote">« ${esc(c.quote)} »</div>` : ''}`;
+        } else {
+          const caShort = v.ca ? (String(v.ca).match(/\d+/) || ['?'])[0] : '?';
+          const vitShort = v.vitesse ? String(v.vitesse).split(/[+·]/)[0].trim() : '—';
+          body = `${locHTML}
+          <div class="lvl-switch">
+            <button class="${(window.__forceV || auto) === 'v4' ? 'on' : ''}" onclick="window.__forceV='v4';openSheet(selected)">Niv. ${c.v4?.lvl ?? 4} (avant min 30)</button>
+            <button class="${(window.__forceV || auto) === 'v5' ? 'on' : ''}" onclick="window.__forceV='v5';openSheet(selected)">Niv. ${c.v5?.lvl ?? 5} (après le souffle)</button>
+          </div>
+          <div class="statgrid">${['FOR', 'DEX', 'CON', 'INT', 'SAG', 'CHA'].map((k) => `<div class="stat"><div class="lbl">${k}</div><div class="val">${v.stats[k] ?? '—'}</div><div class="mod">${MODIF(v.stats[k])}</div></div>`).join('')}</div>
+          <div class="vitals">
+            <div class="vital" title="${esc(v.ca || '')}"><div class="lbl">CA</div><div class="val">${caShort}</div></div>
+            <div class="vital"><div class="lbl">PV MAX</div><div class="val">${v.pv ?? '—'}</div></div>
+            <div class="vital" title="${esc(v.vitesse || '')}"><div class="lbl">VITESSE</div><div class="val" style="font-size:12px;padding-top:3px">${esc(vitShort)}</div></div>
+            <div class="vital"><div class="lbl">PERC. PASSIVE</div><div class="val">${v.pp ?? '—'}</div></div>
+          </div>
+          ${secHTML('⚔️ Attaques', v.attaques)}
+          ${secHTML('✨ Traits raciaux', v.traits)}
+          ${secHTML('🎖 Aptitudes de classe', v.aptitudes)}
+          ${v.cantrips && v.cantrips !== '—' ? secHTML('🔮 Sorts mineurs', v.cantrips) : ''}
+          ${v.sorts && v.sorts !== '—' ? secHTML('📜 Sorts connus / préparés', v.sorts) : ''}
+          ${v.slots && v.slots !== '—' ? `<div class="sec"><h4>🕳 Emplacements</h4><ul><li>${esc(v.slots)}${v.dd && !String(v.dd).startsWith('=') ? ` — <b>DD ${esc(v.dd)}</b>` : ''}</li></ul></div>` : ''}
+          ${secHTML('🛠 Compétences', v.skills)}
+          ${rolesHTML}
+          ${c.quote ? `<div class="quote">« ${esc(c.quote)} »</div>` : ''}`;
+        }
+      }
+      $('drawer').innerHTML = `
+        <div class="d-head">
+          <img class="d-avatar" src="${encodeURI(c.portrait || '')}" onerror="this.style.opacity=.15">
+          <div>
+            <h3>${esc(c.nom)}</h3>
+            <div class="ult">${esc(c.ultimate || '')}</div>
+            ${c.type === 'prime' ? `<div class="meta">${esc(c.race || '')} · ${esc(c.classe || '')} — ${esc(c.sousclasse || '')}</div>` : ''}
+          </div>
+          <button class="d-close" onclick="closeSheet()">✕</button>
+        </div>
+        <div class="d-body">${body}</div>`;
+      $('drawer').classList.add('open'); $('overlay').classList.add('open');
+    }
+    function closeSheet() { selected = null; window.__forceV = null; $('drawer').classList.remove('open'); $('overlay').classList.remove('open'); }
+    $('overlay').addEventListener('click', closeSheet);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+
+    /* ================= Mode répétition ================= */
+    $('repetToggle').addEventListener('change', (e) => {
+      repet = e.target.checked;
+      $('repetControls').style.display = repet ? '' : 'none';
+      if (repet) { simMs = realElapsedMs; $('repetScrub').value = Math.floor(simMs / 1000); }
+      lastTi = -1; updateCockpitTime(); refreshCockpit();
+    });
+    $('repetScrub').addEventListener('input', (e) => { simMs = (+e.target.value) * 1000; updateCockpitTime(); });
+    function simJump(ms) { if (repet) { simMs = ms; $('repetScrub').value = Math.floor(ms / 1000); updateCockpitTime(); } }
+
+    /* ================= Pills & tranche ================= */
+    function updateCockpitTime() {
+      const ti = trancheIdx(curMin());
+      const t = DATA.tranches[ti];
+      $('tranchePill').textContent = (t.label === '60 (reset)' ? '⟲ RESET' : `Tranche ${t.start}–${t.end}`) + (repet ? ' · 🎬' : '');
+      const p = $('lvlPill');
+      if (curMin() >= 30) { p.textContent = 'Primes niv. 5 — souffle passé'; p.classList.add('lvl5'); }
+      else { p.textContent = 'Primes niv. 4'; p.classList.remove('lvl5'); }
+      if (repet) $('repetClock').textContent = fmt(simMs);
+      if (ti !== lastTi) { lastTi = ti; refreshCockpit(); }
+    }
+
+    /* ================= Rappels (existant) ================= */
+    $('addRem').addEventListener('click', () => {
+      const min = parseInt($('remMin').value, 10);
+      const text = $('remText').value.trim();
       if (isNaN(min) || !text) return;
       sendAction({ action: 'addReminder', atMs: min * 60000, text });
-      document.getElementById('remText').value = '';
+      $('remText').value = '';
     });
-    document.getElementById('remText').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('addRem').click();
-    });
-
+    $('remText').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('addRem').click(); });
     function renderReminders(list) {
-      const el = document.getElementById('remList');
+      const el = $('remList');
       el.innerHTML = '';
       list.forEach((r) => {
         const li = document.createElement('li');
         li.className = 'reminder-item' + (r.fired ? ' fired' : '');
-        li.innerHTML =
-          '<span class="at">' + fmt(r.atMs) + '</span>' +
-          '<span class="txt"></span>' +
-          '<button class="del warn">✕</button>';
+        li.innerHTML = '<span class="at">' + fmt(r.atMs) + '</span><span class="txt"></span><button class="del warn">✕</button>';
         li.querySelector('.txt').textContent = r.text;
-        li.querySelector('.del').addEventListener('click', () =>
-          sendAction({ action: 'removeReminder', id: r.id }));
+        li.querySelector('.del').addEventListener('click', () => sendAction({ action: 'removeReminder', id: r.id }));
         el.appendChild(li);
       });
     }
 
-    /* ----- Minuteurs secrets ----- */
+    /* ================= Minuteurs secrets (existant) ================= */
     let timersBuilt = false;
     function buildTimers(timers) {
-      const wrap = document.getElementById('timers');
+      const wrap = $('timers');
       timers.forEach((t, i) => {
         const div = document.createElement('div');
         div.className = 'timer';
@@ -135,8 +597,7 @@
           '</div>';
         const nameInput = div.querySelector('[data-name]');
         nameInput.value = t.label;
-        const saveName = () => sendAction({ action: 'timerSetLabel', index: i, label: nameInput.value.trim() });
-        nameInput.addEventListener('change', saveName);
+        nameInput.addEventListener('change', () => sendAction({ action: 'timerSetLabel', index: i, label: nameInput.value.trim() }));
         nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') nameInput.blur(); });
         div.querySelector('[data-set]').addEventListener('click', () => {
           const m = parseInt(div.querySelector('[data-min]').value, 10) || 0;
@@ -165,7 +626,7 @@
       });
     }
 
-    /* ----- Toasts / notifications ----- */
+    /* ================= Toasts ================= */
     function showToast(text, kind) {
       const t = document.createElement('div');
       t.className = 'toast ' + (kind || '');
@@ -182,18 +643,27 @@
       toasts.appendChild(t);
     }
 
-    /* ----- Synchronisation ----- */
+    /* ================= Synchronisation ================= */
+    let lastLiveJSON = '';
     startSync({
       onState(s) {
         renderReminders(s.reminders);
         renderTimers(s.timers);
         statusEl.textContent = s.running ? 'En cours' : 'En pause';
         statusEl.className = 'status-pill ' + (s.running ? 'status-running' : 'status-paused');
-        document.getElementById('toggle').textContent = s.running ? '⏸ Pause' : '▶ Reprendre';
+        $('toggle').textContent = s.running ? '⏸ Pause' : '▶ Reprendre';
+        // cockpit : dérogations + événements improvisés partagés
+        overrides = s.overrides || {};
+        improEvents = s.improEvents || [];
+        const j = JSON.stringify([overrides, improEvents]);
+        if (j !== lastLiveJSON) { lastLiveJSON = j; refreshCockpit(); }
       },
       onFrame(rem, s) {
         updateHourglass(svg, 1 - rem / s.totalMs, s.running);
         clock.textContent = fmt(rem);
+        clock.classList.toggle('danger', rem <= 5 * 60000);
+        realElapsedMs = s.totalMs - rem;
+        updateCockpitTime();
       },
       onEvent(e) {
         if (e.kind === 'reminder') { playAlert('reminder'); showToast('🔔  ' + e.text, ''); }
