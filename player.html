@@ -10,6 +10,64 @@
   <div class="player-page" id="page">
     <button class="sound-btn" id="soundBtn">🔔 Activer le son</button>
 
+    <!-- Horloge de la Citadelle : l'heure « en jeu », calée sur le sablier (09:00 → 10:00) -->
+    <div class="med-clock" id="medClock" title="Heure de la Citadelle">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <radialGradient id="mcFace" cx="38%" cy="30%" r="78%">
+            <stop offset="0%" stop-color="#3a2a15"/>
+            <stop offset="55%" stop-color="#241809"/>
+            <stop offset="100%" stop-color="#140d05"/>
+          </radialGradient>
+          <linearGradient id="mcBrass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f6dfa4"/>
+            <stop offset="38%" stop-color="#c9973f"/>
+            <stop offset="62%" stop-color="#8a6220"/>
+            <stop offset="100%" stop-color="#e2c179"/>
+          </linearGradient>
+          <linearGradient id="mcHand" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe9b8"/>
+            <stop offset="100%" stop-color="#c08c30"/>
+          </linearGradient>
+          <filter id="mcGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- couronne de laiton + rivets -->
+        <circle cx="100" cy="100" r="96" fill="url(#mcBrass)"/>
+        <circle cx="100" cy="100" r="87" fill="#150e06"/>
+        <circle cx="100" cy="100" r="83" fill="url(#mcBrass)"/>
+        <circle cx="100" cy="100" r="78" fill="url(#mcFace)"/>
+        <g id="mcRivets" fill="#f2d99e" opacity=".85"></g>
+        <!-- graduations + chiffres romains (generes au chargement) -->
+        <g id="mcTicks" stroke="#d9b874" stroke-linecap="round"></g>
+        <g id="mcNums" fill="#e8c37a" font-family="Georgia,'Times New Roman',serif"
+           font-size="13" font-weight="700" text-anchor="middle"></g>
+
+        <!-- aiguilles -->
+        <g filter="url(#mcGlow)">
+          <!-- aiguille des heures : courte et large, style gothique -->
+          <g class="mc-hand" id="mcHourHand">
+            <path d="M100 110 L91 90 L100 52 L109 90 Z" fill="url(#mcHand)" stroke="#4a3210" stroke-width="1.8"
+                  stroke-linejoin="round"/>
+            <circle cx="100" cy="82" r="6.5" fill="#241809" stroke="#4a3210" stroke-width="1.6"/>
+          </g>
+          <!-- aiguille des minutes : longue, pointe en fleur de lys -->
+          <g class="mc-hand" id="mcMinHand">
+            <path d="M100 112 L95 92 L100 30 L105 92 Z" fill="url(#mcHand)" stroke="#4a3210" stroke-width="1.6"
+                  stroke-linejoin="round"/>
+            <path d="M100 14 L106 30 L100 36 L94 30 Z" fill="url(#mcHand)" stroke="#4a3210" stroke-width="1.6"
+                  stroke-linejoin="round"/>
+          </g>
+        </g>
+        <circle cx="100" cy="100" r="7" fill="url(#mcBrass)" stroke="#5c3f12" stroke-width="1.2"/>
+        <circle cx="100" cy="100" r="2.4" fill="#3a2a12"/>
+      </svg>
+      <div class="mc-time" id="mcTime">09:00</div>
+    </div>
+
     <div class="stage">
       <div class="hg-frame" id="hgFrame">
         <svg class="sand" id="sand" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -116,9 +174,60 @@
       sandG.classList.toggle('critical', rem <= 60*1000 && rem > 0);
     }
 
+    /* ---------- Horloge de la Citadelle ---------- */
+    var ROMAN = ['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];
+    var mcHour = document.getElementById('mcHourHand');
+    var mcMin  = document.getElementById('mcMinHand');
+    var mcTime = document.getElementById('mcTime');
+    (function buildClock(){
+      var ticks = document.getElementById('mcTicks');
+      var nums  = document.getElementById('mcNums');
+      var riv   = document.getElementById('mcRivets');
+      for (var m = 0; m < 60; m++) {
+        var a = (m * 6 - 90) * Math.PI / 180;
+        var big = m % 5 === 0;
+        var r1 = big ? 62 : 67, r2 = 72;
+        var l = document.createElementNS(NS, 'line');
+        l.setAttribute('x1', (100 + Math.cos(a) * r1).toFixed(1));
+        l.setAttribute('y1', (100 + Math.sin(a) * r1).toFixed(1));
+        l.setAttribute('x2', (100 + Math.cos(a) * r2).toFixed(1));
+        l.setAttribute('y2', (100 + Math.sin(a) * r2).toFixed(1));
+        l.setAttribute('stroke-width', big ? 2.6 : 1);
+        l.setAttribute('opacity', big ? 1 : 0.55);
+        ticks.appendChild(l);
+      }
+      for (var h = 0; h < 12; h++) {
+        var ah = (h * 30 - 90) * Math.PI / 180;
+        var t = document.createElementNS(NS, 'text');
+        t.setAttribute('x', (100 + Math.cos(ah) * 52).toFixed(1));
+        t.setAttribute('y', (100 + Math.sin(ah) * 52 + 4.6).toFixed(1));
+        t.textContent = ROMAN[h];
+        nums.appendChild(t);
+      }
+      for (var k = 0; k < 12; k++) {
+        var ar = (k * 30 - 90) * Math.PI / 180;
+        var c = document.createElementNS(NS, 'circle');
+        c.setAttribute('cx', (100 + Math.cos(ar) * 91).toFixed(1));
+        c.setAttribute('cy', (100 + Math.sin(ar) * 91).toFixed(1));
+        c.setAttribute('r', 2.6);
+        riv.appendChild(c);
+      }
+    })();
+    /* Le sablier couvre une heure de fiction : 09:00 -> 10:00. */
+    function renderClock(rem, s) {
+      var elapsed = Math.max(0, Math.min(s.totalMs, s.totalMs - rem));
+      var mins = elapsed / 60000;                    // 0 -> 60
+      var hh = 9 + Math.floor(mins / 60);
+      var mm = Math.floor(mins) % 60;
+      if (mins >= 60) { hh = 10; mm = 0; }
+      mcTime.textContent = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+      mcMin.setAttribute('transform', 'rotate(' + (mins * 6).toFixed(2) + ' 100 100)');
+      mcHour.setAttribute('transform', 'rotate(' + (270 + mins * 0.5).toFixed(2) + ' 100 100)');
+    }
+
     startSync({
       onState: function (s) { page.classList.toggle('paused', !s.running); },
-      onFrame: function (rem, s) { renderSand(rem, s); clock.textContent = fmt(rem); },
+      onFrame: function (rem, s) { renderSand(rem, s); renderClock(rem, s); clock.textContent = fmt(rem); },
       onEvent: function (e) {
         if (e.kind === 'timer' || e.kind === 'end') { playAlert(e.kind); doFlash(); }
       },

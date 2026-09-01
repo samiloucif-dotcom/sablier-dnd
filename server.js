@@ -4,7 +4,7 @@
  *
  * Lancement :   node server.js
  * Interface joueur :  http://localhost:3000/
- * Interface MJ    :  http://localhost:3000/gm
+ * Interface MJ    :  http://localhost:3000 + GM_PATH (adresse privee, affichee au demarrage)
  *
  * Pour jouer sur plusieurs appareils du même réseau Wi-Fi, les joueurs
  * ouvrent  http://<IP-de-ta-machine>:3000/  (l'IP s'affiche au démarrage).
@@ -14,17 +14,82 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { M1_LOCATIONS } = require('./locations.js');
 
 const PORT = process.env.PORT || 3000;
+/* Adresse du cockpit MJ. Elle n'est PAS devinable depuis l'adresse joueur :
+   /gm ne repond plus rien. Modifiable sans toucher au code via la variable
+   d'environnement GM_PATH (Render : Settings > Environment). */
+const GM_PATH = process.env.GM_PATH || '/mj-chrysaldus-7f3a';
 const TOTAL_MS = 60 * 60 * 1000; // 1 heure
 const PUBLIC = __dirname;
 const STATIC = {
   '/app.js': 'app.js',
   '/style.css': 'style.css',
   '/data.js': 'data.js',
+  '/locations.js': 'locations.js',
   '/frame_hourglass.png': 'frame_hourglass.png',
   '/hall_bg.jpg': 'hall_bg.jpg',
 };
+
+const TIMELINE_FILE = path.join(PUBLIC, 'timeline.json');
+
+/* Les routines (qui est ou, et fait quoi, tranche par tranche) sont editees
+   dans le cockpit et vivent dans timeline.json. Ce fichier fait foi ; data.js
+   (genere depuis l'Excel) ne sert plus que d'amorce si le JSON est absent. */
+function seedTimelineFromData() {
+  try {
+    const src = fs.readFileSync(path.join(PUBLIC, 'data.js'), 'utf8');
+    const D = eval(src + '; MJ_DATA');
+    const slots = D.tranches.filter((t) => t.start < 60).map((t) => ({
+      label: `${String(9 + Math.floor(t.start / 60)).padStart(2, '0')}:${String(t.start % 60).padStart(2, '0')}`
+           + ` → ${String(9 + Math.floor(t.end / 60)).padStart(2, '0')}:${String(t.end % 60).padStart(2, '0')}`,
+      start: t.start, end: t.end, marque: t.marque || '',
+    }));
+    const cols = D.order.filter((n) => D.chars[n] && D.chars[n].type === 'prime' && !D.chars[n].horsCasting)
+                        .concat(D.staffOrder || []);
+    const routines = {};
+    cols.forEach((n) => { routines[n] = slots.map(() => ({ loc: '', act: '' })); });
+    return { version: 1, updated: new Date().toISOString(), source: 'amorce vide', slots, cols, routines };
+  } catch (e) {
+    return { version: 1, updated: new Date().toISOString(), source: 'vide', slots: [], cols: [], routines: {} };
+  }
+}
+
+function loadTimeline() {
+  try {
+    const t = JSON.parse(fs.readFileSync(TIMELINE_FILE, 'utf8'));
+    if (t && Array.isArray(t.slots) && t.routines) {
+      console.log(`  Routines chargees depuis timeline.json (${t.cols.length} personnages).`);
+      return t;
+    }
+  } catch (e) {}
+  console.log('  Pas de timeline.json : routines vides (amorcees depuis data.js).');
+  return seedTimelineFromData();
+}
+
+let saveTimer = null;
+let saveWarned = false;
+function persistTimeline() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      const tmp = TIMELINE_FILE + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(state.timeline, null, 1), 'utf8');
+      try { fs.copyFileSync(TIMELINE_FILE, TIMELINE_FILE + '.bak'); } catch (e) {}
+      fs.renameSync(tmp, TIMELINE_FILE);
+      saveWarned = false;
+    } catch (e) {
+      if (!saveWarned) {
+        saveWarned = true;
+        console.warn('  /!\\ timeline.json non enregistrable (' + e.code + ').'
+          + ' Les modifications restent en memoire : utilise « Exporter » pour les recuperer.');
+      }
+    }
+  }, 400);
+}
+
+function emptyRow() { return state.timeline.slots.map(() => ({ loc: '', act: '' })); }
 
 let nextEventId = 1;
 let nextReminderId = 1;
@@ -46,7 +111,11 @@ const state = {
   events: [],                   // {id, kind:'timer'|'reminder'|'end', text}
   overrides: {},                // cockpit MJ : nom -> {lieu, act} (dérogations au plan)
   improEvents: [],              // cockpit MJ : {id, min, who, lieu, act} (événements à la volée)
+  timeline: null,               // routines editables (chargees juste apres)
+  timelineRev: 1,               // incremente a chaque modif : les clients rechargent /timeline
+  saveOk: true,                 // false si l'ecriture disque a echoue (hebergement en lecture seule)
 };
+state.timeline = loadTimeline();
 
 const now = () => Date.now();
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -213,6 +282,51 @@ function handleAction(body) {
       if (state.improEvents.length > 100) state.improEvents.shift();
       break;
     }
+    /* ---- Routines (grille editable du cockpit) ---- */
+    case 'setCell': {
+      const tl = state.timeline;
+      const name = String(body.name || '');
+      const i = Number(body.i);
+      if (!tl.routines[name] || !(i >= 0 && i < tl.slots.length)) break;
+      const cell = tl.routines[name][i] || (tl.routines[name][i] = { loc: '', act: '' });
+      if (typeof body.loc === 'string') cell.loc = body.loc.slice(0, 120);
+      if (typeof body.act === 'string') cell.act = body.act.slice(0, 400);
+      tl.updated = new Date().toISOString();
+      state.timelineRev++;
+      persistTimeline();
+      break;
+    }
+    case 'addCol': {
+      const tl = state.timeline;
+      const name = String(body.name || '').trim();
+      if (!name || tl.cols.includes(name)) break;
+      tl.cols.push(name);
+      tl.routines[name] = emptyRow();
+      tl.updated = new Date().toISOString();
+      state.timelineRev++;
+      persistTimeline();
+      break;
+    }
+    case 'removeCol': {
+      const tl = state.timeline;
+      const name = String(body.name || '');
+      tl.cols = tl.cols.filter((n) => n !== name);
+      delete tl.routines[name];
+      tl.updated = new Date().toISOString();
+      state.timelineRev++;
+      persistTimeline();
+      break;
+    }
+    case 'importTimeline': {
+      const t = body.timeline;
+      if (t && Array.isArray(t.slots) && Array.isArray(t.cols) && t.routines) {
+        state.timeline = t;
+        state.timeline.updated = new Date().toISOString();
+        state.timelineRev++;
+        persistTimeline();
+      }
+      break;
+    }
     case 'removeImpro':
       state.improEvents = state.improEvents.filter((e) => e.id !== Number(body.id));
       break;
@@ -236,6 +350,9 @@ function snapshot() {
     events: state.events.slice(-30),
     overrides: state.overrides,
     improEvents: state.improEvents,
+    timelineRev: state.timelineRev,
+    timelineUpdated: state.timeline ? state.timeline.updated : null,
+    saveOk: !saveWarned,
     serverNow: now(),
   };
 }
@@ -260,7 +377,33 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'GET') {
     if (pathname === '/' ) return serveFile(res, path.join(PUBLIC, 'player.html'));
-    if (pathname === '/gm' || pathname === '/gm.html') return serveFile(res, path.join(PUBLIC, 'gm.html'));
+    if (pathname === GM_PATH) return serveFile(res, path.join(PUBLIC, 'gm.html'));
+    if (pathname === '/timeline') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      return res.end(JSON.stringify(state.timeline));
+    }
+    if (pathname === '/timeline.json') {          // telechargement (sauvegarde locale)
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="timeline.json"' });
+      return res.end(JSON.stringify(state.timeline, null, 1));
+    }
+    if (pathname === '/timeline.csv') {           // export lisible dans Excel
+      const tl = state.timeline;
+      const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+      const head = ['Heure'].concat(...tl.cols.map((n) => [n + ' — lieu', n + ' — action']));
+      const rows = tl.slots.map((s2, i) => [s2.label].concat(...tl.cols.map((n) => {
+        const c = (tl.routines[n] || [])[i] || {};
+        return [c.loc || '', c.act || ''];
+      })));
+      const csv = '\ufeff' + [head].concat(rows).map((r) => r.map(esc).join(';')).join('\r\n');
+      res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="routines.csv"' });
+      return res.end(csv);
+    }
+    if (pathname === '/locations') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify(M1_LOCATIONS));
+    }
     if (pathname === '/state') {
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       return res.end(JSON.stringify(snapshot()));
@@ -280,7 +423,7 @@ const server = http.createServer((req, res) => {
     let body = '';
     req.on('data', (c) => {
       body += c;
-      if (body.length > 1e5) req.destroy();
+      if (body.length > 4e6) req.destroy();
     });
     req.on('end', () => {
       try {
@@ -306,7 +449,7 @@ server.listen(PORT, () => {
   }
   console.log('\n  ⏳  Sablier D&D lancé !\n');
   console.log('  Interface joueur :  http://localhost:' + PORT + '/');
-  console.log('  Interface MJ     :  http://localhost:' + PORT + '/gm\n');
+  console.log('  Interface MJ     :  http://localhost:' + PORT + GM_PATH + '   (adresse privee)\n');
   if (ips.length) {
     console.log('  Pour les joueurs sur le même Wi-Fi :');
     ips.forEach((ip) => console.log('     http://' + ip + ':' + PORT + '/'));

@@ -92,6 +92,42 @@
     .impro-form .if-row input[type=number]{width:74px;flex:none;text-align:center}
     .btn-impro{background:rgba(167,139,250,.14);border-color:rgba(167,139,250,.45);color:var(--violet);width:100%}
 
+    /* ---- Grille des routines (editable) ---- */
+    .rt-card{display:none;margin-bottom:16px}
+    .rt-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+    .rt-hint{font-size:11.5px;color:var(--muted)}
+    .rt-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+    .rt-chip{font-size:11.5px;padding:3px 9px;border-radius:14px;border:1px solid var(--line);
+      color:var(--muted);cursor:pointer;user-select:none;background:transparent}
+    .rt-chip.on{border-color:var(--amber);color:var(--amber);background:rgba(232,181,89,.12)}
+    .rt-warn{font-size:12px;color:#f4a259;border:1px dashed #f4a259;border-radius:8px;padding:6px 10px;margin-bottom:10px}
+    .rt-wrap{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:10px}
+    table.rt{border-collapse:separate;border-spacing:0;font-size:12px}
+    table.rt th,table.rt td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:2px 4px}
+    table.rt thead th{position:sticky;top:0;z-index:3;background:#131722;color:var(--muted);
+      font-weight:600;text-align:left;white-space:nowrap;padding:5px 8px}
+    table.rt thead tr.sub th{top:31px;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase}
+    table.rt th.who{color:var(--text);font-size:12.5px}
+    table.rt th.who .x{float:right;color:var(--muted);cursor:pointer;padding-left:8px}
+    table.rt th.who .x:hover{color:var(--red)}
+    table.rt .tcol{position:sticky;left:0;z-index:2;background:#131722;font-variant-numeric:tabular-nums;
+      font-weight:600;color:var(--text);white-space:nowrap}
+    table.rt thead .tcol{z-index:5}
+    table.rt tr.now .tcol{color:var(--amber)}
+    table.rt tr.now td{background:rgba(232,181,89,.06)}
+    table.rt .mk{display:block;font-size:9.5px;letter-spacing:.5px;color:var(--red)}
+    table.rt select,table.rt input{background:#0f1320;border:1px solid transparent;border-radius:6px;
+      color:var(--text);font-size:11.5px;padding:4px 6px;font-family:inherit}
+    table.rt select{width:186px}
+    table.rt input{width:262px}
+    table.rt select:hover,table.rt input:hover{border-color:var(--line)}
+    table.rt select:focus,table.rt input:focus{border-color:var(--amber);outline:none}
+    table.rt select.inherit{color:var(--muted);font-style:italic}
+    table.rt td.saved select,table.rt td.saved input{border-color:var(--green)}
+    .src-bar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:-6px 0 14px;
+      font-size:11.5px;color:#8b93a7}
+    .src-bar b{color:#c6cede;font-weight:600}
+    .src-bar .warn{color:#f4a259}
     .strip{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-bottom:16px}
     .cell{background:#0e1220;border:1px solid var(--line);border-radius:8px;padding:7px 4px;text-align:center;transition:all .15s;font-size:11px;color:var(--muted)}
     .cell.now{background:rgba(232,181,89,.16);border-color:var(--amber);color:var(--amber);font-weight:700}
@@ -168,6 +204,9 @@
       <a class="mj-link" style="position:static" href="/" target="_blank">Vue joueur ↗</a>
     </div>
 
+    <!-- Provenance des donnees : rempli depuis DATA._meta -->
+    <div class="src-bar" id="srcBar"></div>
+
     <!-- Contrôles du vrai sablier -->
     <div class="card" style="margin-bottom:14px">
       <div class="row">
@@ -195,6 +234,7 @@
         <div class="tabs">
           <button class="tab on" id="tabPersos" onclick="setTab('persos')">👥 Personnages</button>
           <button class="tab" id="tabLieux" onclick="setTab('lieux')">🏰 Lieux</button>
+          <button class="tab" id="tabRoutines" onclick="setTab('routines')">🗓 Routines</button>
         </div>
         <div class="board" id="boardPersos"></div>
         <div class="lieux-board" id="boardLieux" style="display:none"></div>
@@ -206,6 +246,32 @@
           <div><h2>⏭ Prochaine</h2><div id="nextLabel" class="next-label"></div><div id="nextEvents"></div></div>
         </div>
         <div class="impro-form" id="improForm"></div>
+      </div>
+    </div>
+
+    <!-- ============ ROUTINES (grille editable) ============ -->
+    <div class="card rt-card" id="routinesCard">
+      <div class="rt-head">
+        <h2 style="margin:0">🗓 Routines — qui est où, et fait quoi</h2>
+        <div class="spacer"></div>
+        <span class="rt-hint" id="rtSaved"></span>
+        <select id="rtAddSel" style="font-size:12px"></select>
+        <button onclick="rtAddCol()">＋ colonne</button>
+        <a class="mj-link" style="position:static" href="/timeline.json" download onclick="rtNoteBackup()">⬇ JSON</a>
+        <a class="mj-link" style="position:static" href="/timeline.csv" download>⬇ Excel (CSV)</a>
+        <input type="file" id="rtFile" accept=".json,application/json" style="display:none" onchange="rtImport(this)">
+        <button onclick="document.getElementById('rtFile').click()" title="Recharger une sauvegarde .json">⬆ Importer</button>
+        <button id="rtRestore" onclick="rtRestoreLocal()" title="Recharger la copie gardée par ce navigateur">↺ Copie locale</button>
+        <button onclick="setTab('persos')">← Retour au cockpit</button>
+      </div>
+      <div class="rt-warn" id="rtWarn" style="display:none"></div>
+      <div class="rt-chips" id="rtChips"></div>
+      <div class="rt-wrap"><table class="rt" id="rtTable"></table></div>
+      <div class="rt-hint" style="margin-top:8px" id="rtBackupInfo"></div>
+      <div class="rt-hint" style="margin-top:4px">
+        Une case <b>lieu</b> laissée vide veut dire « ne bouge pas » : le personnage reste où il était
+        (affiché en gris italique). <b>Ctrl+D</b> recopie la case du dessus. Tout est enregistré
+        au fil de l'eau et visible immédiatement dans le cockpit.
       </div>
     </div>
 
@@ -234,6 +300,7 @@
 
   <script src="/app.js"></script>
   <script src="/data.js"></script>
+  <script src="/locations.js"></script>
   <script>
     /* ================= Base (sablier, horloge) ================= */
     const $ = (id) => document.getElementById(id);
@@ -255,7 +322,23 @@
 
     /* ================= Cockpit : état ================= */
     const DATA = MJ_DATA;
+    /* Provenance : ces donnees sont generees depuis les fichiers Excel du projet
+       par 08_Outil_MJ/gen_data.py. Relancer le script apres chaque modif Excel. */
+    (function showSources() {
+      const m = DATA._meta; const el = document.getElementById('srcBar');
+      if (!m || !el) return;
+      el.innerHTML = '<span>📊 Donnees Excel &rarr; cockpit &middot; generees le <b>' + m.genere + '</b></span>'
+        + m.sources.map(s => '<span>' + s.f + ' <b>' + s.maj + '</b></span>').join('')
+        + (m.nonResolus ? '<span class="warn">' + m.nonResolus + ' cellule(s) non resolue(s)</span>' : '');
+    })();
     const ALL = [...DATA.order, ...DATA.staffOrder];
+    /* Lieux : liste canonique du MJ (locations.js). data.js ne sert plus que de repli. */
+    const LIEUX = (typeof M1_LOCATIONS !== 'undefined')
+      ? M1_LOCATIONS.map((l) => ({ n: l.id, etage: l.etage })) : DATA.lieux;
+    /* Routines editables, servies par le serveur (timeline.json). */
+    let TL = null, tlRev = -1, tlSaveOk = true, lastRtTi = -1;
+    let tlHidden = new Set();
+    try { tlHidden = new Set(JSON.parse(localStorage.getItem('m1_rt_hidden') || '[]')); } catch (e) {}
     let overrides = {}, improEvents = [];
     let selected = null, curTab = 'persos', focusLieu = null, lastTi = -1;
     let realElapsedMs = 0;               // temps écoulé réel (depuis le serveur)
@@ -271,14 +354,31 @@
     const curMin = () => Math.min(60, Math.floor(cockpitMs() / 60000));
     function trancheIdx(min) { for (let i = DATA.tranches.length - 1; i >= 0; i--) { if (min >= DATA.tranches[i].start) return i; } return 0; }
 
+    /* Lieu effectif d'une case : si elle est vide, on remonte a la derniere case remplie. */
+    function tlEff(cells, i) {
+      for (let k = i; k >= 0; k--) { if (cells[k] && cells[k].loc) return { loc: cells[k].loc, from: k }; }
+      return { loc: '', from: -1 };
+    }
+    function tlPlan(name, ti) {
+      if (!TL || !TL.routines[name]) return null;
+      const cells = TL.routines[name];
+      if (ti >= TL.slots.length) return { lieu: '?', act: 'Reset de la boucle', new: true };
+      const cur = cells[ti] || {};
+      const eff = tlEff(cells, ti);
+      const prev = ti > 0 ? tlEff(cells, ti - 1).loc : '';
+      return { lieu: eff.loc || '?', act: cur.act || '', new: !!(cur.act || (cur.loc && cur.loc !== prev)) };
+    }
     function effCell(name, ti, live = true) {
-      const plan = DATA.timeline[name][ti];
+      const plan = tlPlan(name, ti) || DATA.timeline[name][ti];
       if (live && !repet && overrides[name]) return { lieu: overrides[name].lieu, act: overrides[name].act, new: false, dev: true, plan };
       return { ...plan, dev: false, plan };
     }
     function nextEvent(name, ti) {
-      const cells = DATA.timeline[name];
-      for (let i = ti + 1; i < cells.length; i++) { if (cells[i].new) return { min: DATA.tranches[i].start, lieu: cells[i].lieu, act: cells[i].act }; }
+      const n = DATA.tranches.length;
+      for (let i = ti + 1; i < n; i++) {
+        const c = tlPlan(name, i) || (DATA.timeline[name] || [])[i];
+        if (c && c.new) return { min: DATA.tranches[i].start, lieu: c.lieu, act: c.act };
+      }
       return null;
     }
     function occupancy(ti) {
@@ -291,19 +391,23 @@
       return map;
     }
     function lieuxSorted(map) {
-      const known = DATA.lieux.map((l) => l.n).filter((n) => map[n]);
-      const extra = Object.keys(map).filter((n) => !DATA.lieux.some((l) => l.n === n));
+      const known = LIEUX.map((l) => l.n).filter((n) => map[n]);
+      const extra = Object.keys(map).filter((n) => !LIEUX.some((l) => l.n === n));
       return [...known, ...extra];
     }
-    const etageOf = (n) => (DATA.lieux.find((l) => l.n === n) || {}).etage || '';
+    const etageOf = (n) => (LIEUX.find((l) => l.n === n) || {}).etage || '';
 
     /* ================= Onglets & vue lieux ================= */
     function setTab(t) {
       curTab = t;
       $('tabPersos').classList.toggle('on', t === 'persos');
       $('tabLieux').classList.toggle('on', t === 'lieux');
+      $('tabRoutines').classList.toggle('on', t === 'routines');
       $('boardPersos').style.display = t === 'persos' ? '' : 'none';
       $('boardLieux').style.display = t === 'lieux' ? '' : 'none';
+      document.querySelector('.layout').style.display = t === 'routines' ? 'none' : '';
+      $('routinesCard').style.display = t === 'routines' ? 'block' : 'none';
+      if (t === 'routines') renderRoutines();
     }
     function showLieu(l) {
       focusLieu = l;
@@ -381,7 +485,7 @@
           h += `<div class="event impro ${cls}"><button class="del-ev" onclick="delImpro(${e.id})" title="Supprimer">✕</button><b>min ${e.min}</b>${e.who ? ` · <span class="who" onclick="openSheet('${escJS(e.who)}')">${esc(e.who)}</span>` : ''} · ${lieuLink(e.lieu)}${e.act ? ` — ${esc(e.act)}` : ''}</div>`;
         });
         ALL.forEach((n) => {
-          const c = DATA.timeline[n][idx];
+          const c = tlPlan(n, idx) || DATA.timeline[n][idx];
           if (c.new) h += `<div class="event ${cls}"><span class="who" onclick="openSheet('${escJS(n)}')">${esc(n)}</span> · ${lieuLink(c.lieu)}${c.act ? ` — ${esc(c.act)}` : ''}</div>`;
         });
         return h || `<div class="empty">Rien de nouveau — tout continue.</div>`;
@@ -405,7 +509,7 @@
           <input type="number" id="ivMin" min="0" max="60" value="${Math.min(60, curMin() + 5)}" title="Minute">
           <select id="ivWho"><option value="">— personne —</option>${ALL.map((n) => `<option>${esc(n)}</option>`).join('')}</select>
         </div>
-        <div class="if-row"><select id="ivLieu">${DATA.lieux.map((l) => `<option>${esc(l.n)}</option>`).join('')}</select></div>
+        <div class="if-row"><select id="ivLieu">${LIEUX.map((l) => `<option>${esc(l.n)}</option>`).join('')}</select></div>
         <input type="text" id="ivAct" placeholder="ex : la garde de la Citadelle arrive…">
         <button class="btn-impro" onclick="addImpro()">+ Ajouter</button>`;
     }
@@ -414,7 +518,7 @@
       const ti = trancheIdx(curMin());
       $('strip').innerHTML = DATA.tranches.map((t, i) => {
         let n = 0;
-        ALL.forEach((k) => { if (DATA.timeline[k][i].new) n++; });
+        ALL.forEach((k) => { const c = tlPlan(k, i) || DATA.timeline[k][i]; if (c && c.new) n++; });
         const ni = improIn(i).length;
         const click = repet ? `class="cell clickable ${i === ti ? 'now' : ''}" onclick="simJump(${t.start * 60000})"` : `class="cell ${i === ti ? 'now' : ''}"`;
         return `<div ${click}>${t.label === '60 (reset)' ? 'reset' : t.label}<span class="n ${n || ni ? '' : 'zero'}">${n || '·'}${ni ? `<span style="color:var(--violet)"> +${ni}</span>` : ''}</span></div>`;
@@ -454,7 +558,7 @@
       $('devZone').innerHTML = `
         <div class="dev-form">
           <div style="font-size:11px;color:var(--red);letter-spacing:1px;text-transform:uppercase">📌 Dévier ${esc(name)}</div>
-          <div class="df-row"><select id="dvLieu">${DATA.lieux.map((l) => `<option ${l.n === (o ? o.lieu : cur.lieu) ? 'selected' : ''}>${esc(l.n)}</option>`).join('')}</select></div>
+          <div class="df-row"><select id="dvLieu">${LIEUX.map((l) => `<option ${l.n === (o ? o.lieu : cur.lieu) ? 'selected' : ''}>${esc(l.n)}</option>`).join('')}</select></div>
           <input type="text" id="dvAct" value="${esc(o ? o.act : '')}" placeholder="ex : suit les joueurs vers la serre…">
           <div class="df-row">
             <button class="btn-dev" style="flex:1" onclick="applyDev('${escJS(name)}')">Appliquer</button>
@@ -544,11 +648,14 @@
     function updateCockpitTime() {
       const ti = trancheIdx(curMin());
       const t = DATA.tranches[ti];
-      $('tranchePill').textContent = (t.label === '60 (reset)' ? '⟲ RESET' : `Tranche ${t.start}–${t.end}`) + (repet ? ' · 🎬' : '');
+      $('tranchePill').textContent = (t.label === '60 (reset)' ? '⟲ RESET'
+        : `Tranche ${t.start}–${t.end}` + (t.clock ? ` · ${t.clock}` : '')
+          + (t.marque ? ` · ${t.marque}` : '')) + (repet ? ' · 🎬' : '');
       const p = $('lvlPill');
       if (curMin() >= 30) { p.textContent = 'Primes niv. 5 — souffle passé'; p.classList.add('lvl5'); }
       else { p.textContent = 'Primes niv. 4'; p.classList.remove('lvl5'); }
       if (repet) $('repetClock').textContent = fmt(simMs);
+      if (curTab === 'routines' && ti !== lastRtTi) { lastRtTi = ti; renderRoutines(); }
       if (ti !== lastTi) { lastTi = ti; refreshCockpit(); }
     }
 
@@ -643,6 +750,170 @@
       toasts.appendChild(t);
     }
 
+    /* ================= Routines (grille editable) ================= */
+    function rtCols() { return (TL ? TL.cols : []).filter((n) => !tlHidden.has(n)); }
+
+    function locOptions(sel, inherited) {
+      const groups = {};
+      LIEUX.forEach((l) => { (groups[l.etage] ??= []).push(l.n); });
+      let html = `<option value=""${sel ? '' : ' selected'}>`
+        + (inherited ? '↑ ' + esc(short(inherited, 24)) : '—') + '</option>';
+      for (const etage of Object.keys(groups)) {
+        html += `<optgroup label="${esc(etage)}">`
+          + groups[etage].map((n) => `<option${n === sel ? ' selected' : ''}>${esc(n)}</option>`).join('')
+          + '</optgroup>';
+      }
+      if (sel && !LIEUX.some((l) => l.n === sel)) html += `<option selected>${esc(sel)}</option>`;
+      return html;
+    }
+
+    function renderRoutines() {
+      const table = $('rtTable');
+      if (!TL) { table.innerHTML = '<tbody><tr><td style="padding:14px">Chargement…</td></tr></tbody>'; return; }
+      const cols = rtCols();
+      const ti = trancheIdx(curMin());
+      $('rtChips').innerHTML = TL.cols.map((n) =>
+        `<span class="rt-chip${tlHidden.has(n) ? '' : ' on'}" onclick="rtToggle('${escJS(n)}')">${esc(n)}</span>`).join('');
+      const libres = ALL.filter((n) => !TL.cols.includes(n));
+      $('rtAddSel').innerHTML = libres.length
+        ? libres.map((n) => `<option>${esc(n)}</option>`).join('')
+        : '<option value="">(tous déjà présents)</option>';
+      const head = '<thead><tr><th class="tcol">Heure</th>'
+        + cols.map((n) => `<th class="who" colspan="2">${esc(n)}`
+            + `<span class="x" title="Masquer cette colonne" onclick="rtToggle('${escJS(n)}')">×</span></th>`).join('')
+        + '</tr><tr class="sub"><th class="tcol"></th>'
+        + cols.map(() => '<th>Où</th><th>Action</th>').join('') + '</tr></thead>';
+      const body = TL.slots.map((sl, i) => {
+        const mk = sl.marque ? `<span class="mk">${esc(sl.marque)}</span>` : '';
+        return `<tr class="${i === ti ? 'now' : ''}"><td class="tcol">${esc(sl.label)}${mk}</td>`
+          + cols.map((n) => {
+              const cells = TL.routines[n] || [];
+              const c = cells[i] || { loc: '', act: '' };
+              const inh = c.loc ? '' : (i > 0 ? tlEff(cells, i - 1).loc : '');
+              return `<td><select class="${c.loc ? '' : 'inherit'}" data-n="${esc(n)}" data-i="${i}" data-f="loc">`
+                   + locOptions(c.loc, inh) + '</select></td>'
+                   + `<td><input data-n="${esc(n)}" data-i="${i}" data-f="act" value="${esc(c.act)}" placeholder="…"></td>`;
+            }).join('') + '</tr>';
+      }).join('');
+      table.innerHTML = head + '<tbody>' + body + '</tbody>';
+      const maj = TL.updated ? new Date(TL.updated) : null;
+      $('rtSaved').textContent = maj && !isNaN(maj)
+        ? 'dernière modif ' + maj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+      renderBackupInfo();
+      $('rtWarn').style.display = tlSaveOk ? 'none' : 'block';
+      $('rtWarn').textContent = '⚠ Le serveur n\'arrive pas à écrire timeline.json (hébergement en lecture seule).'
+        + ' Tes modifications sont partagées et visibles, mais seront perdues au redémarrage :'
+        + ' télécharge le JSON avant de fermer.';
+    }
+
+    function rtToggle(n) {
+      if (tlHidden.has(n)) tlHidden.delete(n); else tlHidden.add(n);
+      try { localStorage.setItem('m1_rt_hidden', JSON.stringify([...tlHidden])); } catch (e) {}
+      renderRoutines();
+    }
+    function rtAddCol() {
+      const n = $('rtAddSel').value;
+      if (!n) return;
+      tlHidden.delete(n);
+      sendAction({ action: 'addCol', name: n });
+    }
+
+    $('rtTable').addEventListener('change', (e) => {
+      const el = e.target, n = el.dataset && el.dataset.n;
+      if (!n) return;
+      const i = Number(el.dataset.i), f = el.dataset.f;
+      const cells = TL.routines[n] || (TL.routines[n] = []);
+      const c = cells[i] || (cells[i] = { loc: '', act: '' });
+      c[f] = el.value;
+      sendAction(f === 'loc' ? { action: 'setCell', name: n, i, loc: el.value }
+                             : { action: 'setCell', name: n, i, act: el.value });
+      const td = el.parentElement;
+      td.classList.add('saved');
+      setTimeout(() => td.classList.remove('saved'), 800);
+      if (f === 'loc') renderRoutines();   // les cases suivantes héritent : on redessine
+      refreshCockpit();
+    });
+    $('rtTable').addEventListener('keydown', (e) => {
+      if (!e.ctrlKey || (e.key !== 'd' && e.key !== 'D')) return;
+      const el = e.target, n = el.dataset && el.dataset.n;
+      if (!n) return;
+      e.preventDefault();
+      const i = Number(el.dataset.i);
+      if (i === 0) return;
+      const above = (TL.routines[n] || [])[i - 1] || {};
+      el.value = above[el.dataset.f] || '';
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    /* ---- Sauvegardes ----
+       1. bouton ⬇ JSON : le fichier a garder (dossier de campagne / dépôt) ;
+       2. copie automatique dans ce navigateur a chaque changement, en filet ;
+       3. bouton ⬆ Importer : recharge n'importe quel .json exporte. */
+    function rtSnapshotLocal() {
+      if (!TL) return;
+      try {
+        localStorage.setItem('m1_rt_backup', JSON.stringify({ at: Date.now(), tl: TL }));
+      } catch (e) {}
+    }
+    function rtNoteBackup() {
+      try { localStorage.setItem('m1_rt_lastDownload', String(Date.now())); } catch (e) {}
+      setTimeout(renderBackupInfo, 300);
+    }
+    function renderBackupInfo() {
+      const el = $('rtBackupInfo');
+      if (!el) return;
+      let last = 0, snap = null;
+      try { last = Number(localStorage.getItem('m1_rt_lastDownload') || 0); } catch (e) {}
+      try { snap = JSON.parse(localStorage.getItem('m1_rt_backup') || 'null'); } catch (e) {}
+      const fmtD = (t) => new Date(t).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      el.innerHTML = (last ? '💾 dernier ⬇ JSON : <b>' + fmtD(last) + '</b>' : '💾 aucun ⬇ JSON téléchargé depuis ce navigateur')
+        + (snap ? ' &nbsp;·&nbsp; copie locale : <b>' + fmtD(snap.at) + '</b>' : '');
+    }
+    let rtRestoreArmed = false;
+    function rtRestoreLocal() {
+      let snap = null;
+      try { snap = JSON.parse(localStorage.getItem('m1_rt_backup') || 'null'); } catch (e) {}
+      const btn = $('rtRestore');
+      if (!snap) { btn.textContent = '↺ aucune copie'; setTimeout(() => (btn.textContent = '↺ Copie locale'), 2000); return; }
+      if (!rtRestoreArmed) {   // deux clics : ecraser la grille du serveur, ce n'est pas anodin
+        rtRestoreArmed = true;
+        btn.textContent = '↺ Confirmer ? (écrase la grille)';
+        setTimeout(() => { rtRestoreArmed = false; btn.textContent = '↺ Copie locale'; }, 5000);
+        return;
+      }
+      rtRestoreArmed = false;
+      btn.textContent = '↺ Copie locale';
+      sendAction({ action: 'importTimeline', timeline: snap.tl });
+      showToast('↺  Grille restaurée depuis la copie locale', '');
+    }
+    function rtImport(input) {
+      const f = input.files && input.files[0];
+      input.value = '';
+      if (!f) return;
+      const rd = new FileReader();
+      rd.onload = () => {
+        let t = null;
+        try { t = JSON.parse(rd.result); } catch (e) {}
+        if (!t || !Array.isArray(t.slots) || !t.routines) {
+          showToast('⚠  Fichier illisible : ce n\'est pas un export de routines', 'end');
+          return;
+        }
+        sendAction({ action: 'importTimeline', timeline: t });
+        showToast('⬆  Grille rechargée depuis ' + f.name, '');
+      };
+      rd.readAsText(f);
+    }
+
+    async function fetchTimeline() {
+      try {
+        const r = await fetch('/timeline', { cache: 'no-store' });
+        TL = await r.json();
+        rtSnapshotLocal();
+        if (curTab === 'routines') renderRoutines();
+        refreshCockpit();
+      } catch (e) {}
+    }
+
     /* ================= Synchronisation ================= */
     let lastLiveJSON = '';
     startSync({
@@ -655,6 +926,8 @@
         // cockpit : dérogations + événements improvisés partagés
         overrides = s.overrides || {};
         improEvents = s.improEvents || [];
+        tlSaveOk = s.saveOk !== false;
+        if (s.timelineRev !== tlRev) { tlRev = s.timelineRev; fetchTimeline(); }
         const j = JSON.stringify([overrides, improEvents]);
         if (j !== lastLiveJSON) { lastLiveJSON = j; refreshCockpit(); }
       },
