@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-01T18:00:05.444Z",
+ "updated": "2026-09-01T23:41:05.421Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -99,52 +99,52 @@
  "routines": {
   "Balerion": [
    {
-    "loc": "0 Arena",
-    "act": "avec Carnage"
+    "loc": "0 Gymnasium",
+    "act": "Explores the gymnasium"
    },
    {
-    "loc": "0 Arena",
-    "act": "avec Carnage"
+    "loc": "0 Gymnasium",
+    "act": "Explores the gymnasium"
    },
    {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
+    "loc": "0 Main hall",
+    "act": "Goes to the Foyer"
    },
    {
     "loc": "0 Foyer",
-    "act": "Se dirige vers le foyer"
+    "act": "Asks the TF's for a drink"
    },
    {
-    "loc": "0 Foyer",
-    "act": "Foyer - assiste au spectacle d'Esteban"
+    "loc": "0 Main hall",
+    "act": "After hearing Esteban, heads to the theater"
    },
    {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
+    "loc": "0 Theater",
+    "act": "assiste au spectacle d'Esteban"
    },
    {
     "loc": "",
-    "act": ""
+    "act": "Talks about the shockwave"
    },
    {
-    "loc": "",
-    "act": ""
+    "loc": "X In transit",
+    "act": "Goes up to check his room"
    },
    {
-    "loc": "",
-    "act": ""
+    "loc": "1 Dorms B (Carnage Balerion Framschtak, Pryah, Müne)",
+    "act": "Checks his bed and training area"
    },
    {
-    "loc": "",
-    "act": ""
+    "loc": "1 Corridor",
+    "act": "On his way to Armory Meets Norvo in the corridor"
+   },
+   {
+    "loc": "2 Corridor",
+    "act": "Makes his way to the Armory"
+   },
+   {
+    "loc": "2 Corridor",
+    "act": "Hears the noise and goes to the balcony"
    }
   ],
   "Carnage": [
@@ -174,7 +174,7 @@
    },
    {
     "loc": "0 Main hall",
-    "act": "Goes back to the Arena"
+    "act": "Gets healed by Hayeva then goes back to the Arena"
    },
    {
     "loc": "0 Arena",
@@ -312,11 +312,11 @@
    },
    {
     "loc": "0 Theater",
-    "act": ""
+    "act": "Sets up for their show"
    },
    {
     "loc": "0 Theater",
-    "act": "09:20 : idée ; annonce via les TF un spectacle au Foyer"
+    "act": "Announces that a show will start in theater at 9:25"
    },
    {
     "loc": "0 Theater",
@@ -324,7 +324,7 @@
    },
    {
     "loc": "0 Theater",
-    "act": "coïncide avec la SECOUSSE (09:30)"
+    "act": "Shows end with the shockwave"
    },
    {
     "loc": "0 Main hall",
@@ -400,51 +400,51 @@
   "Gasper": [
    {
     "loc": "0 Main hall",
-    "act": "propose un tour de magie aux joueurs"
+    "act": "Tire une carte"
    },
    {
-    "loc": "0 Foyer",
+    "loc": "0 Main hall",
     "act": "discute avec un ou deux personnages"
    },
    {
     "loc": "0 Foyer",
-    "act": "discussions"
+    "act": "Installe des jeux dans les tables"
    },
    {
     "loc": "0 Foyer",
-    "act": "discussions"
+    "act": "Joue un jeu de hasard contre Paxel"
    },
    {
-    "loc": "0 Foyer",
-    "act": "discussions"
+    "loc": "0 Main hall",
+    "act": "Se dirige vers le theatre, voit le hibou de Framschtak"
    },
    {
-    "loc": "0 Foyer",
-    "act": "assiste au spectacle d'Esteban"
+    "loc": "X In transit",
+    "act": "Décide de monter au 3ème étage"
    },
    {
-    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "Remonte vers sa chambre (5 min)"
+    "loc": "3 Corridor",
+    "act": "Croise Framschtak qui quitte les cuisines et Norvo qui quitte le banquet"
    },
    {
-    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "sieste"
+    "loc": "3 Kitchens",
+    "act": "Entre dans la cuisine par curiosité "
    },
    {
-    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "sieste"
+    "loc": "3 Kitchens",
+    "act": "Se fait un snack"
    },
    {
-    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "sieste"
-   },
-   {
-    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "sieste (réveillé par le bruit, pas le temps de voir)"
+    "loc": "X In transit",
+    "act": "Descend vers sa chambre"
    },
    {
     "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
-    "act": "Sort de sa chambre ~09:55 ; entend la chute → escaliers vers le hall"
+    "act": "S'apprête à dormir quand le bruit le fait sursauter"
+   },
+   {
+    "loc": "1 Dorms D (Doulahex, Paxel, Gasper)",
+    "act": "Il a juste le temps de se remettre dans sa chaise"
    }
   ],
   "Hayeva": [
@@ -454,47 +454,47 @@
    },
    {
     "loc": "2 Greenhouse",
-    "act": ""
+    "act": "Checks the greenhouse"
    },
    {
     "loc": "2 Greenhouse",
-    "act": ""
+    "act": "Performs experiments on plants"
    },
    {
     "loc": "2 Greenhouse",
-    "act": ""
+    "act": "Performs experiments on plants"
    },
    {
-    "loc": "0 Foyer",
-    "act": "Se dirige vers le foyer"
+    "loc": "X In transit",
+    "act": "Heads to the theater"
    },
    {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
+    "loc": "0 Theater",
+    "act": "Watches Esteban's show"
    },
    {
     "loc": "0 Main hall",
-    "act": "accourt au corps, premiers secours (canon Innocents du hall)"
+    "act": "Heals Carnage's wound"
+   },
+   {
+    "loc": "X In transit",
+    "act": "Sees Framschtak going to the Arena"
+   },
+   {
+    "loc": "1 Dorms A (Hayeva Esteban Markel Norvodavius Askii)",
+    "act": "Goes to her room, sees Norvodavius there"
+   },
+   {
+    "loc": "1 Corridor",
+    "act": "Accompaies Norvo to the library then heads down"
+   },
+   {
+    "loc": "0 Main hall",
+    "act": "Is crossing the main hall when hears noise from jacques office, then hears the glass shatter"
+   },
+   {
+    "loc": "0 Main hall",
+    "act": "Witnesses Aesterias' fall, checks the body "
    }
   ],
   "Nerasho": [
@@ -574,7 +574,7 @@
    },
    {
     "loc": "4 Corridor",
-    "act": "discussion étrange, congédiée"
+    "act": "Monte au 4ème et jette GEAS sur Aesterias"
    },
    {
     "loc": "1 Dorms A (Hayeva Esteban Markel Norvodavius Askii)",
@@ -585,7 +585,7 @@
     "act": "Chill"
    },
    {
-    "loc": "1 Dorms A (Hayeva Esteban Markel Norvodavius Askii)",
+    "loc": "1 Corridor",
     "act": "Ne se sens pas bien, soupçonne quelque chose"
    },
    {
@@ -599,52 +599,52 @@
   ],
   "Paxel": [
    {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "0 Foyer",
-    "act": "Se dirige vers le foyer"
-   },
-   {
-    "loc": "0 Foyer",
-    "act": "Foyer - assiste au spectacle d'Esteban"
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
-   },
-   {
-    "loc": "",
-    "act": ""
+    "loc": "0 Main hall",
+    "act": "Approaches the players"
    },
    {
     "loc": "0 Main hall",
-    "act": "accourt au corps (canon Innocents du hall)"
+    "act": "Tries to socialize"
+   },
+   {
+    "loc": "0 Foyer",
+    "act": "Goes to the Foyer to socialize"
+   },
+   {
+    "loc": "0 Foyer",
+    "act": "Plays a game with Gasper"
+   },
+   {
+    "loc": "0 Main hall",
+    "act": "Se dirige vers le theatre"
+   },
+   {
+    "loc": "0 Theater",
+    "act": "Foyer - assiste au spectacle d'Esteban"
+   },
+   {
+    "loc": "X In transit",
+    "act": "Goes to the chill zone"
+   },
+   {
+    "loc": "1 Chill Zone",
+    "act": "Needing some quiet, chills"
+   },
+   {
+    "loc": "1 Chill Zone",
+    "act": "Has a conversation with Nerasho"
+   },
+   {
+    "loc": "X In transit",
+    "act": "Goes down to the main hall"
+   },
+   {
+    "loc": "0 Main hall",
+    "act": "Sees Hayeva and goes to talk to her, interrupted by the glass shatter"
+   },
+   {
+    "loc": "0 Main hall",
+    "act": "Tries to calm down everyone and contact Maevis and Jacques to start an investigation"
    }
   ],
   "Aesterias": [
@@ -743,8 +743,8 @@
     "act": "Son bureau"
    },
    {
-    "loc": "6 Maevis' office",
-    "act": "Son bureau"
+    "loc": "0 Main hall",
+    "act": "Teleports to the main hall"
    }
   ],
   "Myst & Alky": [
@@ -793,7 +793,7 @@
     "act": "n'en sortent jamais"
    },
    {
-    "loc": "2 Alchemy Lab",
+    "loc": "2 Corridor",
     "act": "Sort du labo pour comprendre la source du bruit"
    }
   ],
@@ -943,8 +943,8 @@
     "act": "Bureau"
    },
    {
-    "loc": "0 Mr Jacques office",
-    "act": "Bureau"
+    "loc": "0 Main hall",
+    "act": "Court suite à l'appel de Paxel"
    }
   ],
   "Polychroma": [
