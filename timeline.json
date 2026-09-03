@@ -89,7 +89,7 @@
   "Norvodavius",
   "Paxel",
   "Aesterias",
-  "Maeva",
+  "Maevis",
   "Myst & Alky",
   "Djetecht Eve",
   "Sitrip Ayo",
@@ -650,7 +650,7 @@
   "Aesterias": [
    {
     "loc": "4 Monitoring room",
-    "act": "avec Eve et Maeva"
+    "act": "avec Eve et Maevis"
    },
    {
     "loc": "4 Orb's room",
@@ -697,7 +697,7 @@
     "act": "chute dans le hall"
    }
   ],
-  "Maeva": [
+  "Maevis": [
    {
     "loc": "4 Monitoring room",
     "act": "avec Aesterias et Eve"
@@ -800,7 +800,7 @@
   "Djetecht Eve": [
    {
     "loc": "4 Monitoring room",
-    "act": "avec Aesterias et Maeva"
+    "act": "avec Aesterias et Maevis"
    },
    {
     "loc": "4 Orb's room",
