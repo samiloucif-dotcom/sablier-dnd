@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden — Chronovestigation Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="board.css">
+<style>
+  .wrap{padding:24px 26px 80px; max-width:1320px; margin:0 auto;}
+  .seal-row{display:flex; align-items:center; gap:18px; flex-wrap:wrap; padding:16px 20px; margin-bottom:22px;
+    border-radius:3px; border:1px solid #6d2b28; background:rgba(167,45,41,.10);}
+  .seal-row.open{border-color:#4a5a3c; background:rgba(75,93,60,.14);}
+  .seal-state{font-family:var(--display); font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:#f0a49d;}
+  .seal-row.open .seal-state{color:#b9dfae;}
+  .seal-row p{margin:0; color:var(--ink-soft); font-size:15px; max-width:62ch;}
+  .btn.seal{background:linear-gradient(180deg,#c9605c,#a03c3f); border-color:#d4645c; color:#2a0f11; font-weight:600;}
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:21px; align-items:start;}
+  @media (max-width:1050px){.cards{grid-template-columns:1fr;}}
+  .card{padding:18px 20px; position:relative;}
+  .card h3{font-family:var(--display); font-size:11.5px; letter-spacing:.17em; text-transform:uppercase;
+    color:var(--gold-lit); margin:0 0 5px;}
+  .card .cardsub{font-size:14.5px; color:var(--ink-dim); margin:0 0 15px; max-width:62ch;}
+  .toggles{display:flex; flex-wrap:wrap; gap:8px;}
+  .tog{border:1px solid var(--rule); background:rgba(0,0,0,.24); color:var(--ink-faint); border-radius:3px;
+    padding:6px 12px; font-size:14.5px; cursor:pointer; font-family:var(--body);
+    display:flex; align-items:center; gap:8px; transition:all .12s;}
+  .tog:hover{border-color:var(--gold-deep); color:var(--ink-soft);}
+  .tog .gem{color:var(--rule);}
+  .tog[aria-pressed="true"]{background:rgba(75,93,60,.22); border-color:#4a5a3c; color:#cfe6c4;}
+  .tog[aria-pressed="true"] .gem{color:var(--c-conf);}
+  .floorgroup{margin-bottom:14px;}
+  .floorlab{font-family:var(--display); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold-dim); margin-bottom:7px;}
+  .bulk{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px;}
+  .pushrow{display:flex; gap:9px; flex-wrap:wrap; margin-top:11px; align-items:center;}
+  .pushrow input.grow{flex:1; min-width:240px;}
+  .secretnote{margin-top:16px; padding:11px 14px; border-left:3px solid var(--gold-dim);
+    background:rgba(200,168,81,.06); font-size:14.5px; color:var(--ink-soft);}
+  .mirror .lane .who{width:150px;}
+  .fiveline{position:absolute; top:0; bottom:0; width:1px; background:rgba(200,168,81,.16); pointer-events:none;}
+  .urlbox{font-family:var(--display); font-size:14px; color:var(--gold-lit); background:rgba(0,0,0,.3);
+    border:1px solid var(--rule); border-radius:3px; padding:8px 12px; letter-spacing:.04em;}
+  .rooms-scroll{max-height:420px; overflow-y:auto; padding-right:6px;}
+</style>
+</head>
+<body>
+<div id="marble"></div><div id="glow"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="gem" viewBox="0 0 12 16">
+  <polygon points="6,0 11.5,5.2 6,16 0.5,5.2" fill="currentColor"></polygon>
+  <polyline points="0.5,5.2 11.5,5.2" fill="none" stroke="rgba(0,0,0,.42)" stroke-width="1"></polyline>
+  <polyline points="6,0 6,16" fill="none" stroke="rgba(0,0,0,.26)" stroke-width="1"></polyline>
+</symbol></svg>
+
+<div class="topbar">
+  <div class="brandmark">
+    <div class="seal">&#9960;</div>
+    <div class="brand">
+      <h1>Warden</h1>
+      <div class="sub">You do not curate the board &mdash; you only open doors</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <a class="btn sm ghost" id="backLink" href="../">&larr; Cockpit</a>
+  <a class="btn sm ghost" href="board.json">&#11015; Backup</a>
+  <div class="syncdot" id="syncdot"></div>
+</div>
+
+<div class="wrap">
+  <div class="seal-row" id="sealRow">
+    <span class="seal-state" id="sealState">Sealed</span>
+    <p id="sealText"></p>
+    <div class="spacer"></div>
+    <span class="urlbox" id="playerUrl"></span>
+    <button class="btn seal" id="sealBtn">Open to the table</button>
+  </div>
+
+  <div class="cards">
+    <div class="card framed">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+      <h3>Faces</h3>
+      <p class="cardsub">A locked person does not exist on the players' board &mdash; no lane, no placeholder, no count.
+        A lane appears the moment you unlock them.</p>
+      <div class="bulk">
+        <button class="btn sm ghost" data-all="prime" data-on="1">Unlock all Primes</button>
+        <button class="btn sm ghost" data-all="staff" data-on="1">Unlock all staff</button>
+        <button class="btn sm ghost" data-all="" data-on="0">Lock everything</button>
+      </div>
+      <div class="toggles" id="castToggles"></div>
+    </div>
+
+    <div class="card framed">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+      <h3>Places</h3>
+      <p class="cardsub">Unlock a room once they have walked it or been told its name. They see the player-facing
+        label only &mdash; your own names, with the floor numbers and the dormitory rosters, never leave the server.</p>
+      <div class="rooms-scroll" id="roomToggles"></div>
+    </div>
+
+    <div class="card framed" style="grid-column:1/-1">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+      <h3>Hand them a clue</h3>
+      <p class="cardsub">Lands in their Ledger marked as yours, in about a second. Whatever face or place you name
+        here is unlocked along with it, so a clue can never arrive mentioning something the board refuses to show.</p>
+      <div class="pushrow">
+        <select id="pKind"><option value="clue">Clue</option><option value="stmt">Statement</option><option value="note">Note</option></select>
+        <select id="pPerson"></select>
+        <select id="pRoom"></select>
+        <input class="grow" id="pText" type="text" maxlength="600" placeholder="what they find, in your words">
+        <button class="btn primary" id="pPush">Hand it over</button>
+      </div>
+      <p class="secretnote"><b>Your five minutes stay yours.</b> The players' board has no cells and no tick marks
+        below the quarter hour; their spans land on the minute. The mirror below draws your five-minute grid faintly
+        under their lanes &mdash; that grid exists only on this page.</p>
+    </div>
+
+    <div class="card framed" style="grid-column:1/-1">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+      <h3>Backup &amp; restore</h3>
+      <p class="cardsub">Render's free tier has no disk that survives a restart, and it puts the site to sleep after
+        fifteen quiet minutes. Everything below is how the table's work survives that. Download after every session;
+        the file that lands in your campaign folder is the copy that counts.</p>
+      <div class="pushrow">
+        <a class="btn primary" href="board.json" download>&#11015; Download the board</a>
+        <label class="btn">&#11014; Restore from a file<input type="file" id="impFile" accept="application/json" hidden></label>
+        <button class="btn ghost" id="impLocal">&#8630; Restore my browser copy</button>
+        <span class="opt" id="localInfo"></span>
+      </div>
+      <p class="secretnote">Restoring never unseals the board: whatever you bring back arrives sealed if it was
+        sealed. Your browser keeps its own snapshot of the last state it saw, as a second net.</p>
+    </div>
+
+    <div class="card framed mirror" style="grid-column:1/-1">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+      <h3>What they think they know</h3>
+      <p class="cardsub">Read-only. Their reconstruction, over your grid.</p>
+      <div class="ruler"><div class="gutter"></div><div class="track" id="ruler"></div></div>
+      <div id="lanes"></div>
+      <p class="empty-note" id="mirrorEmpty">Nothing on the board yet.</p>
+      <div class="gridfoot" id="foot"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="warden.js"></script>
+</body>
+</html>

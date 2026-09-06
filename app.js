@@ -114,7 +114,7 @@ function updateHourglass(root, fraction, running) {
 /* ---------- Actions serveur ---------- */
 async function sendAction(payload) {
   try {
-    const r = await fetch('/action', {
+    const r = await fetch((window.SYNC_BASE || '') + '/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -131,7 +131,7 @@ function startSync({ onState, onEvent, onFrame }) {
 
   async function poll() {
     try {
-      const r = await fetch('/state', { cache: 'no-store' });
+      const r = await fetch((window.SYNC_BASE || '') + '/state', { cache: 'no-store' });
       const s = await r.json();
       applyState(s);
     } catch (e) {}

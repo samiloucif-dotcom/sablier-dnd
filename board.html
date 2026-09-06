@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Chronovestigation Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="/board.css">
+</head>
+<body>
+<div id="marble"></div><div id="glow"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="gem" viewBox="0 0 12 16">
+  <polygon points="6,0 11.5,5.2 6,16 0.5,5.2" fill="currentColor"></polygon>
+  <polyline points="0.5,5.2 11.5,5.2" fill="none" stroke="rgba(0,0,0,.42)" stroke-width="1"></polyline>
+  <polyline points="6,0 6,16" fill="none" stroke="rgba(0,0,0,.26)" stroke-width="1"></polyline>
+</symbol></svg>
+
+<div class="topbar">
+  <div class="brandmark">
+    <div class="seal">&#10199;</div>
+    <div class="brand">
+      <h1>The Chronovestigation Board</h1>
+      <div class="sub">Chrysaldus Citadel &mdash; the shared case file</div>
+    </div>
+  </div>
+  <button class="loop" id="loopBtn" title="The loop new entries are filed under">Loop I</button>
+  <button class="who-chip" id="whoBtn">Signing as&hellip;</button>
+  <div class="hourpill"><span class="roman" id="roman">IX</span><span class="clock" id="clock">09:00</span></div>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" data-view="hour">The Hour</button>
+  <button class="tab" role="tab" aria-selected="false" data-view="dossier">Dossiers</button>
+  <button class="tab" role="tab" aria-selected="false" data-view="ledger">Ledger</button>
+  <div class="spacer"></div>
+  <div class="syncdot" id="syncdot" title="Live"></div>
+</div>
+
+<section class="view on" id="v-hour">
+  <div class="viewhead">
+    <div>
+      <h2>The Hour</h2>
+      <p>Drag along a lane to lay down where someone was. Drag a span to move it, pull its edge to stretch it.</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="legend">
+      <span><svg class="gem" style="color:var(--c-conf)"><use href="#gem"></use></svg>Confirmed</span>
+      <span><svg class="gem" style="color:var(--c-rep)"><use href="#gem"></use></svg>Reported</span>
+      <span><svg class="gem" style="color:var(--c-susp)"><use href="#gem"></use></svg>Suspected</span>
+      <span><svg class="gem" style="color:var(--c-disp)"><use href="#gem"></use></svg>Disproved</span>
+    </div>
+  </div>
+  <div class="hourpanel framed">
+    <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+    <div class="ruler"><div class="gutter"></div><div class="track" id="ruler"></div></div>
+    <div id="lanes"></div>
+    <p class="empty-note" id="hourEmpty" hidden>Nobody yet. The first face appears here the moment you meet someone.</p>
+  </div>
+  <div class="gridfoot" id="hourFoot"></div>
+</section>
+
+<section class="view" id="v-dossier">
+  <div class="viewhead"><div>
+    <h2>Dossiers</h2>
+    <p>One lane pulled out of the board, with everything said about that person underneath.</p>
+  </div></div>
+  <div class="dosslayout">
+    <div class="casterlist" id="casterlist"></div>
+    <div class="dossier framed" id="dossier">
+      <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-ledger">
+  <div class="viewhead"><div>
+    <h2>Ledger</h2>
+    <p>Everything the table has recorded. Nothing is lost here &mdash; a span taken off the board still stands in this list, under the name of whoever claimed it.</p>
+  </div></div>
+  <div class="addbar">
+    <span class="lead">Record</span>
+    <select id="adKind"><option value="clue">Clue</option><option value="stmt">Statement</option><option value="note">Note</option></select>
+    <select id="adPerson"></select>
+    <select id="adRoom"></select>
+    <input class="grow" id="adText" type="text" placeholder="what was found, or what was said" maxlength="600">
+    <input id="adSource" type="text" placeholder="source (optional)" maxlength="120">
+    <button class="btn primary sm" id="adAdd">Add</button>
+  </div>
+  <div class="filters" id="filters">
+    <button class="chip" aria-pressed="true" data-f="all">All</button>
+    <button class="chip" aria-pressed="false" data-f="clue">Clues</button>
+    <button class="chip" aria-pressed="false" data-f="stmt">Statements</button>
+    <button class="chip" aria-pressed="false" data-f="span">Spans</button>
+    <button class="chip" aria-pressed="false" data-f="dead">Disproved</button>
+    <button class="chip" aria-pressed="false" data-f="liar">Liars</button>
+  </div>
+  <div class="tablewrap"><table class="ledger"><thead><tr>
+    <th style="width:92px">Loop</th><th style="width:104px">Kind</th><th>What</th>
+    <th style="width:200px">Source</th><th style="width:118px">Added by</th><th style="width:74px"></th>
+  </tr></thead><tbody id="ledgerBody"></tbody></table></div>
+</section>
+
+<div class="drawer" id="drawer">
+  <h3 id="dTitle">Lay down a span</h3>
+  <div class="who2" id="dWho"></div>
+  <div class="spanread"><span id="dFrom">09:00</span>&ndash;<span id="dTo">09:00</span><span class="dur" id="dDur"></span></div>
+  <div class="field"><label>Where</label><select id="dRoom"></select></div>
+  <div class="field"><label>How do we know</label><div class="trustrow" id="dTrust">
+    <button class="trustbtn" data-t="conf"><svg class="gem" style="color:var(--c-conf)"><use href="#gem"></use></svg>Confirmed</button>
+    <button class="trustbtn" data-t="rep"><svg class="gem" style="color:var(--c-rep)"><use href="#gem"></use></svg>Reported</button>
+    <button class="trustbtn" data-t="susp"><svg class="gem" style="color:var(--c-susp)"><use href="#gem"></use></svg>Suspected</button>
+  </div></div>
+  <div class="field"><label>Source</label><input id="dSource" type="text" maxlength="120" placeholder="who told us, or how we saw it"></div>
+  <div class="field"><label>Note <span class="opt">(optional)</span></label><input id="dNote" type="text" maxlength="300" placeholder="one line, only if it matters"></div>
+  <div class="actions">
+    <button class="btn primary" id="dSave">Save</button>
+    <button class="btn danger" id="dDisprove">Disprove</button>
+    <button class="btn ghost" id="dCancel">Cancel</button>
+  </div>
+  <p class="hint">Disproving takes the span off the board and keeps the claim in the Ledger, under the name of whoever made it.</p>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="/board.js"></script>
+</body>
+</html>
