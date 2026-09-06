@@ -92,6 +92,57 @@
     .impro-form .if-row input[type=number]{width:74px;flex:none;text-align:center}
     .btn-impro{background:rgba(167,139,250,.14);border-color:rgba(167,139,250,.45);color:var(--violet);width:100%}
 
+    /* ---- Barre fixe : le chrono ne doit jamais quitter l'ecran (retour Session 1) ---- */
+    .mini-bar{position:fixed;top:0;left:0;right:0;z-index:90;display:none;
+      background:rgba(11,13,18,.96);border-bottom:1px solid var(--line);
+      box-shadow:0 6px 24px rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+    .mini-bar.on{display:block}
+    .mb-row{display:flex;align-items:center;gap:10px;padding:7px 16px;flex-wrap:wrap}
+    .mb-row+.mb-row{border-top:1px solid rgba(49,58,82,.5);padding-top:5px;padding-bottom:6px}
+    .mb-clock{font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--amber);
+      letter-spacing:1px}
+    .mb-clock.danger{color:var(--red)}
+    .mb-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+    .mb-dot.run{background:var(--green);box-shadow:0 0 8px rgba(70,201,139,.7)}
+    .mini-bar button{padding:4px 10px;font-size:12px}
+    .mb-music{color:var(--violet);font-size:12.5px}
+    .mb-here{font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mb-here b{color:var(--amber);font-weight:600}
+    .mb-soon{font-size:12px;color:var(--muted)}
+    .mb-soon b{color:var(--green);font-weight:600}
+    .mb-soon i{color:var(--red);font-style:normal;font-weight:600}
+    body.mb-on{padding-top:74px}
+
+    /* ---- Panneau de salle epingle (vue « ou sont-ils maintenant ») ---- */
+    .room-card{margin-bottom:14px;border-color:rgba(232,181,89,.35)}
+    .room-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .room-head h2{margin:0}
+    .room-head select{background:#141824;color:var(--text);border:1px solid var(--line);
+      border-radius:8px;padding:6px 10px;font-size:13.5px;font-weight:600;max-width:290px}
+    .room-quick{display:flex;gap:5px;flex-wrap:wrap}
+    .room-quick button{padding:3px 9px;font-size:11.5px}
+    .room-quick button.on{border-color:var(--amber);color:var(--amber);background:rgba(232,181,89,.12)}
+    .room-cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px}
+    .room-col h3{margin:0 0 7px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+    .room-col.here h3{color:var(--amber)}
+    .room-col.in h3{color:var(--green)}
+    .room-col.out h3{color:var(--red)}
+    .occ{display:flex;gap:9px;align-items:flex-start;padding:7px 8px;border:1px solid var(--line);
+      border-radius:9px;margin-bottom:6px;background:rgba(255,255,255,.015)}
+    .occ img{width:36px;height:36px;border-radius:7px;object-fit:cover;object-position:top center;
+      background:#141824;flex:none}
+    .occ .n{font-weight:600;font-size:13px}
+    .occ .n .staff{color:var(--muted);font-weight:400;font-size:11px;margin-left:5px}
+    .occ .a{font-size:11.5px;color:var(--muted);line-height:1.35}
+    .occ .from{font-size:11px;color:var(--green)}
+    .occ .to{font-size:11px;color:var(--red)}
+    .room-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 2px}
+    .room-music{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--violet)}
+    .room-music input{background:#141824;border:1px solid var(--line);border-radius:7px;
+      color:var(--violet);font-size:12.5px;padding:5px 9px;min-width:280px;font-family:inherit}
+    .room-music input:focus{border-color:var(--violet);outline:none}
+    @media (max-width:1100px){ .room-cols{grid-template-columns:1fr} }
+
     /* ---- Grille des routines (editable) ---- */
     .rt-card{display:none;margin-bottom:16px}
     .rt-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
@@ -112,6 +163,10 @@
     table.rt th.who .x:hover{color:var(--red)}
     table.rt .tcol{position:sticky;left:0;z-index:2;background:#131722;font-variant-numeric:tabular-nums;
       font-weight:600;color:var(--text);white-space:nowrap}
+    table.rt input.mus{display:block;width:132px;margin-top:3px;font-size:10.5px;color:var(--violet);
+      border:1px solid transparent;background:#0f1320}
+    table.rt input.mus:hover{border-color:var(--line)}
+    table.rt input.mus:focus{border-color:var(--violet)}
     table.rt thead .tcol{z-index:5}
     table.rt tr.now .tcol{color:var(--amber)}
     table.rt tr.now td{background:rgba(232,181,89,.06)}
@@ -181,6 +236,27 @@
 <body>
   <div class="toasts" id="toasts"></div>
 
+  <!-- Barre fixe : apparait des qu'on scrolle. Chrono, tranche, musique, salle suivie. -->
+  <div class="mini-bar" id="miniBar">
+    <div class="mb-row">
+      <span class="mb-dot" id="mbDot"></span>
+      <span class="mb-clock" id="mbClock">60:00</span>
+      <button id="mbToggle">⏸</button>
+      <button data-skip="60000">+1</button>
+      <button data-skip="300000">+5</button>
+      <button data-rewind="60000">−1</button>
+      <span class="tranche-pill" id="mbTranche">Tranche 0–5</span>
+      <span class="mb-music" id="mbMusic"></span>
+      <div class="spacer"></div>
+      <span class="lvl-pill" id="mbLvl">Primes niv. 4</span>
+    </div>
+    <div class="mb-row">
+      <span class="mb-here" id="mbHere"></span>
+      <div class="spacer"></div>
+      <span class="mb-soon" id="mbSoon"></span>
+    </div>
+  </div>
+
   <div class="gm-page">
     <div class="gm-head">
       <div class="hourglass-wrap"><div id="hg"></div></div>
@@ -220,6 +296,28 @@
         <button data-rewind="60000">−1</button>
         <button data-rewind="120000">−2</button>
         <button data-rewind="300000">−5 min</button>
+      </div>
+    </div>
+
+    <!-- ============ SALLE SUIVIE ============ -->
+    <div class="card room-card" id="roomCard">
+      <div class="room-head">
+        <h2 style="margin:0">📍 Salle suivie</h2>
+        <select id="roomSel"></select>
+        <div class="room-quick" id="roomQuick"></div>
+        <button id="roomAuto" title="Suivre automatiquement la salle la plus peuplée">⇄ auto</button>
+        <div class="spacer"></div>
+        <span class="rt-hint" id="roomWhen"></span>
+      </div>
+      <div class="room-cols">
+        <div class="room-col here"><h3>Ici maintenant</h3><div id="roomHere"></div></div>
+        <div class="room-col in"><h3>Arrive ensuite</h3><div id="roomIn"></div></div>
+        <div class="room-col out"><h3>Repart ensuite</h3><div id="roomOut"></div></div>
+      </div>
+      <div class="room-music">
+        <span>🎵 Musique de cette tranche :</span>
+        <input id="roomMusic" placeholder="— aucun morceau noté —">
+        <span class="rt-hint" id="roomMusicHint"></span>
       </div>
     </div>
 
@@ -525,7 +623,8 @@
       }).join('');
     }
 
-    function refreshCockpit() { renderPersos(); renderLieux(); renderMini(); renderEvents(); renderStrip(); if (selected) openSheet(selected); }
+    function refreshCockpit() { renderPersos(); renderLieux(); renderMini(); renderEvents();
+      renderStrip(); renderRoom(); renderMiniBar(); if (selected) openSheet(selected); }
 
     /* ================= Actions serveur (dérogations & impro) ================= */
     function applyDev(name) {
@@ -750,6 +849,151 @@
       toasts.appendChild(t);
     }
 
+    /* ================= Salle suivie + barre fixe =================
+       Retour de la Session 1 : en jeu le MJ a besoin de « qui est ici, qui arrive,
+       qui repart », sans jamais perdre le chrono des yeux. */
+    let roomFocus = null, roomPinned = false;   // tant que le MJ n'a pas choisi, on suit la salle la plus peuplee
+    try {
+      roomFocus = localStorage.getItem('m1_room_focus');
+      roomPinned = !!roomFocus;
+    } catch (e) {}
+
+    function slotMusic(ti) {
+      if (!TL || !TL.slots[ti]) return '';
+      return TL.slots[ti].music || '';
+    }
+    function occupantsOf(room, ti) {
+      return ALL.filter((n) => {
+        const c = effCell(n, ti);
+        return c && c.lieu === room;
+      });
+    }
+    function autoRoom(ti) {                    // salle la plus peuplee, hors « hors boucle »
+      const map = occupancy(ti);
+      let best = null, n = 0;
+      Object.keys(map).forEach((l) => {
+        if (l === 'Hors boucle' || l === '?' || l === 'À définir') return;
+        if (map[l].length > n) { n = map[l].length; best = l; }
+      });
+      return best;
+    }
+    function setRoom(l) {
+      roomFocus = l;
+      roomPinned = true;
+      try { localStorage.setItem('m1_room_focus', l); } catch (e) {}
+      renderRoom();
+    }
+    const portraitOf = (n) => (DATA.chars[n] || {}).portrait || '';
+    const isStaff = (n) => ((DATA.chars[n] || {}).type === 'staff');
+
+    function occLine(n, ti, extra) {
+      const c = effCell(n, ti) || {};
+      return `<div class="occ" onclick="openSheet('${escJS(n)}')" style="cursor:pointer">`
+        + (portraitOf(n) ? `<img src="${esc(portraitOf(n))}" alt="">` : '<img alt="">')
+        + `<div><div class="n">${esc(n)}${isStaff(n) ? '<span class="staff">staff</span>' : ''}</div>`
+        + (c.act ? `<div class="a">${esc(short(c.act, 90))}</div>` : '')
+        + (extra || '') + '</div></div>';
+    }
+
+    function renderRoom() {
+      if (!$('roomCard')) return;
+      const ti = trancheIdx(curMin());
+      const tNext = ti + 1 < DATA.tranches.length ? ti + 1 : null;
+      if (!roomPinned) roomFocus = autoRoom(ti) || roomFocus || LIEUX[0].n;
+
+      // selecteur + acces rapide aux salles occupees
+      const map = occupancy(ti);
+      $('roomSel').innerHTML = LIEUX.map((l) => {
+        const k = (map[l.n] || []).length;
+        return `<option${l.n === roomFocus ? ' selected' : ''} value="${esc(l.n)}">`
+          + esc(l.n) + (k ? ` — ${k}` : '') + '</option>';
+      }).join('');
+      const chauds = Object.keys(map)
+        .filter((l) => l !== 'Hors boucle' && l !== '?' && l !== 'À définir')
+        .sort((a, b) => map[b].length - map[a].length).slice(0, 5);
+      $('roomQuick').innerHTML = chauds.map((l) =>
+        `<button class="${l === roomFocus ? 'on' : ''}" onclick="setRoom('${escJS(l)}')">`
+        + esc(short(l, 22)) + ` <b>${map[l].length}</b></button>`).join('');
+
+      const t = DATA.tranches[ti];
+      $('roomWhen').textContent = (t.clock ? t.clock + ' · ' : '') + `tranche ${t.start}–${t.end}`
+        + (tNext ? ` → ${DATA.tranches[tNext].clock || DATA.tranches[tNext].label}` : '');
+
+      const ici = occupantsOf(roomFocus, ti);
+      const apres = tNext === null ? [] : occupantsOf(roomFocus, tNext);
+      const arrivent = apres.filter((n) => !ici.includes(n));
+      const partent = ici.filter((n) => !apres.includes(n));
+
+      $('roomHere').innerHTML = ici.length
+        ? ici.map((n) => occLine(n, ti)).join('')
+        : '<div class="room-empty">Personne — la salle est vide.</div>';
+      $('roomIn').innerHTML = arrivent.length
+        ? arrivent.map((n) => occLine(n, tNext,
+            `<div class="from">← ${esc(short((effCell(n, ti) || {}).lieu || '?', 26))}</div>`)).join('')
+        : '<div class="room-empty">Personne n\'arrive.</div>';
+      $('roomOut').innerHTML = partent.length
+        ? partent.map((n) => occLine(n, ti,
+            `<div class="to">→ ${esc(short((effCell(n, tNext) || {}).lieu || '?', 26))}</div>`)).join('')
+        : '<div class="room-empty">Personne ne repart.</div>';
+
+      const mus = $('roomMusic');
+      if (document.activeElement !== mus) mus.value = slotMusic(ti);
+      $('roomMusicHint').textContent = TL ? '' : '(routines en cours de chargement)';
+    }
+
+    $('roomSel').addEventListener('change', (e) => setRoom(e.target.value));
+    $('roomAuto').addEventListener('click', () => {
+      roomPinned = false;
+      try { localStorage.removeItem('m1_room_focus'); } catch (e) {}
+      renderRoom(); renderMiniBar();
+    });
+    $('roomMusic').addEventListener('change', (e) => {
+      const ti = trancheIdx(curMin());
+      if (!TL || !TL.slots[ti]) return;
+      TL.slots[ti].music = e.target.value;
+      sendAction({ action: 'setSlotMusic', i: ti, music: e.target.value });
+      renderMiniBar();
+    });
+
+    /* ---- barre fixe ---- */
+    function renderMiniBar() {
+      const bar = $('miniBar');
+      if (!bar) return;
+      const ti = trancheIdx(curMin());
+      const t = DATA.tranches[ti];
+      $('mbTranche').textContent = (t.label === '60 (reset)' ? '⟲ RESET'
+        : `Tranche ${t.start}–${t.end}` + (t.clock ? ` · ${t.clock}` : ''))
+        + (t.marque ? ` · ${t.marque}` : '');
+      $('mbLvl').textContent = curMin() >= 30 ? 'Primes niv. 5' : 'Primes niv. 4';
+      const mus = slotMusic(ti);
+      $('mbMusic').textContent = mus ? '🎵 ' + short(mus, 40) : '';
+      const ici = occupantsOf(roomFocus || '', ti);
+      $('mbHere').innerHTML = roomFocus
+        ? `📍 <b>${esc(short(roomFocus, 30))}</b> — ` + (ici.length ? ici.map(esc).join(' · ') : 'vide')
+        : '';
+      const tNext = ti + 1 < DATA.tranches.length ? ti + 1 : null;
+      if (tNext !== null && roomFocus) {
+        const apres = occupantsOf(roomFocus, tNext);
+        const arr = apres.filter((n) => !ici.includes(n));
+        const par = ici.filter((n) => !apres.includes(n));
+        $('mbSoon').innerHTML = (arr.length ? '<b>↓ ' + arr.map(esc).join(' · ') + '</b>' : '')
+          + (arr.length && par.length ? ' &nbsp; ' : '')
+          + (par.length ? '<i>↑ ' + par.map(esc).join(' · ') + '</i>' : '');
+      } else $('mbSoon').textContent = '';
+    }
+    function syncMiniBar() {
+      const on = window.scrollY > 150;
+      $('miniBar').classList.toggle('on', on);
+      document.body.classList.toggle('mb-on', on);
+      if (on) renderMiniBar();
+    }
+    window.addEventListener('scroll', syncMiniBar, { passive: true });
+    $('mbToggle').addEventListener('click', () => sendAction({ action: 'toggle' }));
+    document.querySelectorAll('.mini-bar [data-skip]').forEach((b) =>
+      b.addEventListener('click', () => sendAction({ action: 'skip', ms: +b.dataset.skip })));
+    document.querySelectorAll('.mini-bar [data-rewind]').forEach((b) =>
+      b.addEventListener('click', () => sendAction({ action: 'rewind', ms: +b.dataset.rewind })));
+
     /* ================= Routines (grille editable) ================= */
     function rtCols() { return (TL ? TL.cols : []).filter((n) => !tlHidden.has(n)); }
 
@@ -785,7 +1029,8 @@
         + cols.map(() => '<th>Où</th><th>Action</th>').join('') + '</tr></thead>';
       const body = TL.slots.map((sl, i) => {
         const mk = sl.marque ? `<span class="mk">${esc(sl.marque)}</span>` : '';
-        return `<tr class="${i === ti ? 'now' : ''}"><td class="tcol">${esc(sl.label)}${mk}</td>`
+        return `<tr class="${i === ti ? 'now' : ''}"><td class="tcol">${esc(sl.label)}${mk}`
+          + `<input class="mus" data-mus="${i}" value="${esc(sl.music || '')}" placeholder="🎵 …"></td>`
           + cols.map((n) => {
               const cells = TL.routines[n] || [];
               const c = cells[i] || { loc: '', act: '' };
@@ -819,7 +1064,15 @@
     }
 
     $('rtTable').addEventListener('change', (e) => {
-      const el = e.target, n = el.dataset && el.dataset.n;
+      const el = e.target;
+      if (el.dataset && el.dataset.mus !== undefined) {   // cue musical de la tranche
+        const i = Number(el.dataset.mus);
+        if (TL.slots[i]) TL.slots[i].music = el.value;
+        sendAction({ action: 'setSlotMusic', i, music: el.value });
+        renderRoom(); renderMiniBar();
+        return;
+      }
+      const n = el.dataset && el.dataset.n;
       if (!n) return;
       const i = Number(el.dataset.i), f = el.dataset.f;
       const cells = TL.routines[n] || (TL.routines[n] = []);
@@ -911,6 +1164,8 @@
         rtSnapshotLocal();
         if (curTab === 'routines') renderRoutines();
         refreshCockpit();
+        renderRoom();
+        renderMiniBar();
       } catch (e) {}
     }
 
@@ -935,6 +1190,11 @@
         updateHourglass(svg, 1 - rem / s.totalMs, s.running);
         clock.textContent = fmt(rem);
         clock.classList.toggle('danger', rem <= 5 * 60000);
+        const mc = $('mbClock');
+        mc.textContent = fmt(rem);
+        mc.classList.toggle('danger', rem <= 5 * 60000);
+        $('mbDot').classList.toggle('run', !!s.running);
+        $('mbToggle').textContent = s.running ? '⏸' : '▶';
         realElapsedMs = s.totalMs - rem;
         updateCockpitTime();
       },

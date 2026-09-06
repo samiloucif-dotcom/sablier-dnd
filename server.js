@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { M1_LOCATIONS } = require('./locations.js');
+const BOARD = require('./board_server.js');
 
 const PORT = process.env.PORT || 3000;
 /* Adresse du cockpit MJ. Elle n'est PAS devinable depuis l'adresse joueur :
@@ -23,14 +24,20 @@ const PORT = process.env.PORT || 3000;
 const GM_PATH = process.env.GM_PATH || '/mj-chrysaldus-7f3a';
 const TOTAL_MS = 60 * 60 * 1000; // 1 heure
 const PUBLIC = __dirname;
+/* Statiques PUBLICS. data.js et locations.js n'y sont plus : ils contenaient
+   toute la campagne et la carte complete de la Citadelle, servies a qui
+   connaissait l'adresse du site. Ils ne sont desormais accessibles que sous
+   l'adresse privee du MJ (voir GM_STATIC). */
 const STATIC = {
   '/app.js': 'app.js',
   '/style.css': 'style.css',
-  '/data.js': 'data.js',
-  '/locations.js': 'locations.js',
   '/frame_hourglass.png': 'frame_hourglass.png',
   '/hall_bg.jpg': 'hall_bg.jpg',
 };
+const GM_STATIC = { '/data.js': 'data.js', '/locations.js': 'locations.js',
+  '/board.css': 'board.css', '/board.js': 'board.js', '/warden.js': 'warden.js' };
+/* Servis a l'adresse publique UNIQUEMENT quand le tableau est ouvert. */
+const BOARD_STATIC = { '/board.css': 'board.css', '/board.js': 'board.js' };
 
 const TIMELINE_FILE = path.join(PUBLIC, 'timeline.json');
 
@@ -116,6 +123,15 @@ const state = {
   saveOk: true,                 // false si l'ecriture disque a echoue (hebergement en lecture seule)
 };
 state.timeline = loadTimeline();
+
+/* Le Chronovestigation Board reprend les memes 18 colonnes que les routines. */
+function staffNames() {
+  try {
+    const src = fs.readFileSync(path.join(PUBLIC, 'data.js'), 'utf8');
+    return eval(src + '; MJ_DATA').staffOrder || [];
+  } catch (e) { return []; }
+}
+BOARD.init(state.timeline.cols, staffNames());
 
 const now = () => Date.now();
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -296,6 +312,16 @@ function handleAction(body) {
       persistTimeline();
       break;
     }
+    case 'setSlotMusic': {          /* cue musical de la tranche (Session 1 : le MJ l'oubliait) */
+      const tl = state.timeline;
+      const i = Number(body.i);
+      if (!tl.slots[i]) break;
+      tl.slots[i].music = String(body.music || '').slice(0, 120);
+      tl.updated = new Date().toISOString();
+      state.timelineRev++;
+      persistTimeline();
+      break;
+    }
     case 'addCol': {
       const tl = state.timeline;
       const name = String(body.name || '').trim();
@@ -335,7 +361,7 @@ function handleAction(body) {
   }
 }
 
-function snapshot() {
+function snapshot(gm) {
   return {
     totalMs: state.totalMs,
     running: state.running,
@@ -348,8 +374,8 @@ function snapshot() {
       remainingMs: timerRemaining(t),
     })),
     events: state.events.slice(-30),
-    overrides: state.overrides,
-    improEvents: state.improEvents,
+    overrides: gm ? state.overrides : {},        /* contenu MJ : jamais cote joueur */
+    improEvents: gm ? state.improEvents : [],
     timelineRev: state.timelineRev,
     timelineUpdated: state.timeline ? state.timeline.updated : null,
     saveOk: !saveWarned,
@@ -357,7 +383,46 @@ function snapshot() {
   };
 }
 
+function sendJSON(res, obj) {
+  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.end(JSON.stringify(obj));
+}
+
+function sendTimelineCsv(res) {
+  const tl = state.timeline;
+  const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const head = ['Heure'].concat(...tl.cols.map((n) => [n + ' — lieu', n + ' — action']));
+  const rows = tl.slots.map((s2, i) => [s2.label].concat(...tl.cols.map((n) => {
+    const c = (tl.routines[n] || [])[i] || {};
+    return [c.loc || '', c.act || ''];
+  })));
+  const csv = '\ufeff' + [head].concat(rows).map((r) => r.map(esc).join(';')).join('\r\n');
+  res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8',
+    'Content-Disposition': 'attachment; filename="routines.csv"' });
+  res.end(csv);
+}
+
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
+
+/* Le cockpit est servi depuis l'adresse privee : on y reecrit les quelques
+   URL absolues pour qu'elles restent sous cette adresse, et on lui greffe le
+   lien vers Warden. Le fichier gm.html sur le disque n'est pas modifie. */
+function serveGm(res) {
+  fs.readFile(path.join(PUBLIC, 'gm.html'), 'utf8', (err, html) => {
+    if (err) { res.writeHead(404); return res.end('Not found'); }
+    const out = html
+      .replace('<script src="/app.js"></script>',
+        '<script>window.SYNC_BASE=' + JSON.stringify(GM_PATH) + ';</script>\n  <script src="/app.js"></script>')
+      .replace(/(src|href)="\/(data\.js|locations\.js|timeline\.json|timeline\.csv)"/g,
+        (m, at, f) => at + '="' + GM_PATH + '/' + f + '"')
+      .replace("fetch('/timeline'", "fetch('" + GM_PATH + "/timeline'")
+      .replace('</body>',
+        '<a href="' + GM_PATH + '/warden" class="mj-link" style="bottom:14px;left:16px;right:auto">'
+        + '\u26e8 Chronovestigation Board</a>\n</body>');
+    res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
+    res.end(out);
+  });
+}
 
 function serveFile(res, file) {
   fs.readFile(file, (err, data) => {
@@ -377,37 +442,48 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'GET') {
     if (pathname === '/' ) return serveFile(res, path.join(PUBLIC, 'player.html'));
-    if (pathname === GM_PATH) return serveFile(res, path.join(PUBLIC, 'gm.html'));
-    if (pathname === '/timeline') {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-      return res.end(JSON.stringify(state.timeline));
+    if (pathname === GM_PATH) return serveGm(res);
+
+    /* ---------- adresse privee du MJ ---------- */
+    if (pathname.startsWith(GM_PATH + '/')) {
+      const sub = pathname.slice(GM_PATH.length);
+      if (GM_STATIC[sub]) return serveFile(res, path.join(PUBLIC, GM_STATIC[sub]));
+      if (sub === '/warden') return serveFile(res, path.join(PUBLIC, 'warden.html'));
+      if (sub === '/state') return sendJSON(res, snapshot(true));
+      if (sub === '/board/state') return sendJSON(res, BOARD.wardenView());
+      if (sub === '/board.json') {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="board.json"' });
+        return res.end(JSON.stringify(BOARD.raw(), null, 1));
+      }
+      if (sub === '/locations') return sendJSON(res, M1_LOCATIONS);
+      if (sub === '/timeline') return sendJSON(res, state.timeline);
+      if (sub === '/timeline.json') {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="timeline.json"' });
+        return res.end(JSON.stringify(state.timeline, null, 1));
+      }
+      if (sub === '/timeline.csv') return sendTimelineCsv(res);
+      res.writeHead(404); return res.end('Not found');
     }
-    if (pathname === '/timeline.json') {          // telechargement (sauvegarde locale)
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8',
-        'Content-Disposition': 'attachment; filename="timeline.json"' });
-      return res.end(JSON.stringify(state.timeline, null, 1));
+
+    /* ---------- le tableau d'enquete des joueurs ----------
+       Scelle = inexistant. Tant que le MJ n'a pas ouvert, ces adresses
+       repondent 404 exactement comme n'importe quelle route inconnue :
+       un joueur qui connait l'URL n'apprend meme pas que la page existe. */
+    if (pathname === '/board') {
+      if (!BOARD.isOpen()) { res.writeHead(404); return res.end('Not found'); }
+      return serveFile(res, path.join(PUBLIC, 'board.html'));
     }
-    if (pathname === '/timeline.csv') {           // export lisible dans Excel
-      const tl = state.timeline;
-      const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-      const head = ['Heure'].concat(...tl.cols.map((n) => [n + ' — lieu', n + ' — action']));
-      const rows = tl.slots.map((s2, i) => [s2.label].concat(...tl.cols.map((n) => {
-        const c = (tl.routines[n] || [])[i] || {};
-        return [c.loc || '', c.act || ''];
-      })));
-      const csv = '\ufeff' + [head].concat(rows).map((r) => r.map(esc).join(';')).join('\r\n');
-      res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': 'attachment; filename="routines.csv"' });
-      return res.end(csv);
+    if (pathname === '/board/state') {
+      if (!BOARD.isOpen()) { res.writeHead(404); return res.end('Not found'); }
+      return sendJSON(res, BOARD.playerView());
     }
-    if (pathname === '/locations') {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-      return res.end(JSON.stringify(M1_LOCATIONS));
+    if (BOARD_STATIC[pathname]) {
+      if (!BOARD.isOpen()) { res.writeHead(404); return res.end('Not found'); }
+      return serveFile(res, path.join(PUBLIC, BOARD_STATIC[pathname]));
     }
-    if (pathname === '/state') {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-      return res.end(JSON.stringify(snapshot()));
-    }
+    if (pathname === '/state') return sendJSON(res, snapshot(false));
     // fichiers statiques autorisés (app.js, style.css)
     if (STATIC[pathname]) return serveFile(res, path.join(PUBLIC, STATIC[pathname]));
     // portraits du cockpit MJ (public/portraits/*.webp), nom décodé et sécurisé
@@ -419,20 +495,24 @@ const server = http.createServer((req, res) => {
     return res.end('Not found');
   }
 
-  if (req.method === 'POST' && pathname === '/action') {
-    let body = '';
-    req.on('data', (c) => {
-      body += c;
-      if (body.length > 4e6) req.destroy();
-    });
-    req.on('end', () => {
-      try {
-        handleAction(JSON.parse(body || '{}'));
-      } catch (e) {}
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(snapshot()));
-    });
-    return;
+  if (req.method === 'POST') {
+    /* /action n'est plus public : seul le cockpit pilote le sablier. */
+    const isGmAction    = pathname === GM_PATH + '/action';
+    const isGmBoard     = pathname === GM_PATH + '/board/act';
+    const isTableBoard  = pathname === '/board/act' && BOARD.isOpen();
+    if (isGmAction || isGmBoard || isTableBoard) {
+      let body = '';
+      req.on('data', (c) => { body += c; if (body.length > 4e6) req.destroy(); });
+      req.on('end', () => {
+        let payload = {};
+        try { payload = JSON.parse(body || '{}'); } catch (e) {}
+        if (isGmAction) { handleAction(payload); return sendJSON(res, snapshot(true)); }
+        if (isGmBoard)  { BOARD.wardenAction(payload); return sendJSON(res, BOARD.wardenView()); }
+        BOARD.tableAction(payload);
+        return sendJSON(res, BOARD.playerView());
+      });
+      return;
+    }
   }
 
   res.writeHead(404);
@@ -449,7 +529,10 @@ server.listen(PORT, () => {
   }
   console.log('\n  ⏳  Sablier D&D lancé !\n');
   console.log('  Interface joueur :  http://localhost:' + PORT + '/');
-  console.log('  Interface MJ     :  http://localhost:' + PORT + GM_PATH + '   (adresse privee)\n');
+  console.log('  Interface MJ     :  http://localhost:' + PORT + GM_PATH + '   (adresse privee)');
+  console.log('  Warden (enquete) :  http://localhost:' + PORT + GM_PATH + '/warden');
+  console.log('  Tableau joueurs  :  http://localhost:' + PORT + '/board   '
+    + (BOARD.isOpen() ? '(OUVERT)' : '(SCELLE — 404 tant que tu ne l\'ouvres pas)') + '\n');
   if (ips.length) {
     console.log('  Pour les joueurs sur le même Wi-Fi :');
     ips.forEach((ip) => console.log('     http://' + ip + ':' + PORT + '/'));
