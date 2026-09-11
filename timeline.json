@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-01T23:41:05.421Z",
+ "updated": "2026-09-10T20:07:40.969Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -181,7 +181,7 @@
     "act": "Est abordée par Framschtak"
    },
    {
-    "loc": "X In transit",
+    "loc": "4 Corridor",
     "act": "Monte vers le secret elevator"
    },
    {
@@ -219,16 +219,16 @@
     "act": "entre par effraction"
    },
    {
+    "loc": "4 Orb's room",
+    "act": "Se faufile vers l'Orbe ;résout le labyrinthe → SECOUSSE (09:30)"
+   },
+   {
     "loc": "4 Corridor",
-    "act": "Se faufile vers l'Orbe ;"
+    "act": "Leaves the room, interrupted by Aesterias, hides"
    },
    {
-    "loc": "4 Orb's room",
-    "act": "résout le labyrinthe → SECOUSSE (09:30)"
-   },
-   {
-    "loc": "4 Orb's room",
-    "act": "Remplace l'Orbe par une fausse ; cape d'invisibilité, se cache"
+    "loc": "4 Corridor",
+    "act": "Invisible"
    },
    {
     "loc": "4 Corridor",
@@ -381,7 +381,7 @@
     "act": "Discute avec Carnage"
    },
    {
-    "loc": "X In transit",
+    "loc": "4 Corridor",
     "act": "Monte vers le secret elevator"
    },
    {
@@ -573,7 +573,7 @@
     "act": "attend"
    },
    {
-    "loc": "4 Corridor",
+    "loc": "4 Orb's room",
     "act": "Monte au 4ème et jette GEAS sur Aesterias"
    },
    {
