@@ -105,7 +105,6 @@
     .mb-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
     .mb-dot.run{background:var(--green);box-shadow:0 0 8px rgba(70,201,139,.7)}
     .mini-bar button{padding:4px 10px;font-size:12px}
-    .mb-music{color:var(--violet);font-size:12.5px}
     .mb-here{font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .mb-here b{color:var(--amber);font-weight:600}
     .mb-soon{font-size:12px;color:var(--muted)}
@@ -137,10 +136,6 @@
     .occ .from{font-size:11px;color:var(--green)}
     .occ .to{font-size:11px;color:var(--red)}
     .room-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 2px}
-    .room-music{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--violet)}
-    .room-music input{background:#141824;border:1px solid var(--line);border-radius:7px;
-      color:var(--violet);font-size:12.5px;padding:5px 9px;min-width:280px;font-family:inherit}
-    .room-music input:focus{border-color:var(--violet);outline:none}
     @media (max-width:1100px){ .room-cols{grid-template-columns:1fr} }
 
     /* ---- Grille des routines (editable) ---- */
@@ -163,10 +158,6 @@
     table.rt th.who .x:hover{color:var(--red)}
     table.rt .tcol{position:sticky;left:0;z-index:2;background:#131722;font-variant-numeric:tabular-nums;
       font-weight:600;color:var(--text);white-space:nowrap}
-    table.rt input.mus{display:block;width:132px;margin-top:3px;font-size:10.5px;color:var(--violet);
-      border:1px solid transparent;background:#0f1320}
-    table.rt input.mus:hover{border-color:var(--line)}
-    table.rt input.mus:focus{border-color:var(--violet)}
     table.rt thead .tcol{z-index:5}
     table.rt tr.now .tcol{color:var(--amber)}
     table.rt tr.now td{background:rgba(232,181,89,.06)}
@@ -236,7 +227,7 @@
 <body>
   <div class="toasts" id="toasts"></div>
 
-  <!-- Barre fixe : apparait des qu'on scrolle. Chrono, tranche, musique, salle suivie. -->
+  <!-- Barre fixe : apparait des qu'on scrolle. Chrono, tranche, salle suivie. -->
   <div class="mini-bar" id="miniBar">
     <div class="mb-row">
       <span class="mb-dot" id="mbDot"></span>
@@ -246,7 +237,6 @@
       <button data-skip="300000">+5</button>
       <button data-rewind="60000">−1</button>
       <span class="tranche-pill" id="mbTranche">Tranche 0–5</span>
-      <span class="mb-music" id="mbMusic"></span>
       <div class="spacer"></div>
       <span class="lvl-pill" id="mbLvl">Primes niv. 4</span>
     </div>
@@ -313,11 +303,6 @@
         <div class="room-col here"><h3>Ici maintenant</h3><div id="roomHere"></div></div>
         <div class="room-col in"><h3>Arrive ensuite</h3><div id="roomIn"></div></div>
         <div class="room-col out"><h3>Repart ensuite</h3><div id="roomOut"></div></div>
-      </div>
-      <div class="room-music">
-        <span>🎵 Musique de cette tranche :</span>
-        <input id="roomMusic" placeholder="— aucun morceau noté —">
-        <span class="rt-hint" id="roomMusicHint"></span>
       </div>
     </div>
 
@@ -858,10 +843,6 @@
       roomPinned = !!roomFocus;
     } catch (e) {}
 
-    function slotMusic(ti) {
-      if (!TL || !TL.slots[ti]) return '';
-      return TL.slots[ti].music || '';
-    }
     function occupantsOf(room, ti) {
       return ALL.filter((n) => {
         const c = effCell(n, ti);
@@ -936,9 +917,6 @@
             `<div class="to">→ ${esc(short((effCell(n, tNext) || {}).lieu || '?', 26))}</div>`)).join('')
         : '<div class="room-empty">Personne ne repart.</div>';
 
-      const mus = $('roomMusic');
-      if (document.activeElement !== mus) mus.value = slotMusic(ti);
-      $('roomMusicHint').textContent = TL ? '' : '(routines en cours de chargement)';
     }
 
     $('roomSel').addEventListener('change', (e) => setRoom(e.target.value));
@@ -946,13 +924,6 @@
       roomPinned = false;
       try { localStorage.removeItem('m1_room_focus'); } catch (e) {}
       renderRoom(); renderMiniBar();
-    });
-    $('roomMusic').addEventListener('change', (e) => {
-      const ti = trancheIdx(curMin());
-      if (!TL || !TL.slots[ti]) return;
-      TL.slots[ti].music = e.target.value;
-      sendAction({ action: 'setSlotMusic', i: ti, music: e.target.value });
-      renderMiniBar();
     });
 
     /* ---- barre fixe ---- */
@@ -965,8 +936,6 @@
         : `Tranche ${t.start}–${t.end}` + (t.clock ? ` · ${t.clock}` : ''))
         + (t.marque ? ` · ${t.marque}` : '');
       $('mbLvl').textContent = curMin() >= 30 ? 'Primes niv. 5' : 'Primes niv. 4';
-      const mus = slotMusic(ti);
-      $('mbMusic').textContent = mus ? '🎵 ' + short(mus, 40) : '';
       const ici = occupantsOf(roomFocus || '', ti);
       $('mbHere').innerHTML = roomFocus
         ? `📍 <b>${esc(short(roomFocus, 30))}</b> — ` + (ici.length ? ici.map(esc).join(' · ') : 'vide')
@@ -1029,8 +998,7 @@
         + cols.map(() => '<th>Où</th><th>Action</th>').join('') + '</tr></thead>';
       const body = TL.slots.map((sl, i) => {
         const mk = sl.marque ? `<span class="mk">${esc(sl.marque)}</span>` : '';
-        return `<tr class="${i === ti ? 'now' : ''}"><td class="tcol">${esc(sl.label)}${mk}`
-          + `<input class="mus" data-mus="${i}" value="${esc(sl.music || '')}" placeholder="🎵 …"></td>`
+        return `<tr class="${i === ti ? 'now' : ''}"><td class="tcol">${esc(sl.label)}${mk}</td>`
           + cols.map((n) => {
               const cells = TL.routines[n] || [];
               const c = cells[i] || { loc: '', act: '' };
@@ -1065,13 +1033,6 @@
 
     $('rtTable').addEventListener('change', (e) => {
       const el = e.target;
-      if (el.dataset && el.dataset.mus !== undefined) {   // cue musical de la tranche
-        const i = Number(el.dataset.mus);
-        if (TL.slots[i]) TL.slots[i].music = el.value;
-        sendAction({ action: 'setSlotMusic', i, music: el.value });
-        renderRoom(); renderMiniBar();
-        return;
-      }
       const n = el.dataset && el.dataset.n;
       if (!n) return;
       const i = Number(el.dataset.i), f = el.dataset.f;

@@ -312,16 +312,6 @@ function handleAction(body) {
       persistTimeline();
       break;
     }
-    case 'setSlotMusic': {          /* cue musical de la tranche (Session 1 : le MJ l'oubliait) */
-      const tl = state.timeline;
-      const i = Number(body.i);
-      if (!tl.slots[i]) break;
-      tl.slots[i].music = String(body.music || '').slice(0, 120);
-      tl.updated = new Date().toISOString();
-      state.timelineRev++;
-      persistTimeline();
-      break;
-    }
     case 'addCol': {
       const tl = state.timeline;
       const name = String(body.name || '').trim();
