@@ -451,8 +451,13 @@
       const prev = ti > 0 ? tlEff(cells, ti - 1).loc : '';
       return { lieu: eff.loc || '?', act: cur.act || '', new: !!(cur.act || (cur.loc && cur.loc !== prev)) };
     }
+    const VIDE = { lieu: '?', act: '', new: false };
+    /* Un personnage peut exister dans DATA.chars sans ligne dans DATA.timeline
+       (Loraine, 13/09). Tant que timeline.json n'est pas charge, on renvoie une
+       case vide plutot que de planter : une exception ici tuait la boucle
+       d'animation et figeait le chrono du MJ a 60:00. */
     function effCell(name, ti, live = true) {
-      const plan = tlPlan(name, ti) || DATA.timeline[name][ti];
+      const plan = tlPlan(name, ti) || (DATA.timeline[name] || [])[ti] || VIDE;
       if (live && !repet && overrides[name]) return { lieu: overrides[name].lieu, act: overrides[name].act, new: false, dev: true, plan };
       return { ...plan, dev: false, plan };
     }
@@ -568,7 +573,7 @@
           h += `<div class="event impro ${cls}"><button class="del-ev" onclick="delImpro(${e.id})" title="Supprimer">✕</button><b>min ${e.min}</b>${e.who ? ` · <span class="who" onclick="openSheet('${escJS(e.who)}')">${esc(e.who)}</span>` : ''} · ${lieuLink(e.lieu)}${e.act ? ` — ${esc(e.act)}` : ''}</div>`;
         });
         ALL.forEach((n) => {
-          const c = tlPlan(n, idx) || DATA.timeline[n][idx];
+          const c = tlPlan(n, idx) || (DATA.timeline[n] || [])[idx] || VIDE;
           if (c.new) h += `<div class="event ${cls}"><span class="who" onclick="openSheet('${escJS(n)}')">${esc(n)}</span> · ${lieuLink(c.lieu)}${c.act ? ` — ${esc(c.act)}` : ''}</div>`;
         });
         return h || `<div class="empty">Rien de nouveau — tout continue.</div>`;
@@ -601,7 +606,7 @@
       const ti = trancheIdx(curMin());
       $('strip').innerHTML = DATA.tranches.map((t, i) => {
         let n = 0;
-        ALL.forEach((k) => { const c = tlPlan(k, i) || DATA.timeline[k][i]; if (c && c.new) n++; });
+        ALL.forEach((k) => { const c = tlPlan(k, i) || (DATA.timeline[k] || [])[i]; if (c && c.new) n++; });
         const ni = improIn(i).length;
         const click = repet ? `class="cell clickable ${i === ti ? 'now' : ''}" onclick="simJump(${t.start * 60000})"` : `class="cell ${i === ti ? 'now' : ''}"`;
         return `<div ${click}>${t.label === '60 (reset)' ? 'reset' : t.label}<span class="n ${n || ni ? '' : 'zero'}">${n || '·'}${ni ? `<span style="color:var(--violet)"> +${ni}</span>` : ''}</span></div>`;

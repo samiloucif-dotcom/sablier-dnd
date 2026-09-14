@@ -124,6 +124,12 @@ async function sendAction(payload) {
 }
 
 /* ---------- Synchronisation (polling + interpolation fluide) ---------- */
+var __frameErrs = 0;
+function frameErr(e) {                 /* on signale une fois, on continue */
+  if (__frameErrs++) return;
+  console.error('[sablier] erreur affichage ignoree pour garder le chrono vivant :', e);
+}
+
 function startSync({ onState, onEvent, onFrame }) {
   let last = null;
   let fetchedAt = Date.now();
@@ -149,7 +155,7 @@ function startSync({ onState, onEvent, onFrame }) {
         }
       }
     }
-    onState && onState(s);
+    try { onState && onState(s); } catch (e) { frameErr(e); }
   }
 
   poll();
@@ -160,7 +166,10 @@ function startSync({ onState, onEvent, onFrame }) {
       const rem = last.running
         ? Math.max(0, last.remainingMs - (Date.now() - fetchedAt))
         : last.remainingMs;
-      onFrame && onFrame(rem, last);
+      /* Filet de securite : si l'affichage plante, l'horloge continue.
+         Sans ce try/catch, une exception empechait le requestAnimationFrame
+         suivant et le chrono restait fige pour toute la partie (13/09). */
+      try { onFrame && onFrame(rem, last); } catch (e) { frameErr(e); }
     }
     requestAnimationFrame(frame);
   }
