@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:18:23.567Z",
+ "updated": "2026-09-16T17:18:42.819Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -575,7 +575,7 @@
    },
    {
     "loc": "4 Orb's room",
-    "act": ""
+    "act": "Casts GEAS on Aesterias"
    },
    {
     "loc": "1 Dorms A (Hayeva Esteban Markel Norvodavius Askii)",
