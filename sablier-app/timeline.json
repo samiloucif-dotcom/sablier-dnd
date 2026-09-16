@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:15:45.459Z",
+ "updated": "2026-09-16T17:16:02.108Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -555,7 +555,7 @@
    },
    {
     "loc": "0 Main hall",
-    "act": "demande une audience avec Aesterias (refusée)"
+    "act": "Storms out to reach higher levels"
    },
    {
     "loc": "3 Staircase",
