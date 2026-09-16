@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:16:56.287Z",
+ "updated": "2026-09-16T17:17:12.173Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -562,7 +562,7 @@
     "act": "Is blocked by barrier, meets Framschtak "
    },
    {
-    "loc": "3 Banquet room",
+    "loc": "3 Corridor",
     "act": "Goes to the banquet room, eats"
    },
    {
