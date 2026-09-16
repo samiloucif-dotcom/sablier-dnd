@@ -2,9 +2,9 @@
  "version": 1,
  "open": true,
  "loop": 1,
- "rev": 2,
+ "rev": 12,
  "nextId": 1,
- "updated": "2026-09-16T14:05:24.138Z",
+ "updated": "2026-09-16T14:06:11.635Z",
  "cast": [
   {
    "key": "balerion",
@@ -28,13 +28,13 @@
    "key": "doulahex",
    "name": "Doula'hex",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "esteban",
    "name": "Esteban",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "framschtak",
@@ -52,13 +52,13 @@
    "key": "gasper",
    "name": "Gasper",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "hayeva",
    "name": "Hayeva",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "nerasho",
@@ -70,13 +70,13 @@
    "key": "norvodavius",
    "name": "Norvodavius",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "paxel",
    "name": "Paxel",
    "staff": false,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "aesterias",
@@ -88,19 +88,19 @@
    "key": "maevis",
    "name": "Maevis",
    "staff": true,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "mystalky",
    "name": "Myst & Alky",
    "staff": true,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "djetechteve",
    "name": "Djetecht Eve",
    "staff": true,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "sitripayo",
@@ -112,7 +112,7 @@
    "key": "mrjacques",
    "name": "Mr Jacques",
    "staff": true,
-   "unlocked": false
+   "unlocked": true
   },
   {
    "key": "polychroma",
