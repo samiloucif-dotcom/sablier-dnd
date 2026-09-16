@@ -2,9 +2,9 @@
  "version": 1,
  "open": true,
  "loop": 1,
- "rev": 17,
+ "rev": 28,
  "nextId": 1,
- "updated": "2026-09-16T14:06:24.784Z",
+ "updated": "2026-09-16T14:06:53.424Z",
  "cast": [
   {
    "key": "balerion",
@@ -180,13 +180,13 @@
    "rid": 9,
    "id": "0 Staircase",
    "label": "Staircase, ground floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 10,
    "id": "1 Stairecase",
    "label": "Staircase, first floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 11,
@@ -240,43 +240,43 @@
    "rid": 19,
    "id": "2 Staircase",
    "label": "Staircase, second floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 20,
    "id": "2 Corridor",
    "label": "Corridor, second floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 21,
    "id": "2 Classroom",
    "label": "Classroom",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 22,
    "id": "2 Workshop room",
    "label": "Workshop room",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 23,
    "id": "2 Armory",
    "label": "Armory",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 24,
    "id": "2 Greenhouse",
    "label": "Greenhouse",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 25,
    "id": "2 Alchemy Lab",
    "label": "Alchemy Lab",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 26,
