@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:17:56.365Z",
+ "updated": "2026-09-16T17:18:08.867Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -574,7 +574,7 @@
     "act": "Gets enchanted by the spell"
    },
    {
-    "loc": "4 Corridor",
+    "loc": "4 Orb's room",
     "act": "Monte au 4ème et jette GEAS sur Aesterias"
    },
    {
