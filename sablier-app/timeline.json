@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:15:21.037Z",
+ "updated": "2026-09-16T17:15:45.459Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -551,10 +551,10 @@
   "Norvodavius": [
    {
     "loc": "0 Mr Jacques office",
-    "act": "socialise"
+    "act": "Complains about power supression and demands an audience"
    },
    {
-    "loc": "0 Mr Jacques office",
+    "loc": "0 Main hall",
     "act": "demande une audience avec Aesterias (refusée)"
    },
    {
