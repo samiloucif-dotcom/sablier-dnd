@@ -2,9 +2,9 @@
  "version": 1,
  "open": true,
  "loop": 1,
- "rev": 12,
+ "rev": 17,
  "nextId": 1,
- "updated": "2026-09-16T14:06:11.635Z",
+ "updated": "2026-09-16T14:06:24.784Z",
  "cast": [
   {
    "key": "balerion",
@@ -126,19 +126,19 @@
    "rid": 0,
    "id": "0 Arrival area",
    "label": "Arrival area",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 1,
    "id": "0 Main hall",
    "label": "Main hall",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 2,
    "id": "0 Mr Jacques office",
    "label": "Mr Jacques' office",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 3,
@@ -162,13 +162,13 @@
    "rid": 6,
    "id": "0 Theater",
    "label": "Theater",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 7,
    "id": "0 Foyer",
    "label": "Foyer",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 8,
