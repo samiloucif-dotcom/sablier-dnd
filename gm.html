@@ -420,6 +420,7 @@
       ? M1_LOCATIONS.map((l) => ({ n: l.id, etage: l.etage })) : DATA.lieux;
     /* Routines editables, servies par le serveur (timeline.json). */
     let TL = null, tlRev = -1, tlSaveOk = true, lastRtTi = -1;
+    let storeState = null;          // ou vont les donnees : disque local ou GitHub
     let tlHidden = new Set();
     try { tlHidden = new Set(JSON.parse(localStorage.getItem('m1_rt_hidden') || '[]')); } catch (e) {}
     let overrides = {}, improEvents = [];
@@ -1015,10 +1016,21 @@
       }).join('');
       table.innerHTML = head + '<tbody>' + body + '</tbody>';
       const maj = TL.updated ? new Date(TL.updated) : null;
-      $('rtSaved').textContent = maj && !isNaN(maj)
-        ? 'dernière modif ' + maj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+      const hhmm = (d) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      let txt = maj && !isNaN(maj) ? 'dernière modif ' + hhmm(maj) : '';
+      if (storeState && storeState.kind === 'github') {
+        const at = storeState.at ? new Date(storeState.at) : null;
+        txt += storeState.saving ? ' · ☁ enregistrement…'
+          : !storeState.ok ? ' · ⚠ GitHub : ' + short(storeState.err || 'échec', 40)
+          : at && !isNaN(at) ? ' · ☁ enregistré sur GitHub ' + hhmm(at)
+          : ' · ☁ GitHub prêt';
+      } else if (storeState) {
+        txt += ' · 💾 disque local (pense à ⬇ JSON)';
+      }
+      $('rtSaved').textContent = txt;
       renderBackupInfo();
-      $('rtWarn').style.display = tlSaveOk ? 'none' : 'block';
+      const ghKo = storeState && storeState.kind === 'github' && !storeState.ok;
+      $('rtWarn').style.display = (tlSaveOk && !ghKo) ? 'none' : 'block';
       $('rtWarn').textContent = '⚠ Le serveur n\'arrive pas à écrire timeline.json (hébergement en lecture seule).'
         + ' Tes modifications sont partagées et visibles, mais seront perdues au redémarrage :'
         + ' télécharge le JSON avant de fermer.';
@@ -1148,6 +1160,11 @@
         overrides = s.overrides || {};
         improEvents = s.improEvents || [];
         tlSaveOk = s.saveOk !== false;
+        const st = JSON.stringify(s.store || null);
+        if (st !== JSON.stringify(storeState)) {
+          storeState = s.store || null;
+          if (curTab === 'routines') renderRoutines();
+        }
         if (s.timelineRev !== tlRev) { tlRev = s.timelineRev; fetchTimeline(); }
         const j = JSON.stringify([overrides, improEvents]);
         if (j !== lastLiveJSON) { lastLiveJSON = j; refreshCockpit(); }

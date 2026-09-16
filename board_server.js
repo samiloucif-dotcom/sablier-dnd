@@ -80,7 +80,10 @@ function load(cols, staffNames) {
   return seed(cols, staffNames);
 }
 
+const STORE = require('./store_github.js');
+
 function persist() {
+  STORE.save('sablier-app/board.json', board);
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try {
@@ -291,6 +294,19 @@ function wardenAction(body) {
 
 module.exports = {
   init(cols, staffNames) { board = load(cols, staffNames); return board; },
+  /* recharge la version durable (GitHub) par-dessus l'amorce locale */
+  async hydrate() {
+    const b = await STORE.load('sablier-app/board.json');
+    if (b && Array.isArray(b.cast) && Array.isArray(b.entries)) {
+      board = b;
+      board.rev = (board.rev || 1) + 1;
+      console.log('  Chronovestigation Board recharge depuis GitHub ('
+        + board.entries.filter((e) => !e.dead).length + ' entrees, '
+        + (board.open ? 'OUVERT' : 'scelle') + ').');
+    } else if (board) {
+      STORE.save('sablier-app/board.json', board);
+    }
+  },
   isOpen: () => !!(board && board.open),
   playerView, wardenView, tableAction, wardenAction,
   raw: () => board,

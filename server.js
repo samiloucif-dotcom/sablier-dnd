@@ -16,6 +16,7 @@ const path = require('path');
 const os = require('os');
 const { M1_LOCATIONS } = require('./locations.js');
 const BOARD = require('./board_server.js');
+const STORE = require('./store_github.js');   // sauvegarde durable (GitHub, branche « data »)
 
 const PORT = process.env.PORT || 3000;
 /* Adresse du cockpit MJ. Elle n'est PAS devinable depuis l'adresse joueur :
@@ -78,6 +79,7 @@ function loadTimeline() {
 let saveTimer = null;
 let saveWarned = false;
 function persistTimeline() {
+  STORE.save('sablier-app/timeline.json', state.timeline);   // durable : survit aux redemarrages
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try {
@@ -123,6 +125,29 @@ const state = {
   saveOk: true,                 // false si l'ecriture disque a echoue (hebergement en lecture seule)
 };
 state.timeline = loadTimeline();
+
+/* Au demarrage, la version durable (GitHub) fait foi : le fichier livre avec le
+   code n'est qu'une amorce, fige au dernier deploiement. */
+async function hydrateFromStore() {
+  if (!STORE.enabled) {
+    console.log('  Sauvegarde durable inactive (GH_TOKEN absent) : ecriture disque locale seulement.');
+    return;
+  }
+  try { await STORE.ensureBranch(); } catch (e) {
+    console.warn('  /!\\ branche de donnees inaccessible : ' + e.message);
+    return;
+  }
+  const t = await STORE.load('sablier-app/timeline.json');
+  if (t && Array.isArray(t.slots) && t.routines) {
+    state.timeline = t;
+    state.timelineRev++;
+    console.log('  Routines rechargees depuis GitHub (' + t.cols.length + ' personnages, maj ' + (t.updated || '?') + ').');
+  } else {
+    console.log('  Rien encore sur la branche « ' + STORE.BRANCH + ' » : la copie du depot sert d\'amorce.');
+    STORE.save('sablier-app/timeline.json', state.timeline);
+  }
+  await BOARD.hydrate();
+}
 
 /* Le Chronovestigation Board reprend les memes 18 colonnes que les routines. */
 function staffNames() {
@@ -368,7 +393,9 @@ function snapshot(gm) {
     improEvents: gm ? state.improEvents : [],
     timelineRev: state.timelineRev,
     timelineUpdated: state.timeline ? state.timeline.updated : null,
-    saveOk: !saveWarned,
+    saveOk: !saveWarned || STORE.enabled,
+    store: { kind: STORE.etat.kind, ok: STORE.etat.ok, at: STORE.etat.at,
+             saving: STORE.etat.saving, err: STORE.etat.err, branch: STORE.BRANCH },
     serverNow: now(),
   };
 }
@@ -508,6 +535,8 @@ const server = http.createServer((req, res) => {
   res.writeHead(404);
   res.end('Not found');
 });
+
+hydrateFromStore();
 
 server.listen(PORT, () => {
   const nets = os.networkInterfaces();
