@@ -2,9 +2,9 @@
  "version": 1,
  "open": true,
  "loop": 1,
- "rev": 34,
- "nextId": 1,
- "updated": "2026-09-16T14:07:14.039Z",
+ "rev": 35,
+ "nextId": 2,
+ "updated": "2026-09-16T14:07:55.162Z",
  "cast": [
   {
    "key": "balerion",
@@ -441,5 +441,22 @@
    "unlocked": false
   }
  ],
- "entries": []
+ "entries": [
+  {
+   "id": 1,
+   "at": "2026-09-16T14:07:55.162Z",
+   "dead": false,
+   "liar": false,
+   "kind": "span",
+   "person": "norvodavius",
+   "a": 0,
+   "b": 4,
+   "rid": 2,
+   "trust": "conf",
+   "source": "we saw him arguing with mr Jacques",
+   "text": "",
+   "author": "DM",
+   "loop": 1
+  }
+ ]
 }
