@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:17:12.173Z",
+ "updated": "2026-09-16T17:17:41.216Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -567,7 +567,7 @@
    },
    {
     "loc": "3 Banquet room",
-    "act": "Va à la salle des banquets"
+    "act": "Eats a nice meal, interacts with a statue"
    },
    {
     "loc": "3 Banquet room",
