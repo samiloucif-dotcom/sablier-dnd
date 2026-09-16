@@ -2,9 +2,9 @@
  "version": 1,
  "open": true,
  "loop": 1,
- "rev": 28,
+ "rev": 34,
  "nextId": 1,
- "updated": "2026-09-16T14:06:53.424Z",
+ "updated": "2026-09-16T14:07:14.039Z",
  "cast": [
   {
    "key": "balerion",
@@ -288,13 +288,13 @@
    "rid": 27,
    "id": "3 Staircase",
    "label": "Staircase, third floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 28,
    "id": "3 Corridor",
    "label": "Corridor, third floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 29,
@@ -324,19 +324,19 @@
    "rid": 33,
    "id": "4 Staircase",
    "label": "Staircase, fourth floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 34,
    "id": "4 Corridor",
    "label": "Corridor, fourth floor",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 35,
    "id": "4 Eve's office",
    "label": "Eve's office",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 36,
@@ -360,7 +360,7 @@
    "rid": 39,
    "id": "4 Monitoring room",
    "label": "Monitoring room",
-   "unlocked": false
+   "unlocked": true
   },
   {
    "rid": 40,
