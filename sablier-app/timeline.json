@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-13T13:47:57.491Z",
+ "updated": "2026-09-16T17:15:21.037Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -550,7 +550,7 @@
   ],
   "Norvodavius": [
    {
-    "loc": "0 Main hall",
+    "loc": "0 Mr Jacques office",
     "act": "socialise"
    },
    {
