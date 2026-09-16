@@ -1,0 +1,445 @@
+{
+ "version": 1,
+ "open": false,
+ "loop": 1,
+ "rev": 1,
+ "nextId": 1,
+ "updated": "2026-09-16T13:49:55.820Z",
+ "cast": [
+  {
+   "key": "balerion",
+   "name": "Balerion",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "carnage",
+   "name": "Carnage",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "citello",
+   "name": "Citello",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "doulahex",
+   "name": "Doula'hex",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "esteban",
+   "name": "Esteban",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "framschtak",
+   "name": "Framschtak",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "loraine",
+   "name": "Loraine",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "gasper",
+   "name": "Gasper",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "hayeva",
+   "name": "Hayeva",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "nerasho",
+   "name": "Nerasho",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "norvodavius",
+   "name": "Norvodavius",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "paxel",
+   "name": "Paxel",
+   "staff": false,
+   "unlocked": false
+  },
+  {
+   "key": "aesterias",
+   "name": "Aesterias",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "maevis",
+   "name": "Maevis",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "mystalky",
+   "name": "Myst & Alky",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "djetechteve",
+   "name": "Djetecht Eve",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "sitripayo",
+   "name": "Sitrip Ayo",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "mrjacques",
+   "name": "Mr Jacques",
+   "staff": true,
+   "unlocked": false
+  },
+  {
+   "key": "polychroma",
+   "name": "Polychroma",
+   "staff": true,
+   "unlocked": false
+  }
+ ],
+ "rooms": [
+  {
+   "rid": 0,
+   "id": "0 Arrival area",
+   "label": "Arrival area",
+   "unlocked": false
+  },
+  {
+   "rid": 1,
+   "id": "0 Main hall",
+   "label": "Main hall",
+   "unlocked": false
+  },
+  {
+   "rid": 2,
+   "id": "0 Mr Jacques office",
+   "label": "Mr Jacques' office",
+   "unlocked": false
+  },
+  {
+   "rid": 3,
+   "id": "0' Mr Jacques studio",
+   "label": "Mr Jacques' studio",
+   "unlocked": false
+  },
+  {
+   "rid": 4,
+   "id": "0 Storage",
+   "label": "Storage",
+   "unlocked": false
+  },
+  {
+   "rid": 5,
+   "id": "0 Arena",
+   "label": "Arena",
+   "unlocked": false
+  },
+  {
+   "rid": 6,
+   "id": "0 Theater",
+   "label": "Theater",
+   "unlocked": false
+  },
+  {
+   "rid": 7,
+   "id": "0 Foyer",
+   "label": "Foyer",
+   "unlocked": false
+  },
+  {
+   "rid": 8,
+   "id": "0 Gymnasium",
+   "label": "Gymnasium",
+   "unlocked": false
+  },
+  {
+   "rid": 9,
+   "id": "0 Staircase",
+   "label": "Staircase, ground floor",
+   "unlocked": false
+  },
+  {
+   "rid": 10,
+   "id": "1 Stairecase",
+   "label": "Staircase, first floor",
+   "unlocked": false
+  },
+  {
+   "rid": 11,
+   "id": "1 Corridor",
+   "label": "Corridor, first floor",
+   "unlocked": false
+  },
+  {
+   "rid": 12,
+   "id": "1 Dorms A (Hayeva Esteban Markel Norvodavius Askii)",
+   "label": "Dorms A",
+   "unlocked": false
+  },
+  {
+   "rid": 13,
+   "id": "1 Dorms B (Carnage Balerion Framschtak, Pryah, Müne)",
+   "label": "Dorms B",
+   "unlocked": false
+  },
+  {
+   "rid": 14,
+   "id": "1 Dorms C (Citello Nerasho Bardik)",
+   "label": "Dorms C",
+   "unlocked": false
+  },
+  {
+   "rid": 15,
+   "id": "1 Dorms D (Doulahex, Paxel, Gasper)",
+   "label": "Dorms D",
+   "unlocked": false
+  },
+  {
+   "rid": 16,
+   "id": "1 Library",
+   "label": "Library",
+   "unlocked": false
+  },
+  {
+   "rid": 17,
+   "id": "1' Library 1st floor",
+   "label": "Library, upper level",
+   "unlocked": false
+  },
+  {
+   "rid": 18,
+   "id": "1 Chill Zone",
+   "label": "Chill Zone",
+   "unlocked": false
+  },
+  {
+   "rid": 19,
+   "id": "2 Staircase",
+   "label": "Staircase, second floor",
+   "unlocked": false
+  },
+  {
+   "rid": 20,
+   "id": "2 Corridor",
+   "label": "Corridor, second floor",
+   "unlocked": false
+  },
+  {
+   "rid": 21,
+   "id": "2 Classroom",
+   "label": "Classroom",
+   "unlocked": false
+  },
+  {
+   "rid": 22,
+   "id": "2 Workshop room",
+   "label": "Workshop room",
+   "unlocked": false
+  },
+  {
+   "rid": 23,
+   "id": "2 Armory",
+   "label": "Armory",
+   "unlocked": false
+  },
+  {
+   "rid": 24,
+   "id": "2 Greenhouse",
+   "label": "Greenhouse",
+   "unlocked": false
+  },
+  {
+   "rid": 25,
+   "id": "2 Alchemy Lab",
+   "label": "Alchemy Lab",
+   "unlocked": false
+  },
+  {
+   "rid": 26,
+   "id": "2' Alchemy lab mezzanine (Myst's room)",
+   "label": "Alchemy lab mezzanine",
+   "unlocked": false
+  },
+  {
+   "rid": 27,
+   "id": "3 Staircase",
+   "label": "Staircase, third floor",
+   "unlocked": false
+  },
+  {
+   "rid": 28,
+   "id": "3 Corridor",
+   "label": "Corridor, third floor",
+   "unlocked": false
+  },
+  {
+   "rid": 29,
+   "id": "3 Banquet room",
+   "label": "Banquet room",
+   "unlocked": false
+  },
+  {
+   "rid": 30,
+   "id": "3 Guest House",
+   "label": "Guest House",
+   "unlocked": false
+  },
+  {
+   "rid": 31,
+   "id": "3 The Great Balcony",
+   "label": "The Great Balcony",
+   "unlocked": false
+  },
+  {
+   "rid": 32,
+   "id": "3 Kitchens",
+   "label": "Kitchens",
+   "unlocked": false
+  },
+  {
+   "rid": 33,
+   "id": "4 Staircase",
+   "label": "Staircase, fourth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 34,
+   "id": "4 Corridor",
+   "label": "Corridor, fourth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 35,
+   "id": "4 Eve's office",
+   "label": "Eve's office",
+   "unlocked": false
+  },
+  {
+   "rid": 36,
+   "id": "4' Eve's studio",
+   "label": "Eve's studio",
+   "unlocked": false
+  },
+  {
+   "rid": 37,
+   "id": "4 Orb's room",
+   "label": "Orb's room",
+   "unlocked": false
+  },
+  {
+   "rid": 38,
+   "id": "4' Orb's labyrinth",
+   "label": "Orb's labyrinth",
+   "unlocked": false
+  },
+  {
+   "rid": 39,
+   "id": "4 Monitoring room",
+   "label": "Monitoring room",
+   "unlocked": false
+  },
+  {
+   "rid": 40,
+   "id": "4' Secret Elevator",
+   "label": "Secret elevator, fourth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 41,
+   "id": "5 Staircase",
+   "label": "Staircase, fifth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 42,
+   "id": "5 Corridor",
+   "label": "Corridor, fifth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 43,
+   "id": "5 Aesteria's lab",
+   "label": "Aesterias' lab",
+   "unlocked": false
+  },
+  {
+   "rid": 44,
+   "id": "5' Secret Elevator",
+   "label": "Secret elevator, fifth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 45,
+   "id": "5 Recollection Room",
+   "label": "Recollection Room",
+   "unlocked": false
+  },
+  {
+   "rid": 46,
+   "id": "6 Staircase",
+   "label": "Staircase, sixth floor",
+   "unlocked": false
+  },
+  {
+   "rid": 47,
+   "id": "6 Maevis' office",
+   "label": "Mrs Maevis' office",
+   "unlocked": false
+  },
+  {
+   "rid": 48,
+   "id": "6' Maevis' Suite",
+   "label": "Mrs Maevis' suite",
+   "unlocked": false
+  },
+  {
+   "rid": 49,
+   "id": "7 Aesterias office",
+   "label": "Aesterias' office",
+   "unlocked": false
+  },
+  {
+   "rid": 50,
+   "id": "7' Aesterias balcony",
+   "label": "Aesterias' balcony",
+   "unlocked": false
+  },
+  {
+   "rid": 51,
+   "id": "7' Secret Elevator",
+   "label": "Secret elevator, seventh floor",
+   "unlocked": false
+  },
+  {
+   "rid": 52,
+   "id": "X In transit",
+   "label": "In transit",
+   "unlocked": false
+  }
+ ],
+ "entries": []
+}
