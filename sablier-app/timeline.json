@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-16T17:16:02.108Z",
+ "updated": "2026-09-16T17:16:22.894Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -559,7 +559,7 @@
    },
    {
     "loc": "3 Staircase",
-    "act": "Monte jusqu'à la cage d'escalier du 3e"
+    "act": "Is blocked by barrier, meets Framschtak "
    },
    {
     "loc": "3 Banquet room",
