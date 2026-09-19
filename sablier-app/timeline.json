@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:37:37.987Z",
+ "updated": "2026-09-19T21:55:23.867Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1000,7 +1000,7 @@
   ],
   "Loraine": [
    {
-    "loc": "",
+    "loc": "0 Main hall",
     "act": ""
    },
    {
