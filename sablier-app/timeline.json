@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:55:37.521Z",
+ "updated": "2026-09-19T21:55:51.957Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1001,7 +1001,7 @@
   "Loraine": [
    {
     "loc": "0 Main hall",
-    "act": ""
+    "act": "On Framschtak"
    },
    {
     "loc": "2 Armory",
