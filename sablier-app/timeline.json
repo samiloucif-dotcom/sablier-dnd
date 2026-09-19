@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:56:19.756Z",
+ "updated": "2026-09-19T21:56:43.590Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -358,12 +358,12 @@
     "act": "Prépare le sort \"Control Person\" / Envoi hibou scout"
    },
    {
-    "loc": "3 Staircase",
+    "loc": "2 Staircase",
     "act": "Se dirige vers le 3ème étage"
    },
    {
     "loc": "3 Staircase",
-    "act": "croise l'Ensorcelé·e et l'envoie à la salle des banquets"
+    "act": "Meets"
    },
    {
     "loc": "3 Corridor",
