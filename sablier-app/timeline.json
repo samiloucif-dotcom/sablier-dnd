@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:37:15.266Z",
+ "updated": "2026-09-19T21:37:37.987Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -358,7 +358,7 @@
     "act": "Prépare le sort \"Control Person\" / Envoi hibou scout"
    },
    {
-    "loc": "X In transit",
+    "loc": "3 Staircase",
     "act": "Se dirige vers le 3ème étage"
    },
    {
