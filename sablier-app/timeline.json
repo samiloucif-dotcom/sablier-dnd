@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:55:51.957Z",
+ "updated": "2026-09-19T21:56:07.790Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1005,7 +1005,7 @@
    },
    {
     "loc": "2 Armory",
-    "act": ""
+    "act": "Is"
    },
    {
     "loc": "2 Workshop room",
