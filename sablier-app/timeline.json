@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-19T21:56:43.590Z",
+ "updated": "2026-09-19T21:57:01.402Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -359,7 +359,7 @@
    },
    {
     "loc": "2 Staircase",
-    "act": "Se dirige vers le 3ème étage"
+    "act": "On his way to the 3rd floor"
    },
    {
     "loc": "3 Staircase",
