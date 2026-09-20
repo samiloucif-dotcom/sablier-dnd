@@ -156,6 +156,30 @@
     .tmini button{padding:2px 6px;font-size:11px;line-height:1.1}
     .reminder-list .lock{opacity:.45;font-size:12px;padding:0 6px}
 
+    /* ---- Panneau de salle : bloc principal + boutons des salles occupees ---- */
+    .room-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+    .room-tab{position:relative;padding:4px 10px;border:1px solid var(--line);border-radius:8px;
+      background:transparent;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;
+      font-family:inherit;letter-spacing:.2px}
+    .room-tab:hover{border-color:var(--amber);color:var(--text)}
+    .room-tab.on{border-color:var(--amber);color:var(--amber);background:rgba(232,181,89,.14)}
+    .room-tab .n{margin-left:6px;opacity:.7;font-weight:700}
+    .room-tab .peek{display:none;position:absolute;left:0;top:calc(100% + 5px);z-index:40;
+      width:250px;text-align:left;background:#131722;border:1px solid var(--amber);border-radius:9px;
+      padding:8px 10px;box-shadow:0 12px 30px rgba(0,0,0,.65);font-weight:400;color:var(--text);
+      white-space:normal;cursor:default}
+    .room-tab:hover .peek{display:block}
+    .room-tab .peek .who{font-size:12px;font-weight:600;color:var(--amber)}
+    .room-tab .peek .act{font-size:11px;color:var(--muted);margin-bottom:5px}
+    .room-main{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px;align-items:start}
+    @media(max-width:1180px){.room-main{grid-template-columns:1fr}}
+    .transit-col{border-left:1px solid var(--line);padding-left:12px}
+    .transit-col h3{margin:0 0 7px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--violet)}
+    .tr-row{padding:5px 0;border-bottom:1px solid rgba(49,58,82,.45)}
+    .tr-row .n{font-size:12.5px;font-weight:600}
+    .tr-row .fromto{font-size:11px;color:var(--muted)}
+    .tr-row .fromto b{color:var(--text);font-weight:600}
+
     /* ---- Panneau des salles occupees ---- */
     .rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:10px}
     .room-box{border:1px solid var(--line);border-radius:10px;padding:8px 9px;position:relative;
@@ -182,8 +206,12 @@
     .room-soon .none{color:var(--muted);font-style:italic}
 
     /* ---- Colonne des personnages ---- */
-    #charList .cl-row{padding:6px 8px;border-bottom:1px solid rgba(49,58,82,.5);cursor:pointer;
-      border-left:2px solid transparent}
+    #charList .cl-row{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;
+      border-bottom:1px solid rgba(49,58,82,.5);cursor:pointer;border-left:2px solid transparent}
+    #charList .cl-tok{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;
+      background:#141824;border:1px solid var(--line)}
+    #charList .cl-row:hover .cl-tok{border-color:var(--amber)}
+    #charList .cl-txt{min-width:0}
     #charList .cl-row:hover{background:rgba(255,255,255,.04);border-left-color:var(--amber)}
     #charList .cl-row.dev{border-left-color:var(--red)}
     #charList .cl-name{font-size:12.5px;font-weight:600;color:var(--text)}
@@ -349,11 +377,24 @@
     <!-- ============ SALLE SUIVIE ============ -->
     <div class="card room-card" id="roomCard">
       <div class="room-head">
-        <h2 style="margin:0">📍 Rooms in use</h2>
+        <h2 style="margin:0">📍 <span id="roomTitle">Room</span></h2>
+        <button id="roomAuto" class="ghost" title="Follow the busiest room automatically">⇄ auto</button>
         <div class="spacer"></div>
         <span class="rt-hint" id="roomWhen"></span>
       </div>
-      <div class="rooms-grid" id="roomsGrid"></div>
+      <!-- un bouton par salle occupee : clic = suivre, survol = apercu -->
+      <div class="room-tabs" id="roomTabs"></div>
+      <div class="room-main">
+        <div class="room-cols">
+          <div class="room-col here"><h3>Here now</h3><div id="roomHere"></div></div>
+          <div class="room-col in"><h3>Arriving next</h3><div id="roomIn"></div></div>
+          <div class="room-col out"><h3>Leaving next</h3><div id="roomOut"></div></div>
+        </div>
+        <div class="transit-col">
+          <h3>🚶 In transit</h3>
+          <div id="roomTransit"></div>
+        </div>
+      </div>
     </div>
 
     <!-- ============ COCKPIT ============ -->
@@ -776,10 +817,14 @@
 
     /* Salles occupees : une carte par salle. Trois salles sont masquees quand
        leur unique occupant est leur resident permanent — elles n'apprennent rien. */
+    /* Salles dont le bouton disparait quand leur unique occupant est celui qu'on
+       devine sans regarder : le libraire dans sa bibliotheque, etc. */
     const SOLO_MASQUE = {
       '1 Library': 'Sitrip Ayo',
       '2 Alchemy Lab': 'Myst & Alky',
       "6 Maevis' office": 'Maevis',
+      '0 Theater': 'Esteban',
+      '0 Arena': 'Carnage',
     };
     function roomsToShow(ti) {
       const map = occupancy(ti);
@@ -794,36 +839,90 @@
     }
 
     function renderRooms() {
-      if (!$('roomsGrid')) return;
+      if (!$('roomsGrid') && !$('roomTabs')) return;
       const ti = trancheIdx(curMin());
       const tNext = ti + 1 < DATA.tranches.length ? ti + 1 : null;
       const t = DATA.tranches[ti];
       $('roomWhen').textContent = (t.clock ? t.clock + ' · ' : '') + 'slice ' + t.start + '–' + t.end
         + (tNext ? ' → ' + (DATA.tranches[tNext].clock || DATA.tranches[tNext].label) : '');
 
+      /* --- boutons : toutes les salles occupees, hors evidences --- */
       const rooms = roomsToShow(ti);
-      $('roomsGrid').innerHTML = rooms.length ? rooms.map((room) => {
-        const ici = occupantsOf(room, ti);
-        const apres = tNext === null ? [] : occupantsOf(room, tNext);
-        const arrivent = apres.filter((n) => !ici.includes(n));
-        const partent = ici.filter((n) => !apres.includes(n));
-        const soon = (arrivent.length || partent.length)
-          ? '<div class="room-soon">'
-            + (arrivent.length ? '<div class="in">↓ ' + arrivent.map((n) =>
-                esc(n) + ' <span class="whence">from ' + esc(short((effCell(n, ti) || {}).lieu || '?', 22)) + '</span>').join('<br>') + '</div>' : '')
-            + (partent.length ? '<div class="out">↑ ' + partent.map((n) =>
-                esc(n) + ' <span class="whence">to ' + esc(short((effCell(n, tNext) || {}).lieu || '?', 22)) + '</span>').join('<br>') + '</div>' : '')
-            + '</div>'
-          : '<div class="room-soon"><div class="none">nobody moves next slice</div></div>';
-        return `<div class="room-box" data-room="${esc(room)}">`
-          + `<h3>${esc(room)}<span class="n">${ici.length}</span></h3>`
-          + ici.map((n) => occLine(n, ti)).join('')
-          + soon + '</div>';
-      }).join('') : '<div class="room-empty">No room occupied in this slice.</div>';
+      if (!roomPinned || !roomFocus) roomFocus = rooms[0] || roomFocus || LIEUX[0].n;
+      $('roomTabs').innerHTML = rooms.map((r) => {
+        const occ = occupantsOf(r, ti);
+        const peek = occ.map((n) => {
+          const c = effCell(n, ti) || {};
+          return `<div class="who">${esc(n)}</div>`
+            + (c.act ? `<div class="act">${esc(short(c.act, 70))}</div>` : '<div class="act">—</div>');
+        }).join('');
+        return `<button class="room-tab${r === roomFocus ? ' on' : ''}" onclick="setRoom('${escJS(r)}')">`
+          + esc(short(r, 30)) + `<span class="n">${occ.length}</span>`
+          + `<span class="peek">${peek}</span></button>`;
+      }).join('') || '<span class="rt-hint">No room occupied in this slice.</span>';
+
+      /* --- bloc principal : la salle suivie --- */
+      $('roomTitle').textContent = roomFocus;
+      const ici = occupantsOf(roomFocus, ti);
+      const apres = tNext === null ? [] : occupantsOf(roomFocus, tNext);
+      const arrivent = apres.filter((n) => !ici.includes(n));
+      const partent = ici.filter((n) => !apres.includes(n));
+      $('roomHere').innerHTML = ici.length
+        ? ici.map((n) => occLine(n, ti)).join('')
+        : '<div class="room-empty">Nobody — the room is empty.</div>';
+      $('roomIn').innerHTML = arrivent.length
+        ? arrivent.map((n) => occLine(n, tNext,
+            `<div class="from">← ${esc(short((effCell(n, ti) || {}).lieu || '?', 26))}</div>`)).join('')
+        : '<div class="room-empty">Nobody arrives.</div>';
+      $('roomOut').innerHTML = partent.length
+        ? partent.map((n) => occLine(n, ti,
+            `<div class="to">→ ${esc(short((effCell(n, tNext) || {}).lieu || '?', 26))}</div>`)).join('')
+        : '<div class="room-empty">Nobody leaves.</div>';
+
+      renderTransit(ti);
     }
+
+    /* Qui traverse la Citadelle en ce moment : on remonte a la derniere salle
+       reelle et on avance jusqu'a la prochaine, pour lire « d'ou vers ou ». */
+    const EN_ROUTE = 'X In transit';
+    function realRoomBefore(name, ti) {
+      for (let i = ti - 1; i >= 0; i--) {
+        const l = (effCell(name, i) || {}).lieu;
+        if (l && l !== EN_ROUTE && l !== '?') return l;
+      }
+      return '?';
+    }
+    function realRoomAfter(name, ti) {
+      for (let i = ti + 1; i < DATA.tranches.length; i++) {
+        const l = (effCell(name, i) || {}).lieu;
+        if (l && l !== EN_ROUTE && l !== '?') return l;
+      }
+      return '?';
+    }
+    function renderTransit(ti) {
+      if (!$('roomTransit')) return;
+      const gens = ALL.filter((n) => (effCell(n, ti) || {}).lieu === EN_ROUTE);
+      $('roomTransit').innerHTML = gens.length ? gens.map((n) => {
+        const c = effCell(n, ti) || {};
+        return `<div class="tr-row" onclick="openSheet('${escJS(n)}')" style="cursor:pointer">`
+          + `<div class="n">${esc(n)}</div>`
+          + `<div class="fromto"><b>${esc(short(realRoomBefore(n, ti), 24))}</b> → `
+          + `<b>${esc(short(realRoomAfter(n, ti), 24))}</b></div>`
+          + (c.act ? `<div class="fromto">${esc(short(c.act, 44))}</div>` : '')
+          + '</div>';
+      }).join('') : '<div class="room-empty">Nobody on the move.</div>';
+    }
+
 
     /* Colonne de gauche : les 19 personnages qui ont une routine, ou ils sont,
        ou ils vont ensuite. Un clic ouvre la fiche. */
+    function setRoom(l) {
+      roomFocus = l;
+      roomPinned = true;
+      try { localStorage.setItem('m1_room_focus', l); } catch (e) {}
+      renderRooms(); renderMiniBar();
+    }
+
     function renderCharList() {
       if (!$('charList')) return;
       const ti = trancheIdx(curMin());
@@ -831,12 +930,14 @@
       $('charList').innerHTML = noms.map((n) => {
         const c = effCell(n, ti) || {};
         const nxt = nextEvent(n, ti);
+        const tok = (DATA.chars[n] || {}).token || (DATA.chars[n] || {}).portrait || '';
         return `<div class="cl-row${c.dev ? ' dev' : ''}" onclick="openSheet('${escJS(n)}')">`
-          + `<div class="cl-name">${esc(n)}${c.dev ? ' <span class="cl-dev">DEV</span>' : ''}</div>`
+          + `<img class="cl-tok" src="${encodeURI(tok)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`
+          + `<div class="cl-txt"><div class="cl-name">${esc(n)}${c.dev ? ' <span class="cl-dev">DEV</span>' : ''}</div>`
           + `<div class="cl-now">📍 ${esc(short(c.lieu || '?', 30))}`
           + (c.act ? ` <span class="cl-act">· ${esc(short(c.act, 40))}</span>` : '') + '</div>'
           + `<div class="cl-next">➜ ${nxt ? 'min ' + nxt.min + ' · ' + esc(short(nxt.lieu, 28)) : 'stays put'}</div>`
-          + '</div>';
+          + '</div></div>';
       }).join('');
     }
 
@@ -851,6 +952,12 @@
 
 
 
+    $('roomAuto').addEventListener('click', () => {
+      roomPinned = false;
+      try { localStorage.removeItem('m1_room_focus'); } catch (e) {}
+      renderRooms(); renderMiniBar();
+    });
+
     /* ---- barre fixe ---- */
     function renderMiniBar() {
       const bar = $('miniBar');
@@ -861,11 +968,15 @@
         : `Slice ${t.start}–${t.end}` + (t.clock ? ` · ${t.clock}` : ''))
         + (t.marque ? ` · ${t.marque}` : '');
       $('mbLvl').textContent = curMin() >= 30 ? 'Primes lvl 5' : 'Primes lvl 4';
-      const rooms = roomsToShow(ti);
-      $('mbHere').innerHTML = rooms.length
-        ? rooms.map((r) => '<b>' + esc(short(r, 24)) + '</b> ' + occupantsOf(r, ti).length).join(' &nbsp;·&nbsp; ')
-        : 'no room occupied';
-      $('mbSoon').textContent = '';
+      const ici = occupantsOf(roomFocus || '', ti);
+      $('mbHere').innerHTML = roomFocus
+        ? '📍 <b>' + esc(short(roomFocus, 28)) + '</b> — ' + (ici.length ? ici.map(esc).join(' · ') : 'empty')
+        : '';
+      const enRoute = ALL.filter((n) => (effCell(n, ti) || {}).lieu === EN_ROUTE);
+      $('mbSoon').innerHTML = enRoute.length
+        ? '🚶 ' + enRoute.map((n) => esc(n) + ' <span style="color:var(--muted)">→ '
+            + esc(short(realRoomAfter(n, ti), 20)) + '</span>').join(' &nbsp;·&nbsp; ')
+        : '';
     }
     function syncMiniBar() {
       const on = window.scrollY > 150;

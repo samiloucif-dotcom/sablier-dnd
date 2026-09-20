@@ -513,6 +513,10 @@ const server = http.createServer((req, res) => {
     // fichiers statiques autorisés (app.js, style.css)
     if (STATIC[pathname]) return serveFile(res, path.join(PUBLIC, STATIC[pathname]));
     // portraits du cockpit MJ (public/portraits/*.webp), nom décodé et sécurisé
+    if (pathname.startsWith('/tokens/')) {
+      const name = path.basename(decodeURIComponent(pathname));
+      return serveFile(res, path.join(PUBLIC, 'public', 'tokens', name));
+    }
     if (pathname.startsWith('/portraits/')) {
       const name = path.basename(decodeURIComponent(pathname));
       return serveFile(res, path.join(PUBLIC, 'public', 'portraits', name));
