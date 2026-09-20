@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T16:18:40.567Z",
+ "updated": "2026-09-20T16:18:58.609Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1033,7 +1033,7 @@
    },
    {
     "loc": "",
-    "act": ""
+    "act": "With Framschtack"
    },
    {
     "loc": "",
