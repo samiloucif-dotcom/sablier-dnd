@@ -74,7 +74,7 @@ async function ensureBranch() {
     headers: head({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ ref: 'refs/heads/' + BRANCH, sha: base.object.sha }),
   });
-  console.log('  Branche de donnees « ' + BRANCH + ' » creee dans ' + REPO + '.');
+  console.log('  Data branch « ' + BRANCH + ' » created in ' + REPO + '.');
   return true;
 }
 
@@ -92,7 +92,7 @@ async function load(file) {
   } catch (e) {
     if (e.status === 404) return null;
     etat.ok = false; etat.err = e.message;
-    console.warn('  /!\\ lecture GitHub impossible (' + e.message + ') — copie locale utilisee.');
+    console.warn('  /!\\ GitHub read failed (' + e.message + ') — using local copy.');
     return null;
   }
 }
@@ -139,7 +139,7 @@ async function flushNow(file) {
     } else {
       etat.ok = false; etat.err = e.message;
     }
-    if (!etat.ok) console.warn('  /!\\ sauvegarde GitHub echouee : ' + etat.err);
+    if (!etat.ok) console.warn('  /!\\ GitHub save failed : ' + etat.err);
   }
   etat.saving = false;
 }

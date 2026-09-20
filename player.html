@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Le Sablier</title>
+  <title>The Hourglass</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div class="player-page" id="page">
-    <button class="sound-btn" id="soundBtn">🔔 Activer le son</button>
+    <button class="sound-btn" id="soundBtn">🔔 Enable sound</button>
 
     <!-- Horloge de la Citadelle : l'heure « en jeu », calée sur le sablier (09:00 → 10:00) -->
-    <div class="med-clock" id="medClock" title="Heure de la Citadelle">
+    <div class="med-clock" id="medClock" title="Citadel time">
       <svg viewBox="0 0 200 200" aria-hidden="true">
         <defs>
           <radialGradient id="mcFace" cx="38%" cy="30%" r="78%">
@@ -92,7 +92,7 @@
         <img class="frame-img" src="/frame_hourglass.png" alt="Sablier" draggable="false">
       </div>
       <div class="digital" id="clock">60:00</div>
-      <div class="paused-badge">En pause</div>
+      <div class="paused-badge">Paused</div>
     </div>
   </div>
   <div class="flash" id="flash"></div>
@@ -129,9 +129,9 @@
       updateSoundBtn();
     });
     function updateSoundBtn(){
-      if (!soundReady) { soundBtn.textContent = '🔔 Activer le son'; soundBtn.classList.remove('off'); }
-      else if (soundMuted) { soundBtn.textContent = '🔕 Son coupé'; soundBtn.classList.add('off'); }
-      else { soundBtn.textContent = '🔊 Son activé'; soundBtn.classList.remove('off'); }
+      if (!soundReady) { soundBtn.textContent = '🔔 Enable sound'; soundBtn.classList.remove('off'); }
+      else if (soundMuted) { soundBtn.textContent = '🔕 Sound off'; soundBtn.classList.add('off'); }
+      else { soundBtn.textContent = '🔊 Sound on'; soundBtn.classList.remove('off'); }
     }
 
     function doFlash(){ flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }

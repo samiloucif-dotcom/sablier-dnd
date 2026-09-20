@@ -3,8 +3,8 @@
  * Serveur de synchronisation, sans aucune dépendance (Node.js pur).
  *
  * Lancement :   node server.js
- * Interface joueur :  http://localhost:3000/
- * Interface MJ    :  http://localhost:3000 + GM_PATH (adresse privee, affichee au demarrage)
+ * Players         :  http://localhost:3000/
+ * GM (private)   :  http://localhost:3000 + GM_PATH (adresse privee, affichee au demarrage)
  *
  * Pour jouer sur plusieurs appareils du même réseau Wi-Fi, les joueurs
  * ouvrent  http://<IP-de-ta-machine>:3000/  (l'IP s'affiche au démarrage).
@@ -68,11 +68,11 @@ function loadTimeline() {
   try {
     const t = JSON.parse(fs.readFileSync(TIMELINE_FILE, 'utf8'));
     if (t && Array.isArray(t.slots) && t.routines) {
-      console.log(`  Routines chargees depuis timeline.json (${t.cols.length} personnages).`);
+      console.log(`  Routines loaded from timeline.json (${t.cols.length} characters).`);
       return t;
     }
   } catch (e) {}
-  console.log('  Pas de timeline.json : routines vides (amorcees depuis data.js).');
+  console.log('  No timeline.json: empty routines (seeded from data.js).');
   return seedTimelineFromData();
 }
 
@@ -91,8 +91,8 @@ function persistTimeline() {
     } catch (e) {
       if (!saveWarned) {
         saveWarned = true;
-        console.warn('  /!\\ timeline.json non enregistrable (' + e.code + ').'
-          + ' Les modifications restent en memoire : utilise « Exporter » pour les recuperer.');
+        console.warn('  /!\\ cannot write timeline.json (' + e.code + ').'
+          + ' Changes stay in memory: use the ⬇ JSON button to recover them.');
       }
     }
   }, 400);
@@ -101,7 +101,7 @@ function persistTimeline() {
 function emptyRow() { return state.timeline.slots.map(() => ({ loc: '', act: '' })); }
 
 let nextEventId = 1;
-let nextReminderId = 1;
+let nextReminderId = 4;   /* 1-3 = rappels natifs */
 let nextImproId = 1;
 
 const state = {
@@ -109,9 +109,15 @@ const state = {
   running: false,
   remainingMs: TOTAL_MS,
   endsAt: null,                 // epoch ms de fin (quand running = true)
-  reminders: [],                // {id, atMs, text, fired}
-  timers: [0, 1, 2, 3].map((i) => ({
-    label: 'Minuteur secret ' + (i + 1),
+  /* Rappels : les trois premiers sont natifs (non supprimables) et se rearment
+     a chaque reset de boucle. atMs = temps RESTANT au sablier. */
+  reminders: [
+    { id: 1, atMs: 38 * 60000, text: "Esteban's announcement", fired: false, native: true },
+    { id: 2, atMs: 30 * 60000, text: 'Energy shockwave',       fired: false, native: true },
+    { id: 3, atMs:  6 * 60000, text: 'Boom on the 7th floor',  fired: false, native: true },
+  ],
+  timers: [0, 1].map((i) => ({
+    label: 'Secret timer ' + (i + 1),
     durationMs: 5 * 60 * 1000,  // 5 min par défaut
     running: false,
     remainingMs: 5 * 60 * 1000,
@@ -130,20 +136,20 @@ state.timeline = loadTimeline();
    code n'est qu'une amorce, fige au dernier deploiement. */
 async function hydrateFromStore() {
   if (!STORE.enabled) {
-    console.log('  Sauvegarde durable inactive (GH_TOKEN absent) : ecriture disque locale seulement.');
+    console.log('  Durable saving off (no GH_TOKEN): local disk only.');
     return;
   }
   try { await STORE.ensureBranch(); } catch (e) {
-    console.warn('  /!\\ branche de donnees inaccessible : ' + e.message);
+    console.warn('  /!\\ data branch unreachable : ' + e.message);
     return;
   }
   const t = await STORE.load('sablier-app/timeline.json');
   if (t && Array.isArray(t.slots) && t.routines) {
     state.timeline = t;
     state.timelineRev++;
-    console.log('  Routines rechargees depuis GitHub (' + t.cols.length + ' personnages, maj ' + (t.updated || '?') + ').');
+    console.log('  Routines reloaded from GitHub (' + t.cols.length + ' characters, updated ' + (t.updated || '?') + ').');
   } else {
-    console.log('  Rien encore sur la branche « ' + STORE.BRANCH + ' » : la copie du depot sert d\'amorce.');
+    console.log('  Nothing yet on branch « ' + STORE.BRANCH + ' » : la copie du depot sert d\'amorce.');
     STORE.save('sablier-app/timeline.json', state.timeline);
   }
   await BOARD.hydrate();
@@ -257,9 +263,12 @@ function handleAction(body) {
       state.reminders.sort((a, b) => b.atMs - a.atMs);
       break;
     }
-    case 'removeReminder':
-      state.reminders = state.reminders.filter((r) => r.id !== Number(body.id));
+    case 'removeReminder': {
+      const r = state.reminders.find((x) => x.id === Number(body.id));
+      if (r && r.native) break;                 /* les trois rappels natifs restent */
+      state.reminders = state.reminders.filter((x) => x.id !== Number(body.id));
       break;
+    }
     case 'timerSetLabel': {
       const t = state.timers[Number(body.index)];
       if (t) t.label = String(body.label || '').slice(0, 60) || t.label;
@@ -381,7 +390,7 @@ function snapshot(gm) {
     totalMs: state.totalMs,
     running: state.running,
     remainingMs: mainRemaining(),
-    reminders: state.reminders.map((r) => ({ id: r.id, atMs: r.atMs, text: r.text, fired: r.fired })),
+    reminders: state.reminders.map((r) => ({ id: r.id, atMs: r.atMs, text: r.text, fired: r.fired, native: !!r.native })),
     timers: state.timers.map((t) => ({
       label: t.label,
       durationMs: t.durationMs,
@@ -434,7 +443,7 @@ function serveGm(res) {
         (m, at, f) => at + '="' + GM_PATH + '/' + f + '"')
       .replace("fetch('/timeline'", "fetch('" + GM_PATH + "/timeline'")
       .replace('</body>',
-        '<a href="' + GM_PATH + '/warden" class="mj-link" style="bottom:14px;left:16px;right:auto">'
+        '<a href="' + GM_PATH + '/warden" class="mj-link" style="bottom:14px;right:16px">'
         + '\u26e8 Chronovestigation Board</a>\n</body>');
     res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
     res.end(out);
@@ -546,14 +555,14 @@ server.listen(PORT, () => {
       if (net.family === 'IPv4' && !net.internal) ips.push(net.address);
     }
   }
-  console.log('\n  ⏳  Sablier D&D lancé !\n');
-  console.log('  Interface joueur :  http://localhost:' + PORT + '/');
-  console.log('  Interface MJ     :  http://localhost:' + PORT + GM_PATH + '   (adresse privee)');
-  console.log('  Warden (enquete) :  http://localhost:' + PORT + GM_PATH + '/warden');
-  console.log('  Tableau joueurs  :  http://localhost:' + PORT + '/board   '
-    + (BOARD.isOpen() ? '(OUVERT)' : '(SCELLE — 404 tant que tu ne l\'ouvres pas)') + '\n');
+  console.log('\n  ⏳  Hourglass D&D running!\n');
+  console.log('  Players         :  http://localhost:' + PORT + '/');
+  console.log('  GM (private)    :  http://localhost:' + PORT + GM_PATH + '   (private URL)');
+  console.log('  Warden          :  http://localhost:' + PORT + GM_PATH + '/warden');
+  console.log('  Player board    :  http://localhost:' + PORT + '/board   '
+    + (BOARD.isOpen() ? '(OPEN)' : '(SEALED — 404 until you open it)') + '\n');
   if (ips.length) {
-    console.log('  Pour les joueurs sur le même Wi-Fi :');
+    console.log('  For players on the same Wi-Fi:');
     ips.forEach((ip) => console.log('     http://' + ip + ':' + PORT + '/'));
     console.log('');
   }

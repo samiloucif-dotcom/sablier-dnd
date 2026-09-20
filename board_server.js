@@ -2,7 +2,7 @@
  * The Chronovestigation Board — etat partage du tableau d'enquete des joueurs.
  *
  * Regles de conception (voir Outil_Enquete_SPEC.md) :
- *  - Le tableau est SCELLE par defaut : tant que board.open est faux, la route
+ *  - Le tableau est SEALED par defaut : tant que board.open est faux, la route
  *    joueur n'existe pas du tout (404). C'est le MJ qui l'ouvre depuis Warden.
  *  - Brouillard de guerre TOTAL : un personnage ou une salle verrouille
  *    n'apparait pas du tout dans la charge utile joueur. Aucun total non plus :
@@ -48,7 +48,7 @@ function seed(cols, staffNames) {
   });
   return {
     version: 1,
-    open: false,                       // scelle tant que le MJ n'ouvre pas
+    open: false,                       // sealed tant que le MJ n'ouvre pas
     loop: 1,
     rev: 1,
     nextId: 1,
@@ -70,13 +70,13 @@ function load(cols, staffNames) {
       b.rooms = M1_LOCATIONS.map((l, i) => ({ rid: i, id: l.id, label: l.label || l.id, unlocked: !!wasOpen[l.id] }));
       if (typeof b.open !== 'boolean') b.open = false;
       if (!b.nextId) b.nextId = (b.entries.reduce((m, e) => Math.max(m, e.id || 0), 0) || 0) + 1;
-      console.log('  Chronovestigation Board charge depuis board.json ('
-        + b.entries.filter((e) => !e.dead).length + ' entrees, '
-        + (b.open ? 'OUVERT aux joueurs' : 'SCELLE') + ').');
+      console.log('  Chronovestigation Board loaded from board.json ('
+        + b.entries.filter((e) => !e.dead).length + ' entries, '
+        + (b.open ? 'OPEN to players' : 'SEALED') + ').');
       return b;
     }
   } catch (e) {}
-  console.log('  Pas de board.json : tableau d\'enquete neuf, scelle.');
+  console.log('  No board.json: fresh investigation board, sealed.');
   return seed(cols, staffNames);
 }
 
@@ -95,8 +95,8 @@ function persist() {
     } catch (e) {
       if (!saveWarned) {
         saveWarned = true;
-        console.warn('  /!\\ board.json non enregistrable (' + e.code + ').'
-          + ' Le tableau reste en memoire : utilise « Sauvegarde JSON » dans Warden.');
+        console.warn('  /!\\ cannot write board.json (' + e.code + ').'
+          + ' The board stays in memory : use Backup JSON in the Warden.');
       }
     }
   }, 400);
@@ -275,7 +275,7 @@ function wardenAction(body) {
       const t = b.board;
       if (t && Array.isArray(t.cast) && Array.isArray(t.entries)) {
         const wasOpen = board.open;
-        board = t; board.open = wasOpen;                 /* un import ne descelle jamais */
+        board = t; board.open = wasOpen;                 /* un import ne desealed jamais */
         board.rooms = M1_LOCATIONS.map((l, i) => {
           const prev = (t.rooms || []).find((r) => r.id === l.id);
           return { rid: i, id: l.id, label: l.label || l.id, unlocked: prev ? !!prev.unlocked : false };
@@ -300,9 +300,9 @@ module.exports = {
     if (b && Array.isArray(b.cast) && Array.isArray(b.entries)) {
       board = b;
       board.rev = (board.rev || 1) + 1;
-      console.log('  Chronovestigation Board recharge depuis GitHub ('
-        + board.entries.filter((e) => !e.dead).length + ' entrees, '
-        + (board.open ? 'OUVERT' : 'scelle') + ').');
+      console.log('  Chronovestigation Board reloaded from GitHub ('
+        + board.entries.filter((e) => !e.dead).length + ' entries, '
+        + (board.open ? 'OPEN' : 'sealed') + ').');
     } else if (board) {
       STORE.save('sablier-app/board.json', board);
     }
