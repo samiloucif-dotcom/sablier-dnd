@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T16:17:37.446Z",
+ "updated": "2026-09-20T16:17:49.623Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1021,7 +1021,7 @@
    },
    {
     "loc": "4 Corridor",
-    "act": ""
+    "act": "Scouting the 4th floor"
    },
    {
     "loc": "",
