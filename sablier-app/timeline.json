@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T16:18:30.485Z",
+ "updated": "2026-09-20T16:18:40.567Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1029,7 +1029,7 @@
    },
    {
     "loc": "X In transit",
-    "act": ""
+    "act": "Flies back to join Framschtak"
    },
    {
     "loc": "",
