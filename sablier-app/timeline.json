@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T16:19:50.042Z",
+ "updated": "2026-09-20T16:20:01.096Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1045,7 +1045,7 @@
    },
    {
     "loc": "X In transit",
-    "act": ""
+    "act": "Flies to the 4th floor to rejoin Framschtak"
    }
   ]
  }
