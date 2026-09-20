@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T00:30:37.300Z",
+ "updated": "2026-09-20T12:31:23.449Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1016,7 +1016,7 @@
     "act": ""
    },
    {
-    "loc": "",
+    "loc": "0 Main hall",
     "act": ""
    },
    {
