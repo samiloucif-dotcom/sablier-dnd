@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T12:32:53.461Z",
+ "updated": "2026-09-20T16:16:44.705Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1000,7 +1000,7 @@
   ],
   "Loraine": [
    {
-    "loc": "0 Main hall",
+    "loc": "X In transit",
     "act": "On Framschtak"
    },
    {
