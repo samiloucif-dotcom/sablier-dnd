@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-20T12:31:36.052Z",
+ "updated": "2026-09-20T12:31:51.503Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1017,7 +1017,7 @@
    },
    {
     "loc": "1 Corridor",
-    "act": ""
+    "act": "On the 1st floor balcony looking at the main hall"
    },
    {
     "loc": "",
