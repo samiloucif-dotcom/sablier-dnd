@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:13:26.961Z",
+ "updated": "2026-09-25T13:13:45.977Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -733,7 +733,7 @@
    },
    {
     "loc": "7 Aesterias office",
-    "act": "Bureau d'Aesterias (5 min)"
+    "act": "Has a final talk with Master Aesterias "
    },
    {
     "loc": "6 Maevis' office",
