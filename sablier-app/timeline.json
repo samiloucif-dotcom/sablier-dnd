@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:39:31.982Z",
+ "updated": "2026-09-25T13:42:21.493Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -217,7 +217,7 @@
    },
    {
     "loc": "4 Eve's office",
-    "act": "entre par effraction"
+    "act": "Breaks in, steals the invisibility cloak"
    },
    {
     "loc": "4 Corridor",
