@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:13:07.134Z",
+ "updated": "2026-09-25T13:13:17.501Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -728,7 +728,7 @@
     "act": "SECOUSSE → communique avec Aesterias & Eve"
    },
    {
-    "loc": "4 Orb's room",
+    "loc": "6 Maevis' office",
     "act": "Salle du bloqueur (5 min)"
    },
    {
