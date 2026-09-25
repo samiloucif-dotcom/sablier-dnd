@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:13:45.977Z",
+ "updated": "2026-09-25T13:13:54.405Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -737,7 +737,7 @@
    },
    {
     "loc": "6 Maevis' office",
-    "act": "Redescend vers son bureau"
+    "act": "Goes back to her office"
    },
    {
     "loc": "6 Maevis' office",
