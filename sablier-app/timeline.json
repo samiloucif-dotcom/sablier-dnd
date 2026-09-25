@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:44:25.655Z",
+ "updated": "2026-09-25T13:44:57.262Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -229,7 +229,7 @@
    },
    {
     "loc": "4 Orb's room",
-    "act": "Remplace l'Orbe par une fausse ; cape d'invisibilité, se cache"
+    "act": ""
    },
    {
     "loc": "4 Corridor",
