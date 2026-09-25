@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:44:00.145Z",
+ "updated": "2026-09-25T13:44:25.655Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -225,7 +225,7 @@
    },
    {
     "loc": "4 Orb's room",
-    "act": "résout le labyrinthe → SECOUSSE (09:30)"
+    "act": "Swaps orbs, exits. Witnesses Norvo and Aesterias"
    },
    {
     "loc": "4 Orb's room",
