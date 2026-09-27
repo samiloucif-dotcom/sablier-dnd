@@ -378,6 +378,11 @@
     <div class="card room-card" id="roomCard">
       <div class="room-head">
         <h2 style="margin:0">📍 <span id="roomTitle">Room</span></h2>
+        <!-- Menu deroulant : N'IMPORTE QUELLE salle de la Citadelle, y compris une
+             salle vide. Sans lui, impossible d'ouvrir une salle deserte pour voir
+             qui y arrive a la tranche suivante — le cas le plus courant en jeu
+             quand les joueurs entrent quelque part ou il n'y a personne. -->
+        <select id="roomPick" title="Jump to any room of the Citadel — empty ones included"></select>
         <button id="roomAuto" class="ghost" title="Follow the busiest room automatically">⇄ auto</button>
         <div class="spacer"></div>
         <span class="rt-hint" id="roomWhen"></span>
@@ -815,26 +820,18 @@
     const portraitOf = (n) => (DATA.chars[n] || {}).portrait || '';
     const isStaff = (n) => ((DATA.chars[n] || {}).type === 'staff');
 
-    /* Salles occupees : une carte par salle. Trois salles sont masquees quand
-       leur unique occupant est leur resident permanent — elles n'apprennent rien. */
-    /* Salles dont le bouton disparait quand leur unique occupant est celui qu'on
-       devine sans regarder : le libraire dans sa bibliotheque, etc. */
-    const SOLO_MASQUE = {
-      '1 Library': 'Sitrip Ayo',
-      '2 Alchemy Lab': 'Myst & Alky',
-      "6 Maevis' office": 'Maevis',
-      '0 Theater': 'Esteban',
-      '0 Arena': 'Carnage',
-    };
+    /* Un bouton par salle OCCUPEE, sans exception : les salles a occupant unique
+       (Bibliotheque/Sitrip, Labo/Myst, bureau de Maevis, Theatre/Esteban,
+       Arene/Carnage) etaient masquees — mauvaise idee, les joueurs y vont et il
+       faut quand meme pouvoir verifier qui arrive ensuite. Seules restent exclues
+       les pseudo-salles, qui ne sont pas des lieux de la Citadelle. */
+    const PSEUDO_SALLES = ['Hors boucle', '?', 'À définir', 'X In transit'];
     function roomsToShow(ti) {
       const map = occupancy(ti);
       return LIEUX.map((l) => l.n).filter((n) => {
         const occ = map[n];
         if (!occ || !occ.length) return false;
-        if (n === 'Hors boucle' || n === '?' || n === 'À définir' || n === 'X In transit') return false;
-        const solo = SOLO_MASQUE[n];
-        if (solo && occ.length === 1 && occ[0].name === solo) return false;
-        return true;
+        return PSEUDO_SALLES.indexOf(n) === -1;
       });
     }
 
@@ -879,7 +876,34 @@
             `<div class="to">→ ${esc(short((effCell(n, tNext) || {}).lieu || '?', 26))}</div>`)).join('')
         : '<div class="room-empty">Nobody leaves.</div>';
 
+      renderRoomPick(ti);
       renderTransit(ti);
+    }
+
+    /* Le menu deroulant liste les 53 salles groupees par etage, avec le nombre
+       d'occupants quand il y en a. Il inclut les salles VIDES : c'est tout son
+       interet — ouvrir une salle deserte et lire « Arriving next ». */
+    function renderRoomPick(ti) {
+      const sel = $('roomPick');
+      if (!sel) return;
+      if (document.activeElement === sel) return;   // liste ouverte : on n'y touche pas
+      const map = occupancy(ti);
+      const groups = {};
+      LIEUX.forEach((l) => { (groups[l.etage] ??= []).push(l.n); });
+      let html = '';
+      for (const etage of Object.keys(groups)) {
+        html += `<optgroup label="${esc(etage)}">` + groups[etage].map((n) => {
+          const k = (map[n] || []).length;
+          return `<option value="${esc(n)}"${n === roomFocus ? ' selected' : ''}>`
+            + esc(n) + (k ? ' · ' + k : '') + '</option>';
+        }).join('') + '</optgroup>';
+      }
+      /* Salle suivie absente de locations.js (donnee heritee) : on l'ajoute pour
+         que le menu n'affiche jamais autre chose que la salle reellement suivie. */
+      if (roomFocus && !LIEUX.some((l) => l.n === roomFocus)) {
+        html += `<option value="${esc(roomFocus)}" selected>${esc(roomFocus)}</option>`;
+      }
+      sel.innerHTML = html;
     }
 
     /* Qui traverse la Citadelle en ce moment : on remonte a la derniere salle
@@ -951,6 +975,11 @@
     }
 
 
+
+    $('roomPick').addEventListener('change', (e) => {
+      if (e.target.value) setRoom(e.target.value);
+      e.target.blur();
+    });
 
     $('roomAuto').addEventListener('click', () => {
       roomPinned = false;
