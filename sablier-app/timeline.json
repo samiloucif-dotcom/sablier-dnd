@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-04T14:15:33.448Z",
+ "updated": "2026-10-04T14:18:32.113Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -625,7 +625,7 @@
    },
    {
     "loc": "X In transit",
-    "act": "Goes to the chill zone"
+    "act": "Goes to her room"
    },
    {
     "loc": "1 Chill Zone",
