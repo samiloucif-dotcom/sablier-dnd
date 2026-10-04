@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-04T14:19:28.668Z",
+ "updated": "2026-10-04T14:19:40.104Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -517,7 +517,7 @@
    },
    {
     "loc": "1 Dorms C (Citello Nerasho Bardik)",
-    "act": "Descend vers sa chambre au 1er étage"
+    "act": "Goes to her dorm, sees the mess on Citello's desk"
    },
    {
     "loc": "1 Dorms C (Citello Nerasho Bardik)",
