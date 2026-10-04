@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-04T14:15:01.378Z",
+ "updated": "2026-10-04T14:15:33.448Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -233,7 +233,7 @@
    },
    {
     "loc": "4 Corridor",
-    "act": "Invisible"
+    "act": "Invisible, hears \"two students\" and hides"
    },
    {
     "loc": "4 Corridor",
