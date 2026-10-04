@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-04T14:18:32.113Z",
+ "updated": "2026-10-04T14:18:39.174Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -628,7 +628,7 @@
     "act": "Goes to her room"
    },
    {
-    "loc": "1 Chill Zone",
+    "loc": "1 Dorms C (Citello Nerasho Bardik)",
     "act": "Needing some quiet, chills"
    },
    {
