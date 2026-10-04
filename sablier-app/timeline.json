@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-09-25T13:44:57.262Z",
+ "updated": "2026-10-04T13:24:30.521Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -509,11 +509,11 @@
    },
    {
     "loc": "3 The Great Balcony",
-    "act": "Admire la vue depuis le great balcony"
+    "act": "Starts a meditation"
    },
    {
     "loc": "3 The Great Balcony",
-    "act": "Admire la vue depuis le great balcony"
+    "act": "Her meditation is disturbed by someone"
    },
    {
     "loc": "1 Dorms C (Citello Nerasho Bardik)",
