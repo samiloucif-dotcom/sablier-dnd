@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "angele",
@@ -21,7 +21,7 @@
   "B9": "norvodavius",
   "T2": "polychroma"
  },
- "updated": "2026-10-14T12:33:15.413Z",
+ "updated": "2026-10-14T12:33:24.594Z",
  "players": {
   "claims": {
    "bardik": "2p66u7xxqyxfymig9a"
