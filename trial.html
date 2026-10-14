@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Trial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #ece6f7; --muted: #9a90b3; --line: rgba(255,255,255,.14); --panel: rgba(14,10,22,.92);
+      --react: #ff8a1e; --gold: #f1c66e; --pro: #3fd0ea; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #000; color: var(--ink); overflow: hidden;
+      font: 14px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    button, input { font: inherit; color: inherit; }
+    #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+    #stageBox { position: relative; flex: 1; min-height: 0; }
+    #stage { position: absolute; inset: 0; }
+
+    /* ---------- the bar ---------- */
+    .bar { display: flex; align-items: center; gap: 14px; padding: 10px 14px; flex-wrap: wrap;
+      background: linear-gradient(180deg, #0d0915, #07050c); border-top: 1px solid var(--line); }
+    .bar[hidden] { display: none; }
+    .me { display: flex; align-items: center; gap: 10px; background: none; border: 0; cursor: pointer; padding: 4px 6px; border-radius: 10px; text-align: left; }
+    .me:hover { background: rgba(255,255,255,.05); }
+    .me img { width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 0 0 2px var(--pro); }
+    .me b { display: block; font: 700 17px/1.1 Cinzel, Georgia, serif; }
+    .me small { color: var(--muted); font-size: 11px; }
+    .emotes { display: flex; gap: 8px; flex: 1; justify-content: center; flex-wrap: wrap; min-width: 0; }
+    .emo { position: relative; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: 0; padding: 0; cursor: pointer; }
+    .emo .pic { width: 64px; height: 64px; border-radius: 12px; overflow: hidden; background: #191226;
+      border: 2px solid var(--line); display: grid; place-items: center; }
+    .emo .pic img { width: 100%; height: 100%; object-fit: contain; }
+    .emo .pic img.tok { object-fit: cover; }
+    .emo .nm { font-size: 11px; color: var(--muted); max-width: 74px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .emo.on .pic { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(241,198,110,.35), 0 0 14px rgba(241,198,110,.45); }
+    .emo.on .nm { color: var(--gold); }
+    .emo.empty .pic { border-style: dashed; color: var(--muted); font-size: 26px; }
+    .emo:hover .pic { border-color: rgba(255,255,255,.4); }
+    .emo .edit { position: absolute; top: -6px; right: 0; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line);
+      background: #241a36; font-size: 12px; display: grid; place-items: center; cursor: pointer; }
+    .react { font: 400 26px/1 Anton, Impact, sans-serif; letter-spacing: .05em; color: #fff; cursor: pointer;
+      padding: 16px 26px; border-radius: 14px; border: 2px solid #ffd27a; transform: skewX(-8deg);
+      background: linear-gradient(180deg, #ffab3d, #e35d00); box-shadow: 0 6px 0 #7a2c00, 0 0 24px rgba(255,138,30,.4);
+      text-shadow: 0 2px 0 #7a2c00; transition: transform .08s, box-shadow .08s, filter .2s; }
+    .react:active { transform: skewX(-8deg) translateY(4px); box-shadow: 0 2px 0 #7a2c00; }
+    .react:disabled { filter: grayscale(1) brightness(.6); cursor: not-allowed; }
+    .react .why { display: block; font: 600 10px/1.2 system-ui, sans-serif; letter-spacing: .04em; text-shadow: none; margin-top: 4px; }
+    .tools { display: flex; gap: 6px; }
+    .tools button { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+    .watch { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+
+    /* ---------- who are you? ---------- */
+    .picker { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; padding: 16px; text-align: center; overflow: auto;
+      background: radial-gradient(ellipse at 50% 40%, rgba(32,15,52,.94), rgba(3,2,6,.98)); }
+    .picker[hidden] { display: none; }
+    .picker h1 { margin: 0; font: 400 clamp(46px, 10vw, 120px)/1 Anton, Impact, sans-serif; color: var(--gold);
+      letter-spacing: .05em; transform: skewX(-8deg); text-shadow: 6px 6px 0 #3b0d2a; }
+    .picker p { margin: 0; font: 600 clamp(16px, 2.4vw, 22px)/1.2 Cinzel, Georgia, serif; letter-spacing: .12em; }
+    .cards { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .card { width: 128px; padding: 14px 10px 12px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.04);
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform .12s, border-color .12s; }
+    .card:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--gold); }
+    .card img { width: 86px; height: 86px; border-radius: 50%; }
+    .card b { font: 700 16px/1 Cinzel, Georgia, serif; }
+    .card small { color: var(--muted); font-size: 11px; min-height: 14px; }
+    .card:disabled { opacity: .38; cursor: not-allowed; filter: grayscale(.8); }
+    .card.mine { border-color: var(--pro); box-shadow: 0 0 0 2px rgba(63,208,234,.35); }
+    .picker .fine { color: var(--muted); font-size: 12px; max-width: 520px; }
+
+    /* ---------- emote editor ---------- */
+    .editor { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.66); }
+    .editor[hidden] { display: none; }
+    .sheet { width: min(440px, 100%); background: #140e1f; border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; }
+    .sheet h2 { margin: 0; font: 700 20px/1.1 Cinzel, Georgia, serif; }
+    .sheet label { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+    .sheet input[type=text] { background: #0b0812; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .drop { border: 2px dashed var(--line); border-radius: 12px; min-height: 200px; display: grid; place-items: center; cursor: pointer;
+      background: #0b0812 repeating-conic-gradient(#120d1b 0 25%, #0b0812 0 50%) 0 0 / 20px 20px; position: relative; overflow: hidden; }
+    .drop.over { border-color: var(--gold); }
+    .drop img { max-width: 100%; max-height: 260px; display: block; }
+    .drop span { color: var(--muted); padding: 20px; }
+    .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+    .row button { border-radius: 10px; padding: 9px 14px; border: 1px solid var(--line); background: rgba(255,255,255,.06); cursor: pointer; }
+    .row .save { background: var(--gold); color: #1a1205; border-color: var(--gold); font-weight: 700; }
+    .row .del { margin-right: auto; color: #ff9a9a; }
+    .err { color: #ff9a9a; font-size: 12px; min-height: 14px; }
+
+    .toast { position: fixed; left: 50%; bottom: 120px; transform: translateX(-50%); z-index: 40; background: rgba(10,8,14,.92);
+      border: 1px solid var(--line); padding: 9px 14px; border-radius: 12px; opacity: 0; transition: opacity .25s; pointer-events: none; }
+    .toast.on { opacity: 1; }
+    .conn { position: fixed; left: 12px; top: 12px; z-index: 5; font: 600 12px system-ui, sans-serif; color: #ffb3b3;
+      background: rgba(0,0,0,.6); padding: 6px 10px; border-radius: 14px; display: none; }
+    @media (max-width: 720px) {
+      .bar { gap: 10px; padding: 8px 10px; }
+      .me img { width: 40px; height: 40px; }
+      .emo { width: 56px; } .emo .pic { width: 50px; height: 50px; }
+      .react { font-size: 20px; padding: 12px 16px; flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="stageBox"><div id="stage"></div></div>
+    <footer class="bar" id="bar" hidden>
+      <button class="me" id="me" title="Change character"></button>
+      <div class="emotes" id="emotes"></div>
+      <button class="react" id="react">REACTION!</button>
+      <div class="tools">
+        <button id="snd" title="Sound">🔊</button>
+        <button id="fs" title="Full screen (F)">⛶</button>
+      </div>
+    </footer>
+  </div>
+
+  <div class="picker" id="picker">
+    <h1>CLASS TRIAL</h1>
+    <p>Who are you?</p>
+    <div class="cards" id="cards"></div>
+    <button class="watch" id="watch">Just watch</button>
+    <div class="fine">Your choice is kept on this device. Each character can only be taken once; ask the GM if yours is taken by mistake.</div>
+  </div>
+
+  <div class="editor" id="editor" hidden>
+    <form class="sheet" id="sheet">
+      <h2 id="edTitle">Emote</h2>
+      <label>Name
+        <input type="text" id="edName" maxlength="24" placeholder="e.g. Angry, Smug, Shocked…" autocomplete="off">
+      </label>
+      <label>Picture <span style="font-size:11px">— a PNG with a transparent background looks best; it is shrunk before sending</span>
+        <div class="drop" id="drop" tabindex="0"><span>Click or drop an image here</span></div>
+        <input type="file" id="edFile" accept="image/png,image/webp,image/jpeg,image/gif" hidden>
+      </label>
+      <div class="err" id="edErr"></div>
+      <div class="row">
+        <button type="button" class="del" id="edDel">Remove</button>
+        <button type="button" id="edCancel">Cancel</button>
+        <button type="submit" class="save" id="edSave">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="conn" id="conn">Reconnecting…</div>
+
+  <script src="/trial_core.js"></script>
+  <script src="/trial_stage.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const C = window.TrialCore;
+    const $ = (s) => document.querySelector(s);
+    const stage = new TrialStage($('#stage'), { sound: true, assets: '/' });
+
+    /* this browser's player id — never shown, only sent with our own actions */
+    let cid = null;
+    try { cid = localStorage.getItem('m1_trial_cid'); } catch (e) {}
+    if (!C.validCid(cid)) {
+      cid = Array.from(crypto.getRandomValues(new Uint8Array(18))).map((b) => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+      try { localStorage.setItem('m1_trial_cid', cid); } catch (e) {}
+    }
+    let watching = false;
+    try { watching = localStorage.getItem('m1_trial_watch') === '1'; } catch (e) {}
+
+    let state = null, rev = null, busy = false, fails = 0, cooldownUntil = 0;
+    const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2400); };
+
+    async function poll() {
+      if (busy) return;
+      busy = true;
+      try {
+        const r = await fetch('/trial/state?cid=' + encodeURIComponent(cid), { cache: 'no-store' });
+        const j = await r.json();
+        fails = 0; $('#conn').style.display = 'none';
+        if (j.rev !== rev) { rev = j.rev; state = j; stage.setState(j); paint(); }
+      } catch (e) {
+        if (++fails > 8) $('#conn').style.display = 'block';
+      } finally { busy = false; }
+    }
+    async function play(a) {
+      try {
+        const r = await fetch('/trial/play', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ cid }, a)) });
+        const j = await r.json();
+        if (j.state && j.state.rev !== rev) { rev = j.state.rev; state = j.state; stage.setState(state); paint(); }
+        if (!j.ok && j.error) toast(j.error.charAt(0).toUpperCase() + j.error.slice(1) + '.');
+        return j;
+      } catch (e) { toast('Could not reach the table — try again.'); return { ok: false }; }
+    }
+    setInterval(poll, 250);
+    poll();
+
+    const pcs = C.CAST.filter((c) => c.group === 'pc');
+    const tokenSrc = (c) => '/tokens/' + encodeURIComponent(c.token);
+
+    /* ---------- painting ---------- */
+    function paint() {
+      if (!state) return;
+      const P = state.players || {};
+      const mine = P.mine;
+      if (mine) watching = false;
+      // picker
+      $('#picker').hidden = !!mine || watching;
+      const cards = $('#cards');
+      if (!cards.children.length) {
+        pcs.forEach((c) => {
+          const b = document.createElement('button');
+          b.className = 'card'; b.dataset.key = c.key;
+          b.innerHTML = '<img alt="" src="' + tokenSrc(c) + '"><b>' + c.name + '</b><small></small>';
+          b.onclick = () => choose(c.key);
+          cards.appendChild(b);
+        });
+      }
+      Array.from(cards.children).forEach((b) => {
+        const k = b.dataset.key, taken = (P.taken || []).indexOf(k) >= 0 && k !== mine;
+        b.disabled = taken;
+        b.classList.toggle('mine', k === mine);
+        b.querySelector('small').textContent = k === mine ? 'you' : taken ? 'taken' : '';
+      });
+      // bar
+      const bar = $('#bar');
+      bar.hidden = !mine && !watching;
+      const c = mine && C.BY_KEY[mine];
+      $('#me').innerHTML = c ? '<img alt="" src="' + tokenSrc(c) + '"><span><b>' + c.name + '</b><small>change character</small></span>'
+        : '<span><b>Watching</b><small>pick a character</small></span>';
+      $('#emotes').style.display = c ? '' : 'none';
+      $('#react').style.display = c ? '' : 'none';
+      if (c) paintEmotes(c, P);
+      paintReact();
+    }
+    function paintReact() {
+      const P = (state && state.players) || {};
+      const b = $('#react');
+      const why = !state.open ? 'court not in session' : P.react === false ? 'reactions are off' : Date.now() < cooldownUntil ? '…' : '';
+      b.disabled = !!why;
+      b.innerHTML = 'REACTION!' + (why && why !== '…' ? '<span class="why">' + why + '</span>' : '');
+    }
+    function paintEmotes(c, P) {
+      const box = $('#emotes');
+      const on = (P.emoteOn || {})[c.key] || 1;
+      const list = (P.emotes || {})[c.key] || [];
+      const sig = JSON.stringify([c.key, on, list]);
+      if (box._sig === sig) return;          // only rebuild when something changed
+      box._sig = sig;
+      box.innerHTML = '';
+      [1, 2, 3, 4, 5].forEach((n) => {
+        const meta = list.find((e) => e.n === n);
+        const b = document.createElement('div');
+        b.className = 'emo' + (n === on ? ' on' : '') + (n > 1 && !meta ? ' empty' : '');
+        b.setAttribute('role', 'button'); b.tabIndex = 0;
+        let pic;
+        if (n === 1) pic = '<img class="tok" alt="" src="' + tokenSrc(c) + '">';
+        else if (meta) pic = '<img alt="" src="/trial/emote/' + c.key + '/' + n + '?v=' + meta.ver + '">';
+        else pic = '+';
+        b.innerHTML = '<div class="pic">' + pic + '</div><div class="nm">' + (n === 1 ? 'Default' : meta ? esc(meta.name || 'Emote ' + n) : 'Add emote') + '</div>'
+          + (meta ? '<button class="edit" title="Edit">✎</button>' : '');
+        b.onclick = (e) => {
+          if (e.target.closest('.edit') || (n > 1 && !meta)) return openEditor(n, meta);
+          if (n !== on) play({ action: 'emote', n });
+        };
+        box.appendChild(b);
+      });
+    }
+    const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+
+    /* ---------- choosing ---------- */
+    async function choose(key) {
+      window.TrialSFX.unlock();
+      watching = false;
+      try { localStorage.removeItem('m1_trial_watch'); } catch (e) {}
+      await play({ action: 'claim', key });
+    }
+    $('#watch').onclick = () => {
+      window.TrialSFX.unlock();
+      watching = true;
+      try { localStorage.setItem('m1_trial_watch', '1'); } catch (e) {}
+      paint();
+    };
+    $('#me').onclick = async () => {
+      if (state.players.mine) await play({ action: 'unclaim' });
+      watching = false;
+      try { localStorage.removeItem('m1_trial_watch'); } catch (e) {}
+      $('#picker').hidden = false;
+    };
+    $('#react').onclick = async () => {
+      cooldownUntil = Date.now() + C.REACT_COOLDOWN;
+      paintReact();
+      setTimeout(paintReact, C.REACT_COOLDOWN + 50);
+      await play({ action: 'react' });
+    };
+
+    /* ---------- emote editor ---------- */
+    let edN = 0, edData = null;
+    function openEditor(n, meta) {
+      edN = n; edData = null;
+      $('#edTitle').textContent = 'Emote ' + n;
+      $('#edName').value = meta ? meta.name : '';
+      $('#edErr').textContent = '';
+      $('#edDel').style.display = meta ? '' : 'none';
+      $('#drop').innerHTML = meta ? '<img alt="" src="/trial/emote/' + state.players.mine + '/' + n + '?v=' + meta.ver + '">' : '<span>Click or drop an image here</span>';
+      $('#editor').hidden = false;
+      $('#edName').focus();
+    }
+    const closeEditor = () => { $('#editor').hidden = true; };
+    $('#edCancel').onclick = closeEditor;
+    $('#editor').addEventListener('click', (e) => { if (e.target.id === 'editor') closeEditor(); });
+    $('#drop').onclick = () => $('#edFile').click();
+    $('#drop').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#edFile').click(); } });
+    $('#drop').addEventListener('dragover', (e) => { e.preventDefault(); $('#drop').classList.add('over'); });
+    $('#drop').addEventListener('dragleave', () => $('#drop').classList.remove('over'));
+    $('#drop').addEventListener('drop', (e) => { e.preventDefault(); $('#drop').classList.remove('over'); if (e.dataTransfer.files[0]) take(e.dataTransfer.files[0]); });
+    $('#edFile').onchange = (e) => { if (e.target.files[0]) take(e.target.files[0]); e.target.value = ''; };
+
+    /* Shrink the picture in the browser before sending: trim transparent edges,
+       at most 900 px, WebP (keeps transparency). */
+    function take(file) {
+      $('#edErr').textContent = '';
+      if (!/^image\//.test(file.type)) { $('#edErr').textContent = 'That is not a picture.'; return; }
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        let w = img.naturalWidth, h = img.naturalHeight;
+        const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        const x = cv.getContext('2d'); x.drawImage(img, 0, 0);
+        // trim fully transparent borders
+        let bx0 = 0, by0 = 0, bx1 = w, by1 = h;
+        try {
+          const d = x.getImageData(0, 0, w, h).data;
+          let minX = w, minY = h, maxX = -1, maxY = -1;
+          for (let yy = 0; yy < h; yy += 2) for (let xx = 0; xx < w; xx += 2) {
+            if (d[(yy * w + xx) * 4 + 3] > 16) { if (xx < minX) minX = xx; if (xx > maxX) maxX = xx; if (yy < minY) minY = yy; if (yy > maxY) maxY = yy; }
+          }
+          if (maxX >= 0) { bx0 = Math.max(0, minX - 2); by0 = Math.max(0, minY - 2); bx1 = Math.min(w, maxX + 3); by1 = Math.min(h, maxY + 3); }
+        } catch (e) {}
+        const cw = bx1 - bx0, ch = by1 - by0;
+        const k = Math.min(1, 900 / Math.max(cw, ch));
+        const out = document.createElement('canvas');
+        out.width = Math.max(1, Math.round(cw * k)); out.height = Math.max(1, Math.round(ch * k));
+        out.getContext('2d').drawImage(cv, bx0, by0, cw, ch, 0, 0, out.width, out.height);
+        let data = out.toDataURL('image/webp', 0.88);
+        if (data.indexOf('data:image/webp') !== 0) data = out.toDataURL('image/png');
+        if (data.length > 1150000) data = out.toDataURL('image/jpeg', 0.85);
+        edData = data;
+        $('#drop').innerHTML = '<img alt="" src="' + data + '">';
+        if (!$('#edName').value) $('#edName').value = file.name.replace(/\.[^.]+$/, '').slice(0, 24);
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => { $('#edErr').textContent = 'This picture could not be read.'; };
+      img.src = url;
+    }
+    $('#sheet').onsubmit = async (e) => {
+      e.preventDefault();
+      const name = $('#edName').value.trim() || ('Emote ' + edN);
+      const meta = ((state.players.emotes || {})[state.players.mine] || []).find((m) => m.n === edN);
+      if (!edData && !meta) { $('#edErr').textContent = 'Choose a picture first.'; return; }
+      $('#edSave').disabled = true;
+      const r = edData ? await play({ action: 'emoteSave', n: edN, name, data: edData, wear: true })
+                       : await play({ action: 'emoteName', n: edN, name });
+      $('#edSave').disabled = false;
+      if (r.ok) closeEditor(); else $('#edErr').textContent = r.error || 'Not saved.';
+    };
+    $('#edDel').onclick = async () => { await play({ action: 'emoteDelete', n: edN }); closeEditor(); };
+
+    /* ---------- sound & full screen ---------- */
+    const snd = $('#snd');
+    const paintSnd = () => { snd.textContent = window.TrialSFX.enabled ? '🔊' : '🔇'; };
+    snd.onclick = () => { if (!window.TrialSFX.ctx) window.TrialSFX.unlock(); else window.TrialSFX.enabled = !window.TrialSFX.enabled; paintSnd(); };
+    const toggleFs = () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+    };
+    $('#fs').onclick = toggleFs;
+    document.addEventListener('keydown', (e) => {
+      if (e.target.closest('input, textarea')) return;
+      if (e.key === 'f' || e.key === 'F') toggleFs();
+      if (e.key === 'Escape') closeEditor();
+    });
+    // one click anywhere unlocks sound (browsers require it)
+    document.addEventListener('pointerdown', () => { if (!window.TrialSFX.ctx) { window.TrialSFX.unlock(); paintSnd(); } }, { once: true });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Trial — stage control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <!--SYNC-->
+  <style>
+    :root {
+      --bg: #0b0d12; --panel: #131824; --panel2: #1a2130; --line: #2a3349; --line2: #3a4562;
+      --text: #e8ecf6; --muted: #8b96b3; --amber: #e8b559;
+      --def: #e2465c; --pro: #3fd0ea; --jury: #e7b54d; --bench: #b38cff;
+      --tok: 52px; --tokS: 42px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: radial-gradient(circle at 50% 20%, #161b29, var(--bg) 70%); color: var(--text);
+      font: 14px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; min-height: 100vh; }
+    body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
+
+    /* ---------- top bar ---------- */
+    .top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 16px;
+      border-bottom: 1px solid var(--line); background: rgba(10,12,18,.85); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+    .title { font: 700 18px/1 Cinzel, Georgia, serif; letter-spacing: .04em; margin-right: 6px; white-space: nowrap; }
+    .title span { color: var(--muted); font: 500 12px system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
+    button, select, input { font: inherit; color: var(--text); }
+    .btn { background: var(--panel2); border: 1px solid var(--line2); border-radius: 8px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+    .btn:hover { border-color: var(--amber); }
+    .btn.ghost { background: transparent; }
+    .court { border-radius: 20px; padding: 7px 14px; font-weight: 600; }
+    .court::before { content: '●'; margin-right: 7px; color: #6b7390; }
+    .court.on { background: rgba(70,201,139,.15); border-color: #46c98b; }
+    .court.on::before { color: #46c98b; }
+    select { background: var(--panel2); border: 1px solid var(--line2); border-radius: 8px; padding: 6px 8px; }
+    .lbl { color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .spacer { flex: 1; }
+    .sync { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .sync.bad { color: #ff9a9a; }
+    a.link { color: var(--muted); text-decoration: none; font-size: 12px; border: 1px solid var(--line); padding: 6px 11px;
+      border-radius: 20px; white-space: nowrap; }
+    a.link:hover { color: var(--text); border-color: var(--amber); }
+
+    /* ---------- the courtroom map ---------- */
+    .room { display: grid; grid-template-columns: 228px minmax(0, 1fr) 228px; gap: 14px; padding: 14px 16px 6px; align-items: start; }
+    .bank { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .bank h3 { margin: 0 0 8px; font: 700 13px/1 Cinzel, Georgia, serif; letter-spacing: .18em; text-transform: uppercase; color: var(--c); }
+    .bank h4 { margin: 12px 0 6px; font: 600 10.5px/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .bank .major { display: flex; flex-direction: column; gap: 6px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .center { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .row.jury { gap: 6px; }
+    .rowlab { text-align: center; font: 700 11px/1 Cinzel, Georgia, serif; letter-spacing: .2em; text-transform: uppercase; color: var(--c); margin-bottom: 6px; }
+    #preview { position: relative; width: 100%; height: clamp(240px, calc(100vh - 520px), 620px); background: #000;
+      border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+
+    /* slots */
+    .slot { position: relative; border-radius: 10px; transition: background .12s, box-shadow .12s; }
+    .slot.over { background: rgba(232,181,89,.14); box-shadow: 0 0 0 2px var(--amber) inset; }
+    .slot .empty { width: var(--tok); height: var(--tok); border-radius: 50%; border: 2px dashed var(--line2);
+      display: grid; place-items: center; color: #4b5577; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+    .slot.picking .empty { border-color: var(--amber); color: var(--amber); cursor: pointer; }
+    .bank .major .slot { display: flex; align-items: center; gap: 10px; padding: 4px 6px; min-height: 62px; background: rgba(255,255,255,.02); }
+    .bank .major .slot .meta { min-width: 0; }
+    .bank .major .slot .kind { font: 700 10px/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--c); }
+    .bank .major .slot .who { font: 600 14px/1.3 Cinzel, Georgia, serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bank .major .slot .who:empty::before { content: '—'; color: #4b5577; }
+    .grid3 .slot, .row .slot { display: flex; flex-direction: column; align-items: center; padding: 4px 2px; }
+    .grid3 .slot { --tok: var(--tokS); }
+    .grid3 .slot .empty { font-size: 0; }
+
+    /* tokens */
+    .tok { position: relative; width: var(--tok); display: flex; flex-direction: column; align-items: center; cursor: grab;
+      touch-action: none; -webkit-user-select: none; user-select: none; }
+    .tok .face { width: var(--tok); height: var(--tok); border-radius: 50%; overflow: hidden; background: #222a3c;
+      box-shadow: 0 2px 8px rgba(0,0,0,.5); position: relative; }
+    .tok .face img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .tok .face img.headcrop { object-fit: cover; object-position: 50% 0; transform: scale(1.9) translateY(22%); }
+    .tok .nm { margin-top: 3px; font-size: 10.5px; color: var(--muted); max-width: 74px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+    .bank .major .tok .nm { display: none; }
+    .tok:hover .face { box-shadow: 0 0 0 2px var(--line2), 0 2px 8px rgba(0,0,0,.5); }
+    .tok.picked .face { box-shadow: 0 0 0 3px var(--amber), 0 0 16px rgba(232,181,89,.6); }
+    .tok.focus .face { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--amber), 0 0 22px rgba(232,181,89,.8); }
+    .tok.focus::after { content: 'ON STAGE'; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+      font: 800 8.5px/1 system-ui, sans-serif; letter-spacing: .1em; background: var(--amber); color: #1a1205; padding: 3px 5px; border-radius: 6px; white-space: nowrap; }
+    .tok.dragging { opacity: .25; }
+    .dragghost { position: fixed; z-index: 100; pointer-events: none; transform: translate(-50%, -50%) scale(1.12); opacity: .95; }
+    .dragghost .nm { color: #fff; }
+
+    .expand { position: absolute; right: 8px; top: 8px; z-index: 30; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.25);
+      color: #fff; border-radius: 8px; padding: 4px 9px; cursor: pointer; font-size: 15px; opacity: .6; }
+    .expand:hover { opacity: 1; }
+    #preview.big { position: fixed; inset: 0; height: 100vh; z-index: 60; border-radius: 0; border: 0; }
+
+    /* banners */
+    .fxbar { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; }
+    .fx { border: 1px solid var(--line2); border-radius: 8px; padding: 8px 12px; cursor: pointer; background: var(--panel2);
+      font: 400 15px/1 Anton, Impact, sans-serif; letter-spacing: .06em; color: #fff; position: relative; }
+    .fx:hover { filter: brightness(1.25); }
+    .fx kbd { position: absolute; top: -6px; right: -4px; font: 700 9px/1 system-ui, sans-serif; background: #000; color: var(--muted);
+      border: 1px solid var(--line2); border-radius: 4px; padding: 2px 4px; }
+    .fx.trial { background: linear-gradient(90deg, #2a1150, #4a1c80); border-color: #f1c66e; color: #f7d684; }
+    .fx.nsd { background: linear-gradient(90deg, #a80f4c, #ff2e7e); border-color: #ff7fb0; }
+    .fx.break { background: linear-gradient(90deg, #6d0718, #c4122f); border-color: #ffd36b; }
+    .fx.tip { background: linear-gradient(90deg, #6b4005, #c98a12); border-color: #ffe08a; }
+    .fx.counter { background: linear-gradient(90deg, #00495a, #0aa6c8); border-color: #8be9ff; }
+    .fx.agree { background: linear-gradient(90deg, #0b5a33, #13a35a); border-color: #8ff0bb; }
+    .fx.reveal { background: #050308; border-color: #f6dc9a; color: #f6dc9a; font: 800 13px/1 Cinzel, Georgia, serif; letter-spacing: .12em; }
+    .fx.shock { background: radial-gradient(circle at 50% 50%, #ff3355, #6d0010); border-color: #8ff; text-shadow: -1.5px 0 #0ff, 1.5px 0 #f03; }
+    .fx.whisper { background: rgba(20,14,34,.9); border-color: #8e7fb0; color: #ddd1f3; font: italic 600 13px/1 Cinzel, Georgia, serif; letter-spacing: .04em; }
+    .fx.custom { background: linear-gradient(90deg, #1a0a2e, #5b2a9c); border-color: #f1c66e; }
+    .fx.last { outline: 2px solid #fff; outline-offset: 2px; }
+    /* words typed: every style button now flashes them */
+    .fxbar.has-text .fx { box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 0 14px rgba(232,181,89,.45); }
+    .fxbar.has-text .fx kbd { display: none; }
+    .fxbar.has-text .words input { border-color: var(--amber); box-shadow: 0 0 0 2px rgba(232,181,89,.25); }
+    .fx small { display: block; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .04em; opacity: .85; margin-top: 3px; }
+    .words { display: flex; gap: 4px; flex: 1 1 260px; max-width: 420px; }
+    .words input { flex: 1; min-width: 0; background: var(--panel2); border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; }
+    .xbtn { padding: 6px 10px; }
+    .fx { padding: 7px 10px; font-size: 14px; }
+
+    /* players at the table */
+    .players { display: flex; flex-direction: column; gap: 4px; }
+    .pl { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 8px; background: rgba(255,255,255,.02); }
+    .pl img { width: 26px; height: 26px; border-radius: 50%; }
+    .pl .who { flex: 1; min-width: 0; font-size: 12px; line-height: 1.2; }
+    .pl .who b { display: block; font: 600 12.5px/1.2 Cinzel, Georgia, serif; }
+    .pl .who span { color: var(--muted); font-size: 11px; }
+    .pl.on .who span { color: #46c98b; }
+    .pl button { font-size: 11px; padding: 3px 7px; border-radius: 6px; border: 1px solid var(--line2); background: var(--panel2); cursor: pointer; }
+    .reactsw { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+    /* demo: player stand-in */
+    .sim { margin: 6px 16px 0; padding: 10px 12px; border: 1px dashed var(--line2); border-radius: 12px; background: rgba(63,208,234,.04); }
+    .sim h4 { margin: 0 0 8px; font: 600 10.5px/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--pro); }
+    .sim h4 b { color: var(--text); }
+    .simrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .simlbl { color: var(--muted); font-size: 12px; }
+    .simpcs, .simemo { display: flex; gap: 6px; flex-wrap: wrap; }
+    .simpcs button, .simemo button { width: 40px; height: 40px; border-radius: 10px; border: 2px solid var(--line2); background: var(--panel2) center/cover no-repeat; cursor: pointer; padding: 0; color: var(--muted); font-size: 18px; }
+    .simpcs button.on, .simemo button.on { border-color: var(--amber); box-shadow: 0 0 10px rgba(232,181,89,.5); }
+    .simreact { font: 400 16px/1 Anton, Impact, sans-serif; letter-spacing: .05em; padding: 10px 16px; border-radius: 10px; border: 2px solid #ffd27a;
+      background: linear-gradient(180deg, #ffab3d, #e35d00); color: #fff; cursor: pointer; transform: skewX(-8deg); }
+
+    /* pool */
+    .pool { margin: 6px 16px 14px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+      display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: flex-start; transition: box-shadow .12s; min-height: 92px; }
+    .pool.over { box-shadow: 0 0 0 2px var(--amber) inset; background: rgba(232,181,89,.06); }
+    .pool .grp { display: flex; flex-direction: column; gap: 4px; }
+    .pool .grp h4 { margin: 0; font: 600 10.5px/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .pool .toks { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pool .tok { --tok: 46px; width: 62px; }
+    .pool .tok .nm { max-width: 62px; font-size: 10px; }
+    .pool .none { color: #4b5577; font-size: 12px; padding: 14px 0; }
+    .help { margin: 0 16px 16px; color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+    .help b { color: var(--text); font-weight: 600; }
+
+    @media (max-width: 980px) {
+      .room { grid-template-columns: 1fr; }
+      .bank.left { order: 2; } .bank.right { order: 3; }
+      #preview { height: auto; aspect-ratio: 16/9; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="title">⚖ Class Trial <span>stage control</span></div>
+    <button class="btn court" id="openBtn" title="Players see a waiting screen until the court is open">Court closed</button>
+    <button class="btn" id="sweepBtn" title="The camera makes one slow full turn of the room (S)">↻ Sweep the room</button>
+    <button class="btn ghost" id="exampleBtn" title="Seat the example cast">Example seating</button>
+    <button class="btn ghost" id="clearBtn">Clear the room</button>
+    <span class="spacer"></span>
+    <span class="sync" id="sync"></span>
+    <a class="link" href="/trial" target="_blank" id="playerLink">Player view ↗</a>
+    <a class="link" id="cockpitLink">Cockpit ↩</a>
+  </header>
+
+  <main class="room">
+    <section class="bank left" style="--c: var(--def)">
+      <h3>Defense</h3>
+      <div class="major" data-zone="L-major"></div>
+      <h4>Joined the defense</h4>
+      <div class="grid3" data-zone="L-minor"></div>
+      <h4 style="color:var(--pro)">Players at the table</h4>
+      <div class="players" id="players"></div>
+      <label class="reactsw"><input type="checkbox" id="reactOn"> Players can press REACTION</label>
+    </section>
+
+    <section class="center">
+      <div>
+        <div class="rowlab" style="--c: var(--bench)">Bench</div>
+        <div class="row bench" data-zone="T"></div>
+      </div>
+      <div id="preview"><button class="expand" id="expandBtn" title="See the stage big (Esc to come back)">⛶</button></div>
+      <div class="fxbar" id="fxbar">
+        <form class="words" id="customForm" title="Leave empty: each button plays its own words. Type here: any button flashes YOUR words in its style. A / makes two lines. Enter = last style used, ↑ = last words.">
+          <input id="customText" maxlength="80" autocomplete="off" placeholder="Your words, then pick a style  ( / = 2 lines )">
+          <button class="btn xbtn" type="button" id="clearText" title="Clear">×</button>
+        </form>
+        <button class="fx trial" data-fx="trial">CLASS TRIAL</button>
+        <button class="fx nsd" data-fx="nsd">NON-STOP DEBATE<kbd>N</kbd></button>
+        <button class="fx break" data-fx="break">BREAK!<kbd>B</kbd></button>
+        <button class="fx tip" data-fx="tip">ABOUT TO TIP<kbd>T</kbd></button>
+        <button class="fx counter" data-fx="counter" id="counterBtn">COUNTER!<kbd>C</kbd></button>
+        <button class="fx agree" data-fx="agree">I AGREE!<kbd>A</kbd></button>
+        <button class="fx reveal" data-fx="reveal">Reveal<kbd>R</kbd></button>
+        <button class="fx shock" data-fx="shock">SHOCK!<kbd>X</kbd></button>
+        <button class="fx whisper" data-fx="whisper">whisper…<kbd>W</kbd></button>
+        <button class="fx custom" data-fx="custom">SLAM</button>
+      </div>
+      <div>
+        <div class="row jury" data-zone="B"></div>
+        <div class="rowlab" style="--c: var(--jury); margin: 6px 0 0">Jury</div>
+      </div>
+    </section>
+
+    <section class="bank right" style="--c: var(--pro)">
+      <h3>Prosecution</h3>
+      <div class="major" data-zone="R-major"></div>
+      <h4>Joined the prosecution</h4>
+      <div class="grid3" data-zone="R-minor"></div>
+    </section>
+  </main>
+
+  <section class="sim" id="sim" hidden>
+    <h4>Player screen — demo stand-in for what each player does on <b>/trial</b></h4>
+    <div class="simrow">
+      <span class="simlbl">Play as</span><div class="simpcs" id="simPcs"></div>
+      <button class="simreact" id="simReact">REACTION!</button>
+      <span class="simlbl">Emotes</span><div class="simemo" id="simEmo"></div>
+      <input type="file" id="simFile" accept="image/*" hidden>
+    </div>
+  </section>
+
+  <section class="pool" id="pool" data-pool="1"></section>
+  <div class="help">
+    <span><b>Drag</b> a token onto a seat (or tap it, then tap a seat)</span>
+    <span><b>Click</b> a seated token: they take the floor</span>
+    <span><b>Click again</b>: punch-in</span>
+    <span><b>Drag back down here</b> to take someone out</span>
+    <span><b>Type words</b> above the jury, then click any banner style</span>
+    <span><b>Players</b> join at <b>/trial</b>: they pick a character, press REACTION, wear emotes</span>
+  </div>
+
+  <script src="/trial_core.js"></script>
+  <script src="/trial_stage.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const C = window.TrialCore;
+    const BASE = window.SYNC_BASE || null;          // injected by the server; absent = demo mode (no server)
+    const ASSETS = window.TRIAL_ASSETS != null ? window.TRIAL_ASSETS : '/';
+    const DEMO = !BASE;
+    const LOCAL_KEY = 'm1_trial_room';
+    const $ = (s, r) => (r || document).querySelector(s);
+    const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+    let state = C.initialState();
+    let pending = 0, lastOk = 0;
+    const demoPics = {};                              // demo only: emote pictures kept in this page
+    const stage = new TrialStage($('#preview'), { gm: true, sound: false, assets: ASSETS,
+      emoteSrc: DEMO ? (k, n) => demoPics[k + '_' + n] || ASSETS + 'sprites/' + k + '.webp' : null });
+    // what the stage and the players panel read: in the demo the page holds the full state itself
+    const view = () => (DEMO ? C.gmView(state, Date.now()) : state);
+
+    if (BASE) { $('#cockpitLink').href = BASE; } else { $('#cockpitLink').style.display = 'none'; $('#playerLink').style.display = 'none'; }
+
+    /* ---------- build the map once ---------- */
+    const zoneOf = (s) => (s.side === 'bench' ? 'T' : s.side === 'jury' ? 'B'
+      : (s.id[0] + '-' + (s.major ? 'major' : 'minor')));
+    C.SLOTS.forEach((s) => {
+      const z = $('[data-zone="' + zoneOf(s) + '"]');
+      const d = document.createElement('div');
+      d.className = 'slot';
+      d.dataset.slot = s.id;
+      d.title = s.label + ' · ' + s.id;
+      z.appendChild(d);
+    });
+
+    const tokenEl = (key) => {
+      const c = C.BY_KEY[key];
+      const t = document.createElement('div');
+      t.className = 'tok';
+      t.dataset.key = key;
+      t.title = c.name;
+      const face = document.createElement('div');
+      face.className = 'face';
+      const img = document.createElement('img');
+      img.alt = '';
+      img.draggable = false;
+      img.src = ASSETS + 'tokens/' + encodeURIComponent(c.token);
+      img.onerror = () => { img.onerror = null; img.classList.add('headcrop'); img.src = ASSETS + 'sprites/' + key + '.webp'; };
+      face.appendChild(img);
+      const nm = document.createElement('span');
+      nm.className = 'nm';
+      nm.textContent = c.name;
+      t.append(face, nm);
+      return t;
+    };
+    const tokCache = {};
+    const tok = (key) => tokCache[key] || (tokCache[key] = tokenEl(key));
+
+    let picked = null;   // tap-to-place
+
+    function render() {
+      const seated = {};
+      $$('.slot').forEach((d) => {
+        const sid = d.dataset.slot, s = C.SLOT[sid], key = state.slots[sid];
+        const isMajorBank = d.closest('.major');
+        d.classList.toggle('picking', !!picked);
+        let want;
+        if (key) { seated[key] = true; want = tok(key); }
+        const cur = d.querySelector('.tok');
+        if (isMajorBank) {
+          if (!d.firstChild) {
+            d.innerHTML = '<div class="holder"></div><div class="meta"><div class="kind"></div><div class="who"></div></div>';
+          }
+          const holder = d.querySelector('.holder');
+          d.querySelector('.kind').textContent = sid[0] === 'L' ? s.label : 'Prosecution ' + sid.slice(1);
+          d.querySelector('.who').textContent = key ? C.BY_KEY[key].name : '';
+          if (want) { if (cur !== want) { holder.innerHTML = ''; holder.appendChild(want); } }
+          else holder.innerHTML = '<div class="empty"></div>';
+        } else {
+          if (want) { if (cur !== want) { d.innerHTML = ''; d.appendChild(want); } }
+          else if (!d.querySelector('.empty')) d.innerHTML = '<div class="empty">' + (s.side === 'jury' ? 'jury' : s.side === 'bench' ? 'bench' : '') + '</div>';
+        }
+      });
+      // pool
+      const pool = $('#pool');
+      const groups = [['pc', 'Players'], ['prime', 'Primes'], ['staff', 'Staff & entities']];
+      pool.innerHTML = '';
+      groups.forEach(([g, label]) => {
+        const free = C.CAST.filter((c) => c.group === g && !seated[c.key]);
+        if (!free.length) return;
+        const box = document.createElement('div'); box.className = 'grp';
+        box.innerHTML = '<h4>' + label + '</h4><div class="toks"></div>';
+        free.forEach((c) => box.lastChild.appendChild(tok(c.key)));
+        pool.appendChild(box);
+      });
+      if (!pool.children.length) pool.innerHTML = '<div class="none">Everyone is in the courtroom.</div>';
+      // highlights
+      Object.keys(tokCache).forEach((k) => {
+        tokCache[k].classList.toggle('focus', state.focus.key === k);
+        tokCache[k].classList.toggle('picked', picked === k);
+      });
+      // top bar
+      const ob = $('#openBtn');
+      ob.classList.toggle('on', !!state.open);
+      ob.textContent = state.open ? 'Court in session' : 'Court closed — players see the waiting screen';
+      const fk = state.focus.key && C.BY_KEY[state.focus.key];
+      $('#counterBtn').innerHTML = 'COUNTER!<kbd>C</kbd>' + (fk && fk.cutin ? '<small>' + fk.name + "'s cut-in</small>" : '');
+      $('#exampleBtn').style.display = Object.keys(state.slots).length ? 'none' : '';
+      paintPlayers();
+    }
+
+    /* ---------- the players at the table ---------- */
+    function paintPlayers() {
+      const P = view().players || {};
+      const taken = P.taken || Object.keys(P.claims || {});
+      const box = $('#players');
+      const sig = JSON.stringify([taken, P.emoteOn, P.emotes, P.react]);
+      if (box._sig === sig) return;
+      box._sig = sig;
+      box.innerHTML = '';
+      C.CAST.filter((c) => c.group === 'pc').forEach((c) => {
+        const on = taken.indexOf(c.key) >= 0;
+        const n = (P.emoteOn || {})[c.key] || 1;
+        const list = Array.isArray((P.emotes || {})[c.key]) ? P.emotes[c.key] : [];
+        const em = n > 1 ? list.find((e) => e.n === n) : null;
+        const row = document.createElement('div');
+        row.className = 'pl' + (on ? ' on' : '');
+        row.innerHTML = '<img alt="" src="' + ASSETS + 'tokens/' + encodeURIComponent(c.token) + '">'
+          + '<div class="who"><b>' + c.name + '</b><span>' + (on ? '● playing' : 'free') + (em ? ' · wearing “' + em.name + '”' : '') + '</span></div>';
+        if (em) { const b = document.createElement('button'); b.textContent = '↺'; b.title = 'Back to their own sprite'; b.onclick = () => act({ action: 'emoteReset', key: c.key }); row.appendChild(b); }
+        if (on) { const b = document.createElement('button'); b.textContent = 'Release'; b.title = 'Free this character so someone else can pick it'; b.onclick = () => act({ action: 'release', key: c.key }); row.appendChild(b); }
+        box.appendChild(row);
+      });
+      $('#reactOn').checked = P.react !== false;
+    }
+    $('#reactOn').onchange = (e) => act({ action: 'allowReact', on: e.target.checked });
+
+    /* ---------- talking to the server ---------- */
+    function paintSync() {
+      const s = $('#sync');
+      if (DEMO) { s.textContent = 'Demo — this page only'; return; }
+      const ok = Date.now() - lastOk < 4000;
+      s.textContent = ok ? (state.open ? '● live on /trial' : '● synced') : '● offline — retrying';
+      s.classList.toggle('bad', !ok);
+    }
+    function adopt(j) {
+      if (!j || typeof j.rev !== 'number') return;
+      state = j;
+      lastOk = Date.now();
+      render();
+      stage.setState(view());
+      paintSync();
+    }
+    function act(a) {
+      C.reduce(state, a, Date.now());
+      delete state.serverNow;
+      render();
+      stage.setState(view());
+      if (DEMO) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(C.persistable(state))); } catch (e) {} return; }
+      pending++;
+      fetch(BASE + '/trial/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a) })
+        .then((r) => r.json()).then((j) => { pending--; if (!pending) adopt(j); })
+        .catch(() => { pending--; paintSync(); });
+    }
+    async function poll() {
+      if (DEMO || pending || drag) return;
+      try {
+        const r = await fetch(BASE + '/trial/state', { cache: 'no-store' });
+        const j = await r.json();
+        lastOk = Date.now();
+        if (!pending && !drag && j.rev !== state.rev) adopt(j);
+      } catch (e) {}
+      paintSync();
+    }
+
+    /* ---------- drag & drop (mouse and touch) ---------- */
+    let drag = null;
+    const targetAt = (x, y) => {
+      const e = document.elementFromPoint(x, y);
+      if (!e) return null;
+      const s = e.closest('[data-slot]');
+      if (s) return { slot: s.dataset.slot, el: s };
+      const p = e.closest('[data-pool]');
+      if (p) return { pool: true, el: p };
+      return null;
+    };
+    let overEl = null;
+    const setOver = (el) => { if (overEl === el) return; if (overEl) overEl.classList.remove('over'); overEl = el; if (el) el.classList.add('over'); };
+
+    document.addEventListener('pointerdown', (e) => {
+      const t = e.target.closest('.tok');
+      if (!t || t.classList.contains('dragghost') || e.button > 0) return;
+      e.preventDefault();
+      const s = t.closest('[data-slot]');
+      drag = { key: t.dataset.key, from: s ? s.dataset.slot : null, x0: e.clientX, y0: e.clientY, src: t, started: false };
+    });
+    document.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (!drag.started) {
+        if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) return;
+        drag.started = true;
+        drag.ghost = drag.src.cloneNode(true);
+        drag.ghost.classList.add('dragghost');
+        drag.ghost.classList.remove('focus', 'picked');
+        document.body.appendChild(drag.ghost);
+        drag.src.classList.add('dragging');
+        document.body.classList.add('is-dragging');
+      }
+      drag.ghost.style.left = e.clientX + 'px';
+      drag.ghost.style.top = e.clientY + 'px';
+      drag.px = e.clientX; drag.py = e.clientY;
+      const tg = targetAt(e.clientX, e.clientY);
+      setOver(tg ? tg.el : null);
+      if (!scrollRaf) scrollRaf = requestAnimationFrame(edgeScroll);
+    });
+    /* While dragging, holding the token near the top or bottom of the window
+       scrolls the page (faster the closer to the edge), so any seat can be reached. */
+    let scrollRaf = 0;
+    function edgeScroll() {
+      scrollRaf = 0;
+      if (!drag || !drag.started) return;
+      const H = window.innerHeight, zone = Math.max(50, Math.min(110, H * 0.13));
+      const top = $('.top').getBoundingClientRect().bottom;           // the sticky bar hides the very top
+      let v = 0;
+      if (drag.py < top + zone) v = -Math.ceil(((top + zone - drag.py) / zone) * 24);
+      else if (drag.py > H - zone) v = Math.ceil(((drag.py - (H - zone)) / zone) * 24);
+      if (v) {
+        const before = window.scrollY;
+        window.scrollBy(0, Math.max(-40, Math.min(40, v)));
+        if (window.scrollY !== before) { const tg = targetAt(drag.px, drag.py); setOver(tg ? tg.el : null); }
+      }
+      scrollRaf = requestAnimationFrame(edgeScroll);
+    }
+    const endDrag = (e, cancel) => {
+      if (!drag) return;
+      const d = drag;
+      drag = null;
+      setOver(null);
+      document.body.classList.remove('is-dragging');
+      d.src.classList.remove('dragging');
+      if (d.ghost) d.ghost.remove();
+      if (cancel) return;
+      if (d.started) {
+        const tg = targetAt(e.clientX, e.clientY);
+        picked = null;
+        if (tg && tg.slot) act({ action: 'place', key: d.key, slot: tg.slot });
+        else if (tg && tg.pool && d.from) act({ action: 'unplace', key: d.key });
+        else render();
+        return;
+      }
+      // a click, not a drag
+      if (d.from) {
+        if (picked && picked !== d.key) { const k = picked; picked = null; act({ action: 'place', key: k, slot: d.from }); return; }
+        picked = null;
+        act({ action: 'focus', key: d.key });
+      } else {
+        picked = picked === d.key ? null : d.key;
+        render();
+      }
+    };
+    document.addEventListener('pointerup', (e) => endDrag(e, false));
+    document.addEventListener('pointercancel', (e) => endDrag(e, true));
+    // tap-to-place on an empty seat
+    document.addEventListener('click', (e) => {
+      if (!picked) return;
+      const s = e.target.closest('[data-slot]');
+      if (s && !s.querySelector('.tok')) { const k = picked; picked = null; act({ action: 'place', key: k, slot: s.dataset.slot }); }
+    });
+
+    /* ---------- controls ---------- */
+    $('#openBtn').onclick = () => act({ action: 'open', open: !state.open });
+    $('#expandBtn').onclick = (e) => { e.stopPropagation(); $('#preview').classList.toggle('big'); };
+    $('#sweepBtn').onclick = () => act({ action: 'sweep' });
+    // two clicks instead of confirm(): some browsers / embedded views silently refuse dialogs
+    let clearArmed = 0;
+    $('#clearBtn').onclick = (e) => {
+      const b = e.currentTarget;
+      if (Date.now() - clearArmed < 3000) { clearArmed = 0; b.textContent = 'Clear the room'; act({ action: 'clear' }); return; }
+      clearArmed = Date.now(); b.textContent = 'Click again to clear';
+      setTimeout(() => { if (Date.now() - clearArmed >= 2900) b.textContent = 'Clear the room'; }, 3000);
+    };
+    $('#exampleBtn').onclick = () => act({ action: 'load', slots: {
+      L1: 'paxel', L2: 'citello',
+      B1: 'balerion', B2: 'doulahex', B3: 'hayeva', B4: 'carnage', B5: 'esteban', B6: 'gasper', B7: 'framschtak', B8: 'nerasho', B9: 'norvodavius',
+      R1: 'mune', R2: 'pryah', R3: 'bardik', R4: 'askii', R5: 'angele',
+      T2: 'polychroma',
+    } });
+    /* Banners. Box empty: a button plays its own words. Words in the box: any
+       button flashes them in its style, then the box clears (↑ brings them back).
+       Keyboard letters always play the default words. */
+    const box = $('#customText');
+    let lastStyle = 'custom', lastText = '';
+    const paintFx = () => {
+      $('#fxbar').classList.toggle('has-text', !!box.value.trim());
+      $$('[data-fx]').forEach((b) => b.classList.toggle('last', b.dataset.fx === lastStyle && !!box.value.trim()));
+    };
+    const fire = (kind, extra) => act(Object.assign({ action: 'fx', kind, key: state.focus.key }, extra || {}));
+    const fireStyle = (kind) => {
+      const t = box.value.trim();
+      lastStyle = kind;
+      if (t) { lastText = t; box.value = ''; fire(kind, { text: t }); }
+      else fire(kind);
+      paintFx();
+    };
+    $$('[data-fx]').forEach((b) => { b.onclick = () => fireStyle(b.dataset.fx); });
+    $('#customForm').onsubmit = (e) => { e.preventDefault(); if (box.value.trim()) fireStyle(lastStyle); };
+    box.addEventListener('input', paintFx);
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp' && !box.value && lastText) { box.value = lastText; paintFx(); e.preventDefault(); }
+      if (e.key === 'Escape') { box.value = ''; paintFx(); box.blur(); }
+    });
+    $('#clearText').onclick = () => { box.value = ''; paintFx(); box.focus(); };
+    document.addEventListener('keydown', (e) => {
+      if (e.target.closest('input, select, textarea') || e.ctrlKey || e.metaKey || e.altKey) return;
+      const map = { n: 'nsd', b: 'break', t: 'tip', c: 'counter', a: 'agree', r: 'reveal', x: 'shock', w: 'whisper' };
+      const k = e.key.toLowerCase();
+      if (map[k]) { fire(map[k]); e.preventDefault(); }
+      else if (k === 's') { act({ action: 'sweep' }); e.preventDefault(); }
+      else if (e.key === 'Escape') { picked = null; $('#preview').classList.remove('big'); render(); }
+    });
+
+    /* ---------- demo: a stand-in for one player's controls ---------- */
+    if (DEMO) {
+      const SIM = 'demo-player-0001';
+      $('#sim').hidden = false;
+      const simAct = (a) => {
+        const r = C.playerAct(state, Object.assign({ cid: SIM }, a), Date.now());
+        if (r.error) { $('#sync').textContent = r.error; setTimeout(paintSync, 1800); }
+        render(); stage.setState(view()); paintSim();
+      };
+      let simN = 0;
+      function paintSim() {
+        const mine = C.claimOf(state, SIM);
+        const box = $('#simPcs'); box.innerHTML = '';
+        C.CAST.filter((c) => c.group === 'pc').forEach((c) => {
+          const b = document.createElement('button');
+          b.title = c.name; b.className = mine === c.key ? 'on' : '';
+          b.style.backgroundImage = 'url(' + ASSETS + 'tokens/' + encodeURIComponent(c.token) + ')';
+          b.onclick = () => simAct({ action: 'claim', key: c.key });
+          box.appendChild(b);
+        });
+        const eb = $('#simEmo'); eb.innerHTML = '';
+        if (!mine) { eb.innerHTML = '<span class="simlbl">pick a character first</span>'; return; }
+        const on = state.players.emoteOn[mine] || 1, em = state.players.emotes[mine] || {};
+        [1, 2, 3, 4, 5].forEach((n) => {
+          const b = document.createElement('button');
+          b.className = n === on ? 'on' : '';
+          const pic = n === 1 ? ASSETS + 'sprites/' + mine + '.webp' : em[n] && demoPics[mine + '_' + n];
+          if (pic) { b.style.backgroundImage = 'url(' + pic + ')'; b.style.backgroundSize = 'contain'; b.title = n === 1 ? 'Default' : em[n].name; }
+          else { b.textContent = '+'; b.title = 'Add an emote (pick a picture)'; }
+          b.onclick = () => {
+            if (pic) simAct({ action: 'emote', n });
+            else { simN = n; $('#simFile').click(); }
+          };
+          eb.appendChild(b);
+        });
+      }
+      $('#simReact').onclick = () => simAct({ action: 'react' });
+      $('#simFile').onchange = (e) => {
+        const f = e.target.files[0]; e.target.value = '';
+        if (!f) return;
+        const mine = C.claimOf(state, SIM);
+        const rd = new FileReader();
+        rd.onload = () => {
+          demoPics[mine + '_' + simN] = rd.result;
+          C.reduce(state, { action: 'emoteStored', key: mine, n: simN, name: f.name.replace(/\.[^.]+$/, '').slice(0, 24) }, Date.now());
+          simAct({ action: 'emote', n: simN });
+        };
+        rd.readAsDataURL(f);
+      };
+      setTimeout(paintSim, 0);
+    }
+
+    /* ---------- start ---------- */
+    if (DEMO) {
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); } catch (e) {}
+      if (saved) state = C.sanitize(saved);
+      render(); stage.setState(view()); paintSync();
+      if (!saved) { $('#exampleBtn').click(); act({ action: 'open', open: true }); act({ action: 'focus', key: 'paxel' }); }
+    } else {
+      render();
+      fetch(BASE + '/trial/state', { cache: 'no-store' }).then((r) => r.json()).then(adopt).catch(paintSync);
+      setInterval(poll, 700);
+      setInterval(paintSync, 2000);
+    }
+  })();
+  </script>
+</body>
+</html>

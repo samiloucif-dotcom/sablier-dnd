@@ -17,6 +17,7 @@ const os = require('os');
 const { M1_LOCATIONS } = require('./locations.js');
 const BOARD = require('./board_server.js');
 const STORE = require('./store_github.js');   // sauvegarde durable (GitHub, branche « data »)
+const TRIAL = require('./trial_server.js');   // Class Trial stage (GM_PATH/trial -> /trial)
 
 const PORT = process.env.PORT || 3000;
 /* Adresse du cockpit MJ. Elle n'est PAS devinable depuis l'adresse joueur :
@@ -34,6 +35,9 @@ const STATIC = {
   '/style.css': 'style.css',
   '/frame_hourglass.png': 'frame_hourglass.png',
   '/hall_bg.jpg': 'hall_bg.jpg',
+  '/trial_core.js': 'trial_core.js',     // Class Trial stage (public : no GM data inside)
+  '/trial_bg.jpg': 'trial_bg.jpg',       // the tribunal (07_Citadel and maps/Scenes/X Class Trial Tribunal)
+  '/trial_stage.js': 'trial_stage.js',
 };
 const GM_STATIC = { '/data.js': 'data.js', '/locations.js': 'locations.js',
   '/board.css': 'board.css', '/board.js': 'board.js', '/warden.js': 'warden.js' };
@@ -153,6 +157,7 @@ async function hydrateFromStore() {
     STORE.save('sablier-app/timeline.json', state.timeline);
   }
   await BOARD.hydrate();
+  await TRIAL.hydrate();
 }
 
 /* Le Chronovestigation Board reprend les memes 18 colonnes que les routines. */
@@ -444,7 +449,21 @@ function serveGm(res) {
       .replace("fetch('/timeline'", "fetch('" + GM_PATH + "/timeline'")
       .replace('</body>',
         '<a href="' + GM_PATH + '/warden" class="mj-link" style="bottom:14px;right:16px">'
-        + '\u26e8 Chronovestigation Board</a>\n</body>');
+        + '\u26e8 Chronovestigation Board</a>\n'
+        + '<a href="' + GM_PATH + '/trial" class="mj-link" style="bottom:54px;right:16px">'
+        + '\u2696 Class Trial stage</a>\n</body>');
+    res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
+    res.end(out);
+  });
+}
+
+/* Le tableau de bord du Class Trial, servi sous l'adresse privee : on lui
+   donne SYNC_BASE pour qu'il parle aux routes MJ. */
+function serveTrialGm(res) {
+  fs.readFile(path.join(PUBLIC, 'trial_gm.html'), 'utf8', (err, html) => {
+    if (err) { res.writeHead(404); return res.end('Not found'); }
+    const out = html.replace('<!--SYNC-->',
+      '<script>window.SYNC_BASE=' + JSON.stringify(GM_PATH) + ';</script>');
     res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
     res.end(out);
   });
@@ -475,6 +494,8 @@ const server = http.createServer((req, res) => {
       const sub = pathname.slice(GM_PATH.length);
       if (GM_STATIC[sub]) return serveFile(res, path.join(PUBLIC, GM_STATIC[sub]));
       if (sub === '/warden') return serveFile(res, path.join(PUBLIC, 'warden.html'));
+      if (sub === '/trial') return serveTrialGm(res);
+      if (sub === '/trial/state') return sendJSON(res, TRIAL.gmView());
       if (sub === '/state') return sendJSON(res, snapshot(true));
       if (sub === '/board/state') return sendJSON(res, BOARD.wardenView());
       if (sub === '/board.json') {
@@ -510,12 +531,27 @@ const server = http.createServer((req, res) => {
       return serveFile(res, path.join(PUBLIC, BOARD_STATIC[pathname]));
     }
     if (pathname === '/state') return sendJSON(res, snapshot(false));
+    /* ---------- Class Trial stage (players) : waiting screen until the GM opens the court ---------- */
+    if (pathname === '/trial') return serveFile(res, path.join(PUBLIC, 'trial.html'));
+    if (pathname === '/trial/state') return sendJSON(res, TRIAL.playerView(url.searchParams.get('cid')));
+    if (pathname.startsWith('/trial/emote/')) {                 // pictures the players uploaded as emotes
+      const [key, n] = pathname.slice('/trial/emote/'.length).split('/');
+      const e = TRIAL.emote(decodeURIComponent(key || ''), n);
+      if (!e) { res.writeHead(404); return res.end('Not found'); }
+      res.writeHead(200, { 'Content-Type': e.mime, 'Cache-Control': 'public, max-age=86400' });
+      return res.end(e.buf);
+    }
     // fichiers statiques autorisés (app.js, style.css)
     if (STATIC[pathname]) return serveFile(res, path.join(PUBLIC, STATIC[pathname]));
     // portraits du cockpit MJ (public/portraits/*.webp), nom décodé et sécurisé
     if (pathname.startsWith('/tokens/')) {
       const name = path.basename(decodeURIComponent(pathname));
       return serveFile(res, path.join(PUBLIC, 'public', 'tokens', name));
+    }
+    if (pathname.startsWith('/sprites/') || pathname.startsWith('/cutins/')) {
+      const dir = pathname.startsWith('/sprites/') ? 'sprites' : 'cutins';
+      const name = path.basename(decodeURIComponent(pathname));
+      return serveFile(res, path.join(PUBLIC, 'public', dir, name));
     }
     if (pathname.startsWith('/portraits/')) {
       const name = path.basename(decodeURIComponent(pathname));
@@ -530,7 +566,9 @@ const server = http.createServer((req, res) => {
     const isGmAction    = pathname === GM_PATH + '/action';
     const isGmBoard     = pathname === GM_PATH + '/board/act';
     const isTableBoard  = pathname === '/board/act' && BOARD.isOpen();
-    if (isGmAction || isGmBoard || isTableBoard) {
+    const isGmTrial     = pathname === GM_PATH + '/trial/act';
+    const isTrialPlayer = pathname === '/trial/play';          // players: pick a character, REACTION, emotes
+    if (isGmAction || isGmBoard || isTableBoard || isGmTrial || isTrialPlayer) {
       let body = '';
       req.on('data', (c) => { body += c; if (body.length > 4e6) req.destroy(); });
       req.on('end', () => {
@@ -538,6 +576,11 @@ const server = http.createServer((req, res) => {
         try { payload = JSON.parse(body || '{}'); } catch (e) {}
         if (isGmAction) { handleAction(payload); return sendJSON(res, snapshot(true)); }
         if (isGmBoard)  { BOARD.wardenAction(payload); return sendJSON(res, BOARD.wardenView()); }
+        if (isGmTrial)  { TRIAL.gmAction(payload); return sendJSON(res, TRIAL.gmView()); }
+        if (isTrialPlayer) {
+          const r = TRIAL.playerAction(payload);
+          return sendJSON(res, Object.assign(r, { state: TRIAL.playerView(payload.cid) }));
+        }
         BOARD.tableAction(payload);
         return sendJSON(res, BOARD.playerView());
       });
@@ -563,6 +606,7 @@ server.listen(PORT, () => {
   console.log('  Players         :  http://localhost:' + PORT + '/');
   console.log('  GM (private)    :  http://localhost:' + PORT + GM_PATH + '   (private URL)');
   console.log('  Warden          :  http://localhost:' + PORT + GM_PATH + '/warden');
+  console.log('  Trial stage     :  http://localhost:' + PORT + GM_PATH + '/trial   (players: /trial)');
   console.log('  Player board    :  http://localhost:' + PORT + '/board   '
     + (BOARD.isOpen() ? '(OPEN)' : '(SEALED — 404 until you open it)') + '\n');
   if (ips.length) {
