@@ -2,8 +2,14 @@
  "v": 1,
  "open": false,
  "route": "jury",
- "slots": {},
- "updated": "2026-10-14T12:31:26.035Z",
+ "slots": {
+  "R1": "angele",
+  "R2": "askii",
+  "R3": "bardik",
+  "R4": "mune",
+  "R5": "pryah"
+ },
+ "updated": "2026-10-14T12:32:33.576Z",
  "players": {
   "claims": {
    "bardik": "2p66u7xxqyxfymig9a"
