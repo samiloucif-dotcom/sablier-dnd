@@ -13,16 +13,16 @@
   "B1": "balerion",
   "B2": "carnage",
   "B3": "doulahex",
-  "B4": "esteban",
   "B5": "framschtak",
   "B6": "gasper",
   "B8": "nerasho",
-  "B9": "norvodavius",
   "T2": "polychroma",
-  "T1": "maevis",
-  "B7": "hayeva"
+  "B7": "hayeva",
+  "R7": "norvodavius",
+  "R6": "esteban",
+  "T3": "eve"
  },
- "updated": "2026-10-14T14:22:44.921Z",
+ "updated": "2026-10-14T14:26:52.377Z",
  "players": {
   "claims": {
    "bardik": "2p66u7xxqyxfymig9a"
