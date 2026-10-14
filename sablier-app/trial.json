@@ -7,14 +7,26 @@
   "R2": "askii",
   "R3": "bardik",
   "R4": "mune",
-  "R5": "pryah"
+  "R5": "pryah",
+  "L1": "citello",
+  "L2": "paxel",
+  "B1": "balerion",
+  "B2": "carnage",
+  "B3": "doulahex",
+  "B4": "esteban",
+  "B5": "framschtak",
+  "B6": "gasper",
+  "B7": "hayeva",
+  "B8": "nerasho",
+  "B9": "norvodavius",
+  "T2": "polychroma"
  },
- "updated": "2026-10-14T12:32:33.576Z",
+ "updated": "2026-10-14T12:33:15.413Z",
  "players": {
   "claims": {
    "bardik": "2p66u7xxqyxfymig9a"
   },
-  "react": true,
+  "react": false,
   "emotes": {},
   "emoteOn": {}
  }
