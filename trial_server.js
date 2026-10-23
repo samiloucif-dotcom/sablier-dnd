@@ -137,6 +137,8 @@ module.exports = {
   playerAction,
   gmView() { return CORE.gmView(st, Date.now()); },
   playerView(cid) { return CORE.playerView(st, Date.now(), cid); },
+  /* the invitation, for the hourglass page (/state): { on, at } */
+  invite() { const i = st.invite || {}; return { on: !!i.on, at: i.at || 0 }; },
   /* an uploaded emote picture, or null */
   emote(key, n) {
     const e = emo[String(key) + '_' + Number(n)];

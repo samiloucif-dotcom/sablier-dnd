@@ -21,7 +21,7 @@
     body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
 
     /* ---------- top bar ---------- */
-    .top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 16px;
+    .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 16px;
       border-bottom: 1px solid var(--line); background: rgba(10,12,18,.85); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
     .title { font: 700 18px/1 Cinzel, Georgia, serif; letter-spacing: .04em; margin-right: 6px; white-space: nowrap; }
     .title span { color: var(--muted); font: 500 12px system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
@@ -33,6 +33,10 @@
     .court::before { content: '●'; margin-right: 7px; color: #6b7390; }
     .court.on { background: rgba(70,201,139,.15); border-color: #46c98b; }
     .court.on::before { color: #46c98b; }
+    /* Invite players: freezes the hourglass and puts JOIN CLASS TRIAL on the players' hourglass screen */
+    .invite { border-radius: 20px; padding: 7px 14px; font-weight: 600; }
+    .invite.on { background: linear-gradient(90deg, #3a1663, #5b2a9c); border-color: #f1c66e; color: #f7d684;
+      box-shadow: 0 0 14px rgba(241,198,110,.35); }
     select { background: var(--panel2); border: 1px solid var(--line2); border-radius: 8px; padding: 6px 8px; }
     .lbl { color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
     .spacer { flex: 1; }
@@ -187,7 +191,8 @@
   <header class="top">
     <div class="title">⚖ Class Trial <span>stage control</span></div>
     <button class="btn court" id="openBtn" title="Players see a waiting screen until the court is open">Court closed</button>
-    <button class="btn" id="sweepBtn" title="The camera makes one slow full turn of the room (S)">↻ Sweep the room</button>
+    <button class="btn invite" id="inviteBtn" title="Stops the hourglass (dramatically) and shows a JOIN CLASS TRIAL button on the players' hourglass screen; it takes them here to pick their character">✉ Invite players</button>
+    <button class="btn" id="sweepBtn" title="Sweep the room: the camera pans slowly along the Primes, then back to the speaker (S)">↻ Sweep</button>
     <button class="btn ghost" id="exampleBtn" title="Seat the example cast">Example seating</button>
     <button class="btn ghost" id="clearBtn">Clear the room</button>
     <span class="lbl">Players</span>
@@ -265,6 +270,7 @@
     <span><b>Type words</b> above the jury, then click any banner style</span>
     <span><b>〰</b> on an NPC's token: wavering (Resolve 4) — they tremble on every screen</span>
     <span><b>Court in session</b>: moving an NPC to another area = the camera follows them + a banner</span>
+    <span><b>✉ Invite players</b>: the hourglass stops and shows them a JOIN CLASS TRIAL button</span>
     <span><b>Players</b> join at <b>/trial</b>: they pick a character, press SPEAK or REACTION, wear emotes</span>
   </div>
 
@@ -377,9 +383,14 @@
         tokCache[k].classList.toggle('waver', !!(state.waver || {})[k]);
       });
       // top bar
+      const inv = !!(state.invite && state.invite.on);
+      $('#inviteBtn').classList.toggle('on', inv);
+      $('#inviteBtn').textContent = inv ? '✉ Players invited ✕' : '✉ Invite players';
+      $('#inviteBtn').title = inv ? 'The hourglass shows JOIN CLASS TRIAL. Click to withdraw the invitation (the hourglass stays paused; resume it from the cockpit).'
+        : 'Stops the hourglass (dramatically) and shows a JOIN CLASS TRIAL button on the players\' hourglass screen; it takes them here to pick their character';
       const ob = $('#openBtn');
       ob.classList.toggle('on', !!state.open);
-      ob.textContent = state.open ? 'Court in session' : 'Court closed — players see the waiting screen';
+      ob.textContent = state.open ? 'Court in session' : 'Court closed';
       const fk = state.focus.key && C.BY_KEY[state.focus.key];
       $('#counterBtn').innerHTML = 'COUNTER!<kbd>C</kbd>' + (fk && fk.cutin ? '<small>' + fk.name + "'s cut-in</small>" : '');
       $('#exampleBtn').style.display = Object.keys(state.slots).length ? 'none' : '';
@@ -557,6 +568,7 @@
 
     /* ---------- controls ---------- */
     $('#openBtn').onclick = () => act({ action: 'open', open: !state.open });
+    $('#inviteBtn').onclick = () => act({ action: 'invite', on: !(state.invite && state.invite.on) });
     $('#expandBtn').onclick = (e) => { e.stopPropagation(); $('#preview').classList.toggle('big'); };
     $('#sweepBtn').onclick = () => act({ action: 'sweep' });
     // two clicks instead of confirm(): some browsers / embedded views silently refuse dialogs

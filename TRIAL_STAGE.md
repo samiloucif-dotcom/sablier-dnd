@@ -8,6 +8,14 @@ Added 2026-10-13, reworked 2026-10-14. A courtroom you drive from a GM dashboard
 | GM dashboard | `GM_PATH/trial` (link "⚖ Class Trial stage" bottom-right of the cockpit) |
 | Players | `/trial` — they pick their character; the stage shows a waiting screen until you press **Court closed → Court in session** |
 
+## Inviting the players
+**✉ Invite players** (top bar of the dashboard) is the way in from the hourglass:
+1. The hourglass is paused (the server pauses it, exactly like the cockpit's Pause).
+2. On the players' hourglass screen (`/`) time stops: violet flash, the screen shakes, a shockwave from the glass's neck, a tape-stop sound and a deep bell (for players who enabled sound), the grains freeze in mid-air, the hourglass goes grey, "TIME STANDS STILL" under the clock.
+3. **JOIN CLASS TRIAL** slams in over the middle of the hourglass ("The court awaits"). It takes them to `/trial`, where they pick their character.
+
+The button stays until you click **✉ Players invited ✕** to withdraw it (also after a reload). Withdrawing does not restart the hourglass, and opening the court is still your **Court closed / Court in session** button. Resume the hourglass from the cockpit as usual; if you do it while the invitation is still out, the sand flows again and the button stays.
+
 ## The stage
 The courtroom is seen from the front: **defense on the left, the jury in the centre, the prosecution on the right, and the bench (Polychroma + her two specialists) raised above the jury's centre**, in front of the three thrones of the tribunal.
 
@@ -52,7 +60,7 @@ On `/trial` each player:
 1. **Picks their character** among Angèle, Pryah, Askii, Müne and Bardik. A taken character is locked for everyone else. The choice is remembered on that device (reloading keeps it). "Just watch" = spectator. "Change character" (their name, bottom-left) lets go.
 2. **Presses SPEAK** — they take the floor: the camera moves to their character on every screen, yours included, exactly as if you had clicked their token (no banner). One per 1.2 s per player; only while the court is in session and their character is seated.
 3. **Presses REACTION!** — to interrupt: the camera moves to them and the REACTION banner plays once it lands. One per 2.5 s per player; only while the court is in session.
-4. **Wears emotes** — five buttons at the bottom. Emote 1 is their own sprite and can't be changed. Emotes 2–5: they give a name and upload a picture (shrunk and trimmed in their browser; a PNG with a transparent background looks best). Clicking an emote swaps their sprite for everyone, without moving the camera.
+4. **Wears emotes** — five buttons at the bottom. Emote 1 is their own sprite and can't be changed. Emotes 2–5: they give a name and upload a picture (shrunk and trimmed in their browser; a PNG with a transparent background looks best). Clicking an emote swaps their sprite for everyone, without moving the camera. In a small window the emote window scrolls and its Save / Cancel row stays pinned at the bottom.
 5. **Sees who sides with whom** — around the stage, the 11 NPC Primes' tokens: Defense in the left strip, Prosecution in the right one, the Jury along the top, each with a count. A token moves to its new strip when the NPC starts walking on stage. Trembling tokens = wavering. **⚖** (or T) hides/shows the strips on that screen. Hidden while the court is closed.
 
 **SPEAK / REACTION switches:** the two pills in your top bar ("Players · SPEAK · REACTION"). Click one to switch it off for the whole table (it turns grey and struck through); click again to switch it back on. With both off, the players' buttons read "listen" under a "THE JUDGE ASKS YOU TO LISTEN" label.
@@ -63,14 +71,15 @@ On your dashboard, **Players at the table** (under the defense) shows who is pla
 | File | Role |
 |---|---|
 | `trial_core.js` | Cast list, seats, the line order, banner styles, the GM reducer and the player actions. **Public file** — no GM secrets in it. |
-| `trial_server.js` | Shared state + emote pictures. Saves the room (seats, open/closed, who is wavering) and the players' side (who plays whom, emote names, SPEAK/REACTION switches) to `trial.json`, the pictures to `trial_emotes/`, and — with GH_TOKEN — all of it to the GitHub `data` branch like the timeline and the board. Clicks, banners and side-change moments are never saved. |
+| `trial_server.js` | Shared state + emote pictures. Saves the room (seats, open/closed, who is wavering, the invitation) and the players' side (who plays whom, emote names, SPEAK/REACTION switches) to `trial.json`, the pictures to `trial_emotes/`, and — with GH_TOKEN — all of it to the GitHub `data` branch like the timeline and the board. Clicks, banners and side-change moments are never saved. |
 | `trial_stage.js` | The stage renderer (camera, tilt, group shot, background, banners, emotes, synthesised sound). Used by both pages. |
 | `trial_gm.html`, `trial.html` | The two pages. |
 | `trial_bg.jpg` | The tribunal (`07_Citadel and maps/Scenes/X Class Trial Tribunal`), 2048 px wide. |
 | `public/sprites/<key>.webp` | Transparent full-body sprites, cropped from `01_Characters/transp/`. |
 | `public/cutins/<key>.webp` | COUNTER cut-ins, from the five `Trial_Counter_*.jpeg` images. |
 | `public/tokens/token_angele.webp` | New token (the others were already there). |
-| `server.js` | Hooks: require, public routes (`/trial`, `/trial/state`, `/trial/play`, `/trial/emote/…`, `/trial_core.js`, `/trial_stage.js`, `/trial_bg.jpg`, `/sprites/`, `/cutins/`), GM routes, POST. |
+| `player.html` | The hourglass screen: also plays the time-stop and shows JOIN CLASS TRIAL when you invite the players. |
+| `server.js` | Hooks: require, the invitation in `/state` (and the pause when you invite), public routes (`/trial`, `/trial/state`, `/trial/play`, `/trial/emote/…`, `/trial_core.js`, `/trial_stage.js`, `/trial_bg.jpg`, `/sprites/`, `/cutins/`), GM routes, POST. |
 
 ## Changing things
 - **Add a character:** one line in `CAST` (`trial_core.js`) + `public/sprites/<key>.webp` (+ `public/cutins/<key>.webp` and `cutin: true` for a COUNTER card). Never add a hidden identity there: players' browsers load that file.

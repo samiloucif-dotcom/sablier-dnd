@@ -148,6 +148,7 @@
       sweep: { seq: 0, at: 0 },
       waver: {},              // cast key -> 1: trembling, about to take a side
       moves: { seq: 0, list: [] },   // the last side changes (moments, never saved)
+      invite: { on: false, at: 0 },  // "Invite players": the hourglass stops and shows JOIN CLASS TRIAL
       players: { claims: {}, react: true, speak: true, emotes: {}, emoteOn: {}, lastReact: {}, lastSpeak: {} },
       updated: '',
     };
@@ -159,6 +160,7 @@
     return {
       v: 1, open: !!st.open, route: st.route, slots: Object.assign({}, st.slots), updated: st.updated,
       waver: Object.assign({}, st.waver || {}),
+      invite: { on: !!(st.invite && st.invite.on), at: (st.invite && st.invite.at) || 0 },
       players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
     };
@@ -176,6 +178,7 @@
     });
     st.updated = String(raw.updated || '');
     Object.keys(raw.waver || {}).forEach((k) => { if (raw.waver[k] && canWaver(st, k)) st.waver[k] = 1; });
+    if (raw.invite && typeof raw.invite === 'object') st.invite = { on: !!raw.invite.on, at: Number(raw.invite.at) || 0 };
     const rp = raw.players || {};
     const used = {};
     Object.keys(rp.claims || {}).forEach((k) => {
@@ -219,6 +222,7 @@
     if (!st.players) st.players = initialState().players;
     if (!st.waver) st.waver = {};
     if (!st.moves) st.moves = { seq: 0, list: [] };
+    if (!st.invite) st.invite = { on: false, at: 0 };
     let persist = false;
     switch (a.action) {
       case 'place': {
@@ -306,6 +310,13 @@
         break;
       case 'open':
         st.open = !!a.open;
+        persist = true;
+        break;
+      /* "Invite players": the hourglass page (/) freezes and shows a JOIN CLASS
+         TRIAL button that leads to /trial. The server also pauses the hourglass. */
+      case 'invite':
+        if (!!a.on === !!st.invite.on) return { changed: false };
+        st.invite = { on: !!a.on, at: now };
         persist = true;
         break;
       case 'route':

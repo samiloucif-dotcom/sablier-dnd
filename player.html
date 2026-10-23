@@ -5,6 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>The Hourglass</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Class Trial invitation: time stops, JOIN CLASS TRIAL ---------- */
+    .tstop { position: fixed; inset: 0; z-index: 6; pointer-events: none; visibility: hidden; }
+    .tstop.on { visibility: visible; }
+    .tst-veil { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease-out;
+      background: radial-gradient(ellipse at 50% 46%, rgba(60,20,110,.06) 0%, rgba(34,10,60,.5) 52%, rgba(6,2,14,.9) 100%); }
+    .tstop.on .tst-veil { opacity: 1; }
+    .tst-at { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+    .tst-ring { position: absolute; left: 0; top: 0; width: 70vmax; height: 70vmax; border-radius: 50%;
+      border: 3px solid rgba(220,190,255,.95); box-shadow: 0 0 40px rgba(180,140,255,.75), inset 0 0 50px rgba(180,140,255,.5);
+      transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    .tstop.intro .tst-ring { animation: tstRing 1.15s cubic-bezier(.12,.7,.3,1) forwards; }
+    .tstop.intro .tst-ring.r2 { animation-delay: .2s; border-color: rgba(241,198,110,.9); }
+    @keyframes tstRing { 0% { transform: translate(-50%, -50%) scale(.02); opacity: 1 } 100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0 } }
+    .tst-box { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .tst-await { font: 700 clamp(12px, 1.5vw, 17px)/1 'Cinzel', Georgia, serif; letter-spacing: .42em; padding-left: .42em; color: #eadbff;
+      text-shadow: 0 2px 8px #000, 0 0 18px rgba(150,90,255,.6); white-space: nowrap; }
+    .tst-join { pointer-events: auto; display: block; white-space: nowrap; text-decoration: none; cursor: pointer;
+      font: 400 clamp(26px, 4.4vw, 56px)/1 'Anton', Impact, 'Arial Black', sans-serif; letter-spacing: .06em; color: #f7d684;
+      padding: .36em .9em .42em; border-radius: 14px; border: 3px solid #f1c66e; transform: skewX(-8deg);
+      background: linear-gradient(180deg, #55209a, #2a1150); text-shadow: 3px 3px 0 #3b0d2a;
+      box-shadow: 0 8px 0 #160828, 0 0 26px rgba(241,198,110,.4), 0 0 70px rgba(150,90,255,.35);
+      animation: tstPulse 2.4s ease-in-out infinite; }
+    .tst-join:hover { filter: brightness(1.18); }
+    .tst-join:active { transform: skewX(-8deg) translateY(5px); box-shadow: 0 3px 0 #160828; }
+    @keyframes tstPulse { 0%, 100% { box-shadow: 0 8px 0 #160828, 0 0 26px rgba(241,198,110,.4), 0 0 70px rgba(150,90,255,.35) }
+      50% { box-shadow: 0 8px 0 #160828, 0 0 40px rgba(241,198,110,.75), 0 0 120px rgba(150,90,255,.6) } }
+    .tstop.intro .tst-join { animation: tstSlam .5s cubic-bezier(.2,1.5,.4,1) 1.2s both, tstPulse 2.4s ease-in-out 1.8s infinite; }
+    .tstop.intro .tst-await { animation: tstFade .8s ease-out 1.65s both; }
+    @keyframes tstSlam { from { transform: skewX(-8deg) scale(2.8); opacity: 0; filter: blur(10px) } to { transform: skewX(-8deg) scale(1); opacity: 1; filter: none } }
+    @keyframes tstFade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+    /* the room while time stands still: the glass goes grey, the sand hangs in the air */
+    .player-page .hg-frame .frame-img { transition: filter 1.4s; }
+    .player-page.frozen .hg-frame .frame-img { filter: drop-shadow(0 18px 44px rgba(0,0,0,.6)) saturate(.25) brightness(.78) contrast(1.08); }
+    #sandG.frozen #particles circle { fill: #fff4d6; animation: tstGlint 1.4s ease-in-out infinite alternate; }
+    #sandG.frozen #stream { fill: #fff0c8; opacity: .85; }
+    @keyframes tstGlint { from { opacity: .45 } to { opacity: 1 } }
+    .player-page.frozen .digital { color: #dccbff; text-shadow: 0 0 16px rgba(170,120,255,.65), 0 2px 4px rgba(0,0,0,.7); }
+    .player-page.frozen .paused-badge { color: #eadbff; letter-spacing: 5px; }
+    .player-page.shake { animation: pShake .65s linear; }
+    @keyframes pShake { 0% { transform: none } 12% { transform: translate(-10px, 6px) } 24% { transform: translate(9px, -7px) } 36% { transform: translate(-7px, -4px) }
+      50% { transform: translate(6px, 5px) } 65% { transform: translate(-4px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: none } }
+    .flash.violet { background: #d2b4ff; }
+    .flash.violet.go { animation: flashV .9s ease-out; }
+    @keyframes flashV { 0% { opacity: .85 } 100% { opacity: 0 } }
+  </style>
 </head>
 <body>
   <div class="player-page" id="page">
@@ -97,6 +146,18 @@
   </div>
   <div class="flash" id="flash"></div>
 
+  <!-- Class Trial invitation (the GM's "Invite players"): time stops, then JOIN CLASS TRIAL -->
+  <div class="tstop" id="tstop">
+    <div class="tst-veil"></div>
+    <div class="tst-at" id="tstAt">
+      <div class="tst-ring"></div><div class="tst-ring r2"></div>
+      <div class="tst-box">
+        <div class="tst-await">The court awaits</div>
+        <a class="tst-join" id="tstJoin" href="/trial">JOIN CLASS TRIAL</a>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
   <script>
     // Géométrie du verre (viewBox 1024x1536, mesurée sur le cadre FINAL)
@@ -154,7 +215,7 @@
       sandTop.setAttribute('d', sandPath(ySurf, NECK, dipT, false));
       sandBot.setAttribute('d', sandPath(yFill, GB, moundB, true));
 
-      var flowing = running && f > 0.001 && f < 0.999;
+      var flowing = (running || frozen) && f > 0.001 && f < 0.999;   // frozen: the falling sand hangs in the air
       if (flowing){
         stream.setAttribute('y', NECK);
         stream.setAttribute('height', Math.max(0, yFill-NECK));
@@ -163,7 +224,8 @@
 
       var now = performance.now();
       var dt = lastTs ? Math.min(0.05,(now-lastTs)/1000) : 0; lastTs = now;
-      if (flowing && Math.random() < 0.7) spawnParticle(yFill);
+      if (frozen) dt = 0;
+      if (running && flowing && Math.random() < 0.7) spawnParticle(yFill);
       for (var i=particles.length-1;i>=0;i--){
         var p=particles[i]; p.y += p.v*dt;
         if (p.y >= p.tgt-2 || p.y > GB){ p.el.remove(); particles.splice(i,1); continue; }
@@ -225,8 +287,62 @@
       mcHour.setAttribute('transform', 'rotate(' + (270 + mins * 0.5).toFixed(2) + ' 100 100)');
     }
 
+    /* ---------- Class Trial invitation ----------
+       The GM presses "Invite players" on the trial dashboard: the hourglass is
+       paused and, here, time stops — violet flash, a shockwave from the neck,
+       the grains freeze in mid-air — then JOIN CLASS TRIAL slams in. It leads to
+       /trial, where each player picks their character. */
+    var frozen = false, inviteAt = null;
+    var tstop = document.getElementById('tstop'), tstAt = document.getElementById('tstAt');
+    var badge = document.querySelector('.paused-badge');
+    var hgFrame = document.getElementById('hgFrame');
+    function placeInvite() {
+      var r = hgFrame.getBoundingClientRect();
+      tstAt.style.left = (r.left + r.width / 2) + 'px';
+      tstAt.style.top = (r.top + r.height * (NECK / 1536)) + 'px';     // right on the glass's neck
+    }
+    window.addEventListener('resize', placeInvite);
+    function playFreeze() {
+      if (!soundReady || soundMuted || !audioCtx) return;
+      unlockAudio();
+      var c = audioCtx, t = c.currentTime;
+      // a tape-stop: everything winds down...
+      var o = c.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(700, t); o.frequency.exponentialRampToValueAtTime(38, t + 1.25);
+      var lp = c.createBiquadFilter(); lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(2600, t); lp.frequency.exponentialRampToValueAtTime(160, t + 1.25);
+      var g = c.createGain(); g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.32, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.35);
+      o.connect(lp); lp.connect(g); g.connect(masterGain || c.destination); o.start(t); o.stop(t + 1.4);
+      // ...then a deep bell as the invitation lands
+      tone(98, 1.2, 2.8, 0.7); tone(147, 1.22, 2.4, 0.45); tone(392, 1.24, 1.6, 0.25, 'triangle');
+    }
+    function stopTime() {
+      placeInvite();
+      tstop.classList.remove('intro'); void tstop.offsetWidth; tstop.classList.add('intro');
+      page.classList.remove('shake'); void page.offsetWidth; page.classList.add('shake');
+      flash.classList.add('violet'); doFlash();
+      setTimeout(function () { flash.classList.remove('violet'); }, 950);
+      playFreeze();
+    }
+    function applyInvite(s) {
+      var inv = s.invite || { on: false, at: 0 };
+      var fresh = inviteAt !== null && inv.at !== inviteAt && inv.on && (s.serverNow - inv.at) < 15000;
+      inviteAt = inv.at;
+      var wasFrozen = frozen;
+      frozen = !!inv.on && !s.running;
+      page.classList.toggle('frozen', frozen);
+      sandG.classList.toggle('frozen', frozen);
+      if (frozen && !wasFrozen) particles.forEach(function (p) { p.el.style.animationDelay = (-Math.random() * 1.4).toFixed(2) + 's'; });
+      badge.textContent = frozen ? 'Time stands still' : 'Paused';
+      if (inv.on && !tstop.classList.contains('on')) placeInvite();
+      tstop.classList.toggle('on', !!inv.on);
+      if (!inv.on) tstop.classList.remove('intro');
+      if (fresh) stopTime();
+    }
+
     startSync({
-      onState: function (s) { page.classList.toggle('paused', !s.running); },
+      onState: function (s) { page.classList.toggle('paused', !s.running); applyInvite(s); },
       onFrame: function (rem, s) { renderSand(rem, s); renderClock(rem, s); clock.textContent = fmt(rem); },
       onEvent: function (e) {
         if (e.kind === 'timer' || e.kind === 'end') { playAlert(e.kind); doFlash(); }

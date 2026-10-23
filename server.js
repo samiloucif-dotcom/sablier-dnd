@@ -407,6 +407,7 @@ function snapshot(gm) {
     improEvents: gm ? state.improEvents : [],
     timelineRev: state.timelineRev,
     timelineUpdated: state.timeline ? state.timeline.updated : null,
+    invite: TRIAL.invite ? TRIAL.invite() : { on: false, at: 0 },   /* Class Trial invitation: JOIN button on the hourglass page */
     saveOk: !saveWarned || STORE.enabled,
     store: { kind: STORE.etat.kind, ok: STORE.etat.ok, at: STORE.etat.at,
              saving: STORE.etat.saving, err: STORE.etat.err, branch: STORE.BRANCH },
@@ -576,7 +577,12 @@ const server = http.createServer((req, res) => {
         try { payload = JSON.parse(body || '{}'); } catch (e) {}
         if (isGmAction) { handleAction(payload); return sendJSON(res, snapshot(true)); }
         if (isGmBoard)  { BOARD.wardenAction(payload); return sendJSON(res, BOARD.wardenView()); }
-        if (isGmTrial)  { TRIAL.gmAction(payload); return sendJSON(res, TRIAL.gmView()); }
+        if (isGmTrial)  {
+          TRIAL.gmAction(payload);
+          // "Invite players" also stops the hourglass (the cockpit's own Play resumes it)
+          if (payload.action === 'invite' && payload.on) handleAction({ action: 'pause' });
+          return sendJSON(res, TRIAL.gmView());
+        }
         if (isTrialPlayer) {
           const r = TRIAL.playerAction(payload);
           return sendJSON(res, Object.assign(r, { state: TRIAL.playerView(payload.cid) }));
