@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-23T17:06:54.971Z",
+ "updated": "2026-10-23T17:07:30.821Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -32,7 +32,7 @@
   "claims": {
    "angele": "bjgb6x22h5eidfs4xv"
   },
-  "react": true,
+  "react": false,
   "speak": true,
   "emotes": {
    "pryah": {
