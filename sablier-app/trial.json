@@ -11,14 +11,10 @@
   "T2": "polychroma",
   "T1": "eve"
  },
- "updated": "2026-10-23T16:43:34.211Z",
+ "updated": "2026-10-23T16:43:49.164Z",
  "waver": {},
  "players": {
-  "claims": {
-   "mune": "2p66u7xxqyxfymig9a",
-   "bardik": "bjgb6x22h5eidfs4xv",
-   "pryah": "2crhmw8vzdfbha2qcd"
-  },
+  "claims": {},
   "react": false,
   "speak": false,
   "emotes": {
@@ -36,8 +32,8 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
-   "bardik": 2
+   "pryah": 1,
+   "bardik": 1
   }
  }
 }
