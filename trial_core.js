@@ -108,7 +108,33 @@
   const PCS = CAST.filter((c) => c.group === 'pc').map((c) => c.key);
   const EMOTE_SLOTS = [2, 3, 4, 5];       // emote 1 is always the character's own sprite
   const REACT_COOLDOWN = 2500;            // ms between two REACTIONs of the same player
+  const SPEAK_COOLDOWN = 1200;            // ms between two SPEAKs of the same player
   const validCid = (cid) => typeof cid === 'string' && /^[A-Za-z0-9_-]{8,64}$/.test(cid);
+
+  /* ---------- taking sides ----------
+     An NPC (anyone but the five PCs) who goes from one area to another:
+       jury → defense        'defense'      "[Name] joined the Defense team"
+       jury → prosecution    'prosecution'  "[Name] joined the Prosecution team"
+       defense/prosecution → jury  'jury'   "[Name] is back on the Jury pool"
+       defense ↔ prosecution 'switch'       "[Name] switched sides!"
+     While the court is in session each one becomes a moment every screen
+     stages the same way: the camera goes to them, follows them to their new
+     seat, and the banner plays. */
+  const AREA = { defense: 0, jury: 1, prosecution: 2 };
+  function sideShift(key, from, to) {
+    const c = BY_KEY[key];
+    if (!c || c.group === 'pc' || !from || !to || !SLOT[from] || !SLOT[to]) return null;
+    const a = SLOT[from].side, b = SLOT[to].side;
+    if (a === b || !(a in AREA) || !(b in AREA)) return null;
+    return b === 'jury' ? 'jury' : a === 'jury' ? b : 'switch';
+  }
+  /* "Wavering" (a juror's Resolve has reached 4 in the GM's tracker): their
+     sprite and token tremble. Only an NPC seated on the floor can waver; taking
+     a side, leaving the room or a new seating clears it. */
+  const canWaver = (st, key) => {
+    const c = BY_KEY[key], sid = slotOf(st, key);
+    return !!(c && c.group !== 'pc' && sid && SLOT[sid].side !== 'bench');
+  };
 
   function initialState() {
     return {
@@ -120,7 +146,9 @@
       focus: { key: null, seq: 0, at: 0 },
       fx: { kind: null, text: '', key: null, seq: 0, at: 0 },
       sweep: { seq: 0, at: 0 },
-      players: { claims: {}, react: true, emotes: {}, emoteOn: {}, lastReact: {} },
+      waver: {},              // cast key -> 1: trembling, about to take a side
+      moves: { seq: 0, list: [] },   // the last side changes (moments, never saved)
+      players: { claims: {}, react: true, speak: true, emotes: {}, emoteOn: {}, lastReact: {}, lastSpeak: {} },
       updated: '',
     };
   }
@@ -130,7 +158,8 @@
     const p = st.players;
     return {
       v: 1, open: !!st.open, route: st.route, slots: Object.assign({}, st.slots), updated: st.updated,
-      players: { claims: Object.assign({}, p.claims), react: p.react !== false,
+      waver: Object.assign({}, st.waver || {}),
+      players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
     };
   }
@@ -146,6 +175,7 @@
       if (SLOT[sid] && BY_KEY[k] && !seen[k]) { st.slots[sid] = k; seen[k] = true; }
     });
     st.updated = String(raw.updated || '');
+    Object.keys(raw.waver || {}).forEach((k) => { if (raw.waver[k] && canWaver(st, k)) st.waver[k] = 1; });
     const rp = raw.players || {};
     const used = {};
     Object.keys(rp.claims || {}).forEach((k) => {
@@ -153,6 +183,7 @@
       if (PCS.indexOf(k) >= 0 && validCid(cid) && !used[cid]) { st.players.claims[k] = cid; used[cid] = true; }
     });
     st.players.react = rp.react !== false;
+    st.players.speak = rp.speak !== false;
     Object.keys(rp.emotes || {}).forEach((k) => {
       if (PCS.indexOf(k) < 0) return;
       EMOTE_SLOTS.forEach((n) => {
@@ -186,6 +217,8 @@
     a = a || {};
     now = now || Date.now();
     if (!st.players) st.players = initialState().players;
+    if (!st.waver) st.waver = {};
+    if (!st.moves) st.moves = { seq: 0, list: [] };
     let persist = false;
     switch (a.action) {
       case 'place': {
@@ -196,7 +229,23 @@
         const other = st.slots[to] || null;
         st.slots[to] = key;
         if (from) { if (other) st.slots[from] = other; else delete st.slots[from]; }
-        else if (other && st.focus.key === other) st.focus.key = null;   // bumped back to the pool
+        else if (other) {                                   // bumped back to the pool
+          if (st.focus.key === other) st.focus.key = null;
+          delete st.waver[other];
+        }
+        // taking sides
+        const k1 = sideShift(key, from, to), k2 = from && other ? sideShift(other, to, from) : null;
+        if (k1) delete st.waver[key];
+        if (k2) delete st.waver[other];
+        if (st.slots[to] === key && SLOT[to].side === 'bench') delete st.waver[key];
+        if (st.open && (k1 || k2)) {
+          const one = { key, from, to, kind: k1 };
+          const two = from && other ? { key: other, from: to, to: from, kind: k2 } : null;
+          const main = k1 ? one : two, mate = k1 ? two : one;
+          const id = st.moves.seq + 1;
+          st.moves = { seq: id, list: st.moves.list.concat([Object.assign({ id, at: now, with: mate }, main)]).slice(-6) };
+          st.focus.key = main.key;     // the camera ends on them; no new focus seq: every screen stages the move itself
+        }
         persist = true;
         break;
       }
@@ -204,19 +253,34 @@
         const from = slotOf(st, String(a.key || ''));
         if (!from) return { changed: false };
         delete st.slots[from];
+        delete st.waver[a.key];
         if (st.focus.key === a.key) st.focus.key = null;
         persist = true;
         break;
       }
       case 'clear':
         st.slots = {};
+        st.waver = {};
         st.focus.key = null;
         persist = true;
         break;
       case 'load': {
         const clean = sanitize({ slots: a.slots, open: st.open, route: st.route });
         st.slots = clean.slots;
+        st.waver = {};
         if (st.focus.key && !slotOf(st, st.focus.key)) st.focus.key = null;
+        persist = true;
+        break;
+      }
+      case 'waver': {
+        const key = String(a.key || '');
+        if (a.on) {
+          if (!canWaver(st, key) || st.waver[key]) return { changed: false };
+          st.waver[key] = 1;
+        } else {
+          if (!st.waver[key]) return { changed: false };
+          delete st.waver[key];
+        }
         persist = true;
         break;
       }
@@ -259,6 +323,10 @@
       }
       case 'allowReact':
         st.players.react = !!a.on;
+        persist = true;
+        break;
+      case 'allowSpeak':
+        st.players.speak = !!a.on;
         persist = true;
         break;
       case 'emoteReset':                       // GM puts a PC back on their own sprite
@@ -318,6 +386,17 @@
         st.fx = { kind: 'reaction', text: '', key: mine, seq: st.fx.seq + 1, at: now };
         break;
       }
+      case 'speak': {                        // takes the floor: the camera comes to them, no banner
+        if (!mine) return { changed: false, error: 'pick a character first' };
+        if (!st.open) return { changed: false, error: 'the court is not in session' };
+        if (P.speak === false) return { changed: false, error: 'the judge asks you to listen' };
+        if (!slotOf(st, mine)) return { changed: false, error: 'your character is not in the courtroom' };
+        if (!P.lastSpeak) P.lastSpeak = {};
+        if (now - (P.lastSpeak[mine] || 0) < SPEAK_COOLDOWN) return { changed: false, error: 'too soon' };
+        P.lastSpeak[mine] = now;
+        st.focus = { key: mine, seq: st.focus.seq + 1, at: now };
+        break;
+      }
       case 'emote': {
         const n = Number(a.n);
         if (!mine) return { changed: false, error: 'pick a character first' };
@@ -357,7 +436,8 @@
     Object.keys(P.emotes).forEach((k) => {
       emotes[k] = EMOTE_SLOTS.filter((n) => P.emotes[k][n]).map((n) => ({ n, name: P.emotes[k][n].name, ver: P.emotes[k][n].ver }));
     });
-    return { taken: Object.keys(P.claims), mine: claimOf(st, cid), react: P.react !== false, emotes, emoteOn: Object.assign({}, P.emoteOn) };
+    return { taken: Object.keys(P.claims), mine: claimOf(st, cid), react: P.react !== false, speak: P.speak !== false,
+      emotes, emoteOn: Object.assign({}, P.emoteOn) };
   }
 
   /* Players get nothing about the room until the court is open. */
@@ -366,7 +446,8 @@
     if (!st.open) return { rev: st.rev, open: false, serverNow: now, players };
     return {
       rev: st.rev, open: true, route: st.route,
-      slots: st.slots, focus: st.focus, fx: st.fx, sweep: st.sweep, serverNow: now, players,
+      slots: st.slots, focus: st.focus, fx: st.fx, sweep: st.sweep,
+      waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players,
     };
   }
 
@@ -378,8 +459,9 @@
   }
 
   const api = {
-    CAST, BY_KEY, SLOTS, SLOT, LINE, BENCH, RING, PROSECUTION_CORE, FX_KINDS, PCS, EMOTE_SLOTS, REACT_COOLDOWN,
+    CAST, BY_KEY, SLOTS, SLOT, LINE, BENCH, RING, PROSECUTION_CORE, FX_KINDS, PCS, EMOTE_SLOTS, REACT_COOLDOWN, SPEAK_COOLDOWN,
     initialState, persistable, sanitize, reduce, playerAct, playerView, gmView, playersPublic, slotOf, claimOf, validCid,
+    sideShift, canWaver,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TrialCore = api;

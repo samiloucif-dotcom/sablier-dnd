@@ -191,6 +191,23 @@
 /* an emote just changed */
 .ts-pop{animation:tsPop .38s cubic-bezier(.2,1.6,.4,1)}
 @keyframes tsPop{0%{transform:scale(.86)}100%{transform:none}}
+/* wavering: about to take a side — a nervous tremble every couple of seconds */
+.ts-sprite{transform-origin:50% 100%}
+.ts-sprite.ts-waver{animation:tsWaver 1.9s linear infinite;animation-delay:var(--wd,0s)}
+@keyframes tsWaver{0%,46%,100%{transform:translateX(-50%)}
+  49%{transform:translateX(calc(-50% - 9px)) rotate(-1.3deg)}52%{transform:translateX(calc(-50% + 8px)) rotate(1.1deg)}
+  55%{transform:translateX(calc(-50% - 7px)) rotate(-1deg)}58%{transform:translateX(calc(-50% + 7px)) rotate(.9deg)}
+  61%{transform:translateX(calc(-50% - 5px)) rotate(-.7deg)}64%{transform:translateX(calc(-50% + 5px)) rotate(.6deg)}
+  67%{transform:translateX(calc(-50% - 3px)) rotate(-.4deg)}70%{transform:translateX(calc(-50% + 3px)) rotate(.3deg)}
+  74%{transform:translateX(calc(-50% - 1px))}78%{transform:translateX(-50%)}}
+/* taking sides: the name, then what they did */
+.ts-sideline{position:absolute;left:0;right:0;top:calc(var(--sh)*.105);transform:skewX(-11deg);text-align:center;white-space:nowrap;
+  font:800 var(--fs2,calc(var(--sh)*.05))/1 'Cinzel',Georgia,serif;letter-spacing:.14em;color:var(--ink2,#fff);
+  text-shadow:0 3px 0 #000,0 0 calc(var(--sh)*.03) rgba(0,0,0,.8);opacity:0;
+  animation:tsSideIn .45s cubic-bezier(.2,1.3,.4,1) .55s forwards,tsWordOut .35s ease-in var(--d1,2.55s) forwards}
+@keyframes tsSideIn{from{opacity:0;transform:skewX(-11deg) translateX(var(--from,-8%))}to{opacity:1;transform:skewX(-11deg)}}
+.ts-sidesplit{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;animation:tsShockF .6s ease-out forwards;
+  background:linear-gradient(100deg,rgba(226,70,92,.85) 0 48%,rgba(63,208,234,.85) 52% 100%)}
 /* REACTION! */
 .ts-react-burst{position:absolute;left:-50%;top:-50%;width:200%;height:200%;opacity:0;mix-blend-mode:screen;
   background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,200,40,0) 0 7deg,rgba(255,170,30,.38) 7deg 11deg);
@@ -351,12 +368,17 @@
     host.appendChild(this.root);
 
     this.actors = {};          // key -> actor
-    this.slots = {};
+    this.slots = {};           // what is on screen (side changes still waiting their turn are held back)
+    this._trueSlots = {};      // what the state says
+    this.moveQ = [];           // side changes waiting to be staged, oldest first
+    this.mv = null;            // the one being staged: { e, phase: 'look' | 'walk', t0, pan, until }
+    this._waver = {};
     this.route = 'jury';
     this.first = true;
     this.open = false;
-    this.seq = { focus: -1, fx: -1, sweep: -1 };
+    this.seq = { focus: -1, fx: -1, sweep: -1, move: -1 };
     this.layoutT0 = -1e9;
+    this.layoutMs = CFG.layoutMs;
     this.cam = { th: 0, pitch: 0, pan: null, key: null, settleT0: -1e9, punchT0: -1e9, tilt: 0, tiltTo: 0, prevTh: 0, prevShift: 0 };
     this.g = 0;                // group-shot blend
     this.speedX = 0;
@@ -554,51 +576,29 @@
     if (!this.opts.gm && !this.open) {
       // court closed: players get nothing of the room, not even a glimpse behind the curtain
       Object.keys(this.actors).forEach((k) => { this.actors[k].stand.remove(); delete this.actors[k]; });
-      this._sig = null; this.slots = {}; this.cam.key = null; this.cam.pan = null; this.hidePlate();
+      this._sig = null; this.slots = {}; this._trueSlots = {}; this.cam.key = null; this.cam.pan = null; this.hidePlate();
+      this.moveQ = []; this.mv = null;
       this.fx.innerHTML = '';
-      this.first = true; this.seq = { focus: -1, fx: -1, sweep: -1 };
+      this.first = true; this.seq = { focus: -1, fx: -1, sweep: -1, move: -1 };
+      if (this.opts.onLayout) this.opts.onLayout({}, this);
       return;
     }
     this.route = st.route || 'jury';
 
-    // ---- the room
-    const slots = st.slots || {};
-    const sig = JSON.stringify(slots);
-    if (sig !== this._sig) {
-      this._sig = sig;
-      const lay = this.computeAngles(slots);
-      const ang = lay.ang;
-      this.benchFrom = this.first ? lay.bench.phi : this.benchNow;
-      this.bench = lay.bench;
-      const slotOf = {};
-      Object.keys(slots).forEach((sid) => { slotOf[slots[sid]] = sid; });
-      let anyMove = false;
-      Object.keys(ang).forEach((k) => {
-        let a = this.actors[k];
-        if (!a) {
-          a = this.actors[k] = this.makeActor(k);
-          a.phi = a.phiFrom = a.phiTo = ang[k];
-          a.appear = this.first ? 1 : 0;
-        } else {
-          a.leaving = false;
-          a.phiFrom = a.phi;
-          a.phiTo = ang[k];
-          a.moving = !this.first && a.slot !== slotOf[k];
-          if (Math.abs(a.phiTo - a.phiFrom) > 0.01) anyMove = true;
-        }
-        a.slot = slotOf[k];
-        a.side = CORE.SLOT[a.slot].side;
-        a.pod.style.setProperty('--side', SIDE_COLOR[a.side]);
-        this.dress(a);
+    // ---- the room, and the side changes waiting to be staged
+    this._trueSlots = st.slots || {};
+    this._waver = st.waver || {};
+    const mvs = st.moves || { seq: 0, list: [] };
+    if (this.first || this.seq.move < 0) this.seq.move = mvs.seq;      // never replay what happened before we looked
+    else if (mvs.seq !== this.seq.move) {
+      if (mvs.seq < this.seq.move) this.seq.move = 0;                  // the server restarted
+      (mvs.list || []).forEach((e) => {
+        if (e.id > this.seq.move && age(e.at) < 12000 && !this.moveQ.some((q) => q.id === e.id)) this.moveQ.push(Object.assign({ rx: now }, e));
       });
-      Object.keys(this.actors).forEach((k) => { if (!(k in ang)) this.actors[k].leaving = true; });
-      if (this.first) Object.values(this.actors).forEach((a) => { a.phi = a.phiFrom = a.phiTo; });
-      if (anyMove) this.layoutT0 = now;
-      this.slots = slots;
-      if (this.cam.key && !(this.cam.key in ang)) { this.cam.key = null; this.hidePlate(); }
-      if (this.cam.pan && this.cam.pan.key && !(this.cam.pan.key in ang)) this.cam.pan.key = null;
-      this.updatePlate();
+      this.seq.move = mvs.seq;
+      while (this.moveQ.length > 6) this.moveQ.splice(this.mv && this.mv.phase === 'look' ? 1 : 0, 1);
     }
+    this.applyRoom(now);
 
     // ---- emotes: a player may be wearing another picture than their sprite
     const pl = st.players || {};
@@ -646,7 +646,118 @@
         } else this.playFx(fx);
       }
     }
+    this.applyWaver();
     this.first = false;
+    this.runMoves(now);
+  };
+
+  /* What is on screen: the state's seats, with the side changes still waiting
+     their turn put back where they were. */
+  Stage.prototype.displaySlots = function () {
+    const disp = Object.assign({}, this._trueSlots);
+    this.moveQ.slice().reverse().forEach((e) => {
+      if (e.with) {
+        if (disp[e.to] === e.key && disp[e.from] === e.with.key) { disp[e.from] = e.key; disp[e.to] = e.with.key; }
+      } else if (disp[e.to] === e.key && !disp[e.from]) { delete disp[e.to]; disp[e.from] = e.key; }
+    });
+    return disp;
+  };
+
+  /* Lays the line out again when the seats on screen change. `ms` = how long
+     the walk to the new seats takes. */
+  Stage.prototype.applyRoom = function (now, ms) {
+    const slots = this.displaySlots();
+    const sig = JSON.stringify(slots);
+    if (sig === this._sig) return;
+    this._sig = sig;
+    const lay = this.computeAngles(slots);
+    const ang = lay.ang;
+    this.benchFrom = this.first ? lay.bench.phi : this.benchNow;
+    this.bench = lay.bench;
+    const slotOf = {};
+    Object.keys(slots).forEach((sid) => { slotOf[slots[sid]] = sid; });
+    let anyMove = false;
+    Object.keys(ang).forEach((k) => {
+      let a = this.actors[k];
+      if (!a) {
+        a = this.actors[k] = this.makeActor(k);
+        a.phi = a.phiFrom = a.phiTo = ang[k];
+        a.appear = this.first ? 1 : 0;
+      } else {
+        a.leaving = false;
+        a.phiFrom = a.phi;
+        a.phiTo = ang[k];
+        a.moving = !this.first && a.slot !== slotOf[k];
+        if (Math.abs(a.phiTo - a.phiFrom) > 0.01) anyMove = true;
+      }
+      a.slot = slotOf[k];
+      a.side = CORE.SLOT[a.slot].side;
+      a.pod.style.setProperty('--side', SIDE_COLOR[a.side]);
+      this.dress(a);
+    });
+    Object.keys(this.actors).forEach((k) => { if (!(k in ang)) this.actors[k].leaving = true; });
+    if (this.first) Object.values(this.actors).forEach((a) => { a.phi = a.phiFrom = a.phiTo; });
+    if (anyMove) { this.layoutT0 = now; this.layoutMs = ms || CFG.layoutMs; }
+    this.slots = slots;
+    if (this.cam.key && !(this.cam.key in ang)) { this.cam.key = null; this.hidePlate(); }
+    if (this.cam.pan && this.cam.pan.key && !(this.cam.pan.key in ang)) this.cam.pan.key = null;
+    this.updatePlate();
+    this.applyWaver();
+    if (this.opts.onLayout) this.opts.onLayout(Object.assign({}, slots), this);
+  };
+
+  /* Trembling sprites (wavering jurors), each on its own rhythm. */
+  Stage.prototype.applyWaver = function () {
+    Object.keys(this.actors).forEach((k) => {
+      const a = this.actors[k], on = !!this._waver[k] && !a.leaving;
+      if (a.wv === on) return;
+      a.wv = on;
+      if (on) a.img.style.setProperty('--wd', (-Math.random() * 1.9).toFixed(2) + 's');
+      a.img.classList.toggle('ts-waver', on);
+    });
+  };
+
+  /* ---- taking sides, one at a time:
+     look  — the camera goes to them, still in their old seat;
+     walk  — they walk to their new seat, the camera on them, the banner plays;
+     then the next one. */
+  Stage.prototype.runMoves = function (now) {
+    while (!this.mv && this.moveQ.length) {
+      const e = this.moveQ[0];
+      if (!this.actors[e.key] || now - e.rx > 20000) { this.moveQ.shift(); this.applyRoom(now); continue; }   // gone, or long stale (hidden tab)
+      this.mv = { e, phase: 'look', t0: now };
+      if (this.cam.key === e.key && !this.cam.pan) this.releaseMove(now);
+      else { this.startPan({ key: e.key }); this.mv.pan = this.cam.pan; }
+    }
+  };
+
+  Stage.prototype.releaseMove = function (now) {
+    const mv = this.mv, e = mv.e;
+    if (this.moveQ[0] === e) this.moveQ.shift();
+    const a0 = this.actors[e.key];
+    const from = a0 ? a0.phi : 0;
+    const lay = this.computeAngles(this.displaySlots());
+    const dist = Math.abs((lay.ang[e.key] != null ? lay.ang[e.key] : from) - from);
+    const ms = clamp(1000 + dist * 11, 1300, 2700);                // a long walk takes its time
+    this.applyRoom(now, ms);
+    if (!this.cam.pan && this.actors[e.key]) { this.cam.key = e.key; this.cam.settleT0 = now; }
+    this.hidePlate();
+    this.playFx({ kind: 'side', key: e.key, move: e.kind, from: e.from, to: e.to, mate: e.with });
+    if (this.opts.sound) SFX.whoosh(ms, 0.35);
+    mv.phase = 'walk';
+    mv.until = now + Math.max(ms, 2700) + 250;
+  };
+
+  Stage.prototype.tickMoves = function (now) {
+    const mv = this.mv;
+    if (!mv) return;
+    if (mv.phase === 'look') {
+      if (this.cam.pan !== mv.pan || now - mv.t0 > 4000) this.releaseMove(now);   // landed (or someone took the camera)
+    } else if (now >= mv.until) {
+      this.mv = null;
+      if (this.cam.key === mv.e.key && !this.cam.pan) this.showPlate(mv.e.key);
+      this.runMoves(now);
+    }
   };
 
   Stage.prototype.phiOf = function (key) {
@@ -757,6 +868,13 @@
     counter: { dflt: 'COUNTER!', bg: 'linear-gradient(90deg,#00222c,#0aa6c8 45%,#00222c)', edge: '#001017', ink: '#fff', shadow: '#00303d' },
     custom:  { dflt: '…', bg: 'linear-gradient(90deg,#1a0a2e,#5b2a9c 45%,#1a0a2e)', edge: '#f1c66e', ink: '#fff', shadow: '#2a0b45' },
   };
+  /* taking sides (Sam's words) */
+  const SIDE_FX = {
+    defense:     { line: 'joined the Defense team', bg: 'linear-gradient(90deg,#3a0010,#c21f3c 45%,#3a0010)', edge: '#1a0006', shadow: '#4a0012', ink2: '#ffd9df', flash: '#ff4d6d' },
+    prosecution: { line: 'joined the Prosecution team', bg: 'linear-gradient(90deg,#00222c,#0a9cbc 45%,#00222c)', edge: '#001017', shadow: '#00303d', ink2: '#d6f8ff', flash: '#3fd0ea' },
+    jury:        { line: 'is back on the Jury pool', bg: 'linear-gradient(90deg,#2e1d00,#b8861c 45%,#2e1d00)', edge: '#150d00', shadow: '#3d2700', ink2: '#fff1cc', flash: '#e7b54d' },
+    switch:      { line: 'switched sides!', bg: 'linear-gradient(90deg,#7a0f24,#c21f3c 30%,#5b2a9c 50%,#0a9cbc 70%,#00495a)', edge: '#f1c66e', shadow: '#2a0b45', ink2: '#fff', flash: '#b38cff' },
+  };
   const band = (y, bh, rot, bg, edge, d0, d1) =>
     '<div class="ts-band" style="--y:' + y + ';--bh:' + bh + ';--rot:' + rot + ';--band:' + bg + ';--edge:' + edge
     + (d0 ? ';--d0:' + d0 : '') + (d1 ? ';--d1:' + d1 : '') + '"></div>';
@@ -846,6 +964,25 @@
         life = 2300; sound = 'sting';
         break;
       }
+      case 'side': {
+        const c = fx.key && CORE.BY_KEY[fx.key];
+        const name = (c ? c.name : '?').toUpperCase();
+        const S = SIDE_FX[fx.move] || SIDE_FX.jury;
+        const order = { defense: 0, jury: 1, prosecution: 2 };
+        const a0 = fx.from && CORE.SLOT[fx.from], a1 = fx.to && CORE.SLOT[fx.to];
+        const rightward = a0 && a1 ? order[a1.side] > order[a0.side] : true;       // which way they walk
+        const line = S.line;
+        html = (fx.move === 'switch' ? '<div class="ts-sidesplit"></div>' : '<div class="ts-flash soft" style="background:' + S.flash + '"></div>')
+          + band('50%', '16%', '-6deg', S.bg, S.edge, '', '2.5s')
+          + '<div class="ts-ww" style="--y:45%;--rot:-6deg"><div class="ts-word ' + (rightward ? 'slide' : 'slideR') + '" style="--fs:calc(var(--sh)*'
+          + fit([name], 0.15, 2.6).toFixed(3) + ');--ink:#fff;--shadow:' + S.shadow + ';--d1:2.55s">' + lettersLines([name]) + '</div>'
+          + '<div class="ts-sideline" style="--from:' + (rightward ? '-9%' : '9%') + ';--ink2:' + S.ink2 + ';--fs2:calc(var(--sh)*'
+          + fit([line], 0.05, 1.25).toFixed(3) + ')">' + esc(line) + '</div></div>';
+        shake = fx.move === 'switch' ? 'big' : null;
+        life = 2950;
+        sound = fx.move === 'jury' ? 'slam' : 'sting';
+        break;
+      }
       case 'whisper': {
         const lines = own.length ? own : ['…something here doesn’t add up.'];
         html = '<div class="ts-whisper" style="--fs:calc(var(--sh)*' + fit(lines, 0.05, 2.4).toFixed(3) + ')">' + lettersLines(lines) + '</div>';
@@ -892,7 +1029,7 @@
     const W = this.W, H = this.H, cam = this.cam;
 
     // walking to new seats
-    const lp = clamp((now - this.layoutT0) / CFG.layoutMs, 0, 1);
+    const lp = clamp((now - this.layoutT0) / this.layoutMs, 0, 1);
     const le = easeInOut(lp);
     Object.keys(this.actors).forEach((k) => {
       const a = this.actors[k];
@@ -932,6 +1069,7 @@
       cam.th = a.phi;                                            // follow them if they walk
       cam.pitch = lerp(cam.pitch, pitchOf(a), Math.min(1, dt / 300));
     }
+    this.tickMoves(now);
     const settle = cam.key ? easeOut(clamp((now - cam.settleT0) / 650, 0, 1)) : 0;
     const pt = (now - cam.punchT0) / 520;
     const punch = pt >= 0 && pt < 1 ? Math.sin(Math.PI * Math.min(1, pt * 2.2)) * (1 - pt) * 0.11 : 0;
@@ -1033,14 +1171,15 @@
       }
       if (a.cache.vis !== true) { a.stand.style.visibility = 'visible'; a.cache.vis = true; }
       if (!isSpeaker && !gp && speaker) { blur += 2 * settle; bright -= 0.36 * settle; }
-      blur += blurMotion;
+      const held = isSpeaker && !cam.pan;                        // the camera rides with them: they stay sharp
+      if (!held) blur += blurMotion;
       const y = H * CFG.horizon + s * (CFG.eye - (onBench ? CFG.benchRise : 0)) + shiftY
         - (a.walk ? Math.abs(Math.sin(now / 95)) * 0.05 * s : 0);
       const sc = s / CFG.PPU;
       a.stand.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + sc.toFixed(4) + ')';
       const fStr = (blur > 0.05 ? 'blur(' + (blur / sc).toFixed(1) + 'px) ' : '') + (bright < 0.99 ? 'brightness(' + bright.toFixed(2) + ')' : '');
       if (a.cache.f !== fStr) { a.stand.style.filter = fStr || 'none'; a.cache.f = fStr; }
-      const skStr = Math.abs(skew) > 0.3 ? 'skewX(' + skew.toFixed(1) + 'deg)' : 'none';
+      const skStr = !held && Math.abs(skew) > 0.3 ? 'skewX(' + skew.toFixed(1) + 'deg)' : 'none';
       if (a.cache.sk !== skStr) { a.body.style.transform = skStr; a.cache.sk = skStr; }
       const opStr = op.toFixed(2);
       if (a.cache.op !== opStr) { a.stand.style.opacity = opStr; a.cache.op = opStr; }

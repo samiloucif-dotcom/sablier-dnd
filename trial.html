@@ -47,7 +47,48 @@
       text-shadow: 0 2px 0 #7a2c00; transition: transform .08s, box-shadow .08s, filter .2s; }
     .react:active { transform: skewX(-8deg) translateY(4px); box-shadow: 0 2px 0 #7a2c00; }
     .react:disabled { filter: grayscale(1) brightness(.6); cursor: not-allowed; }
-    .react .why { display: block; font: 600 10px/1.2 system-ui, sans-serif; letter-spacing: .04em; text-shadow: none; margin-top: 4px; }
+    .react .why, .speak .why { display: block; font: 600 10px/1.2 system-ui, sans-serif; letter-spacing: .04em; text-shadow: none; margin-top: 4px; }
+    .react .why.listen, .speak .why.listen { font: 400 13px/1 Anton, Impact, sans-serif; letter-spacing: .22em; color: #ffe2a3; }
+    .acts.listen { position: relative; }
+    .acts.listen::before { content: 'THE JUDGE ASKS YOU TO LISTEN'; position: absolute; left: 50%; bottom: calc(100% + 2px); transform: translateX(-50%);
+      white-space: nowrap; padding: 5px 12px; border-radius: 10px; background: #0d0915; border: 1px solid rgba(255,226,163,.45);
+      font: 400 12px/1 Anton, Impact, sans-serif; letter-spacing: .18em; color: #ffe2a3; pointer-events: none; z-index: 3; }
+    .speak { font: 400 26px/1 Anton, Impact, sans-serif; letter-spacing: .05em; color: #fff; cursor: pointer;
+      padding: 16px 26px; border-radius: 14px; border: 2px solid #9eefff; transform: skewX(-8deg);
+      background: linear-gradient(180deg, #46d6f0, #0a7f9e); box-shadow: 0 6px 0 #04394a, 0 0 22px rgba(63,208,234,.35);
+      text-shadow: 0 2px 0 #04394a; transition: transform .08s, box-shadow .08s, filter .2s; }
+    .speak:active { transform: skewX(-8deg) translateY(4px); box-shadow: 0 2px 0 #04394a; }
+    .speak:disabled { filter: grayscale(1) brightness(.6); cursor: not-allowed; }
+    .acts { display: flex; gap: 12px; align-items: center; }
+    .tools button.on { border-color: var(--gold); color: var(--gold); }
+
+    /* ---------- who sides with whom (around the stage) ---------- */
+    .tracker { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    .tracker[hidden] { display: none; }
+    .lane { position: absolute; }
+    .lane.def { background: linear-gradient(90deg, rgba(226,70,92,.05), rgba(226,70,92,.12)); box-shadow: inset -2px 0 0 rgba(226,70,92,.55); }
+    .lane.pro { background: linear-gradient(270deg, rgba(63,208,234,.05), rgba(63,208,234,.12)); box-shadow: inset 2px 0 0 rgba(63,208,234,.55); }
+    .lane.jury { background: linear-gradient(180deg, rgba(231,181,77,.04), rgba(231,181,77,.11)); box-shadow: inset 0 -2px 0 rgba(231,181,77,.55); }
+    .th { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-align: center; }
+    .th b { font: 400 var(--hf, 17px)/1 Anton, Impact, sans-serif; letter-spacing: .1em; transform: skewX(-8deg); white-space: nowrap; }
+    .th span { font: 700 calc(var(--hf, 17px) * 1.25)/1 Cinzel, Georgia, serif; color: #fff; }
+    .th.def b { color: #ff7d92; } .th.pro b { color: #7fe6f7; } .th.jury b { color: #f3cc78; }
+    .th.jury { flex-direction: row; gap: 8px; }
+    .tk { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; opacity: 0;
+      transition: transform 1.1s cubic-bezier(.3,.85,.25,1), opacity .45s; will-change: transform; }
+    .tk.in { opacity: 1; }
+    .tk .f { width: var(--d); height: var(--d); border-radius: 50%; overflow: hidden; background: #1a1426;
+      box-shadow: 0 0 0 2px var(--c), 0 3px 10px rgba(0,0,0,.65); transition: width .4s, height .4s, box-shadow .6s; }
+    .tk .f img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .tk .f img.headcrop { object-position: 50% 0; transform: scale(1.9) translateY(22%); }
+    .tk .n { margin-top: 3px; font: 700 10.5px/1.1 Cinzel, Georgia, serif; color: #e9e2f5; max-width: 100%; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #000; }
+    .tk.nolab .n { display: none; }
+    .tk.wv .f { animation: tkWaver 1.9s linear infinite; animation-delay: var(--wd, 0s);
+      box-shadow: 0 0 0 2px var(--c), 0 0 0 4px rgba(241,198,110,.55), 0 0 14px 3px rgba(241,198,110,.55); }
+    @keyframes tkWaver { 0%, 46%, 100% { transform: none } 49% { transform: translateX(-3px) rotate(-6deg) } 52% { transform: translateX(3px) rotate(5deg) }
+      55% { transform: translateX(-2.5px) rotate(-4deg) } 58% { transform: translateX(2.5px) rotate(4deg) } 61% { transform: translateX(-2px) rotate(-3deg) }
+      64% { transform: translateX(2px) rotate(2deg) } 68% { transform: translateX(-1px) } 72% { transform: none } }
     .tools { display: flex; gap: 6px; }
     .tools button { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
     .watch { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
@@ -98,18 +139,31 @@
       .bar { gap: 10px; padding: 8px 10px; }
       .me img { width: 40px; height: 40px; }
       .emo { width: 56px; } .emo .pic { width: 50px; height: 50px; }
-      .react { font-size: 20px; padding: 12px 16px; flex: 1; }
+      .react, .speak { font-size: 20px; padding: 12px 16px; }
+      .acts { flex: 1; } .acts button { flex: 1; }
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <div id="stageBox"><div id="stage"></div></div>
+    <div id="stageBox">
+      <div id="stage"></div>
+      <div class="tracker" id="tracker" hidden>
+        <div class="lane def" id="laneDef"></div><div class="lane pro" id="lanePro"></div><div class="lane jury" id="laneJury"></div>
+        <div class="th def" id="thDef"><b>DEFENSE</b><span></span></div>
+        <div class="th pro" id="thPro"><b>PROSECUTION</b><span></span></div>
+        <div class="th jury" id="thJury"><b>JURY</b><span></span></div>
+      </div>
+    </div>
     <footer class="bar" id="bar" hidden>
       <button class="me" id="me" title="Change character"></button>
       <div class="emotes" id="emotes"></div>
-      <button class="react" id="react">REACTION!</button>
+      <div class="acts" id="acts">
+        <button class="speak" id="speak" title="Take the floor: the camera comes to you">SPEAK</button>
+        <button class="react" id="react" title="Interrupt: the camera comes to you with a REACTION! banner">REACTION!</button>
+      </div>
       <div class="tools">
+        <button id="trk" title="Who sides with whom (T)">⚖</button>
         <button id="snd" title="Sound">🔊</button>
         <button id="fs" title="Full screen (F)">⛶</button>
       </div>
@@ -153,7 +207,8 @@
     'use strict';
     const C = window.TrialCore;
     const $ = (s) => document.querySelector(s);
-    const stage = new TrialStage($('#stage'), { sound: true, assets: '/' });
+    let shown = {};          // the seats as the stage shows them: a side change lands in the tracker when the walk starts
+    const stage = new TrialStage($('#stage'), { sound: true, assets: '/', onLayout: (slots) => { shown = slots; placeTokens(); } });
 
     /* this browser's player id — never shown, only sent with our own actions */
     let cid = null;
@@ -165,7 +220,7 @@
     let watching = false;
     try { watching = localStorage.getItem('m1_trial_watch') === '1'; } catch (e) {}
 
-    let state = null, rev = null, busy = false, fails = 0, cooldownUntil = 0;
+    let state = null, rev = null, busy = false, fails = 0, cooldownUntil = 0, speakUntil = 0;
     const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2400); };
 
     async function poll() {
@@ -227,17 +282,173 @@
       $('#me').innerHTML = c ? '<img alt="" src="' + tokenSrc(c) + '"><span><b>' + c.name + '</b><small>change character</small></span>'
         : '<span><b>Watching</b><small>pick a character</small></span>';
       $('#emotes').style.display = c ? '' : 'none';
-      $('#react').style.display = c ? '' : 'none';
+      $('#acts').style.display = c ? '' : 'none';
       if (c) paintEmotes(c, P);
-      paintReact();
+      paintButtons();
+      layout();
     }
-    function paintReact() {
-      const P = (state && state.players) || {};
-      const b = $('#react');
-      const why = !state.open ? 'court not in session' : P.react === false ? 'reactions are off' : Date.now() < cooldownUntil ? '…' : '';
-      b.disabled = !!why;
-      b.innerHTML = 'REACTION!' + (why && why !== '…' ? '<span class="why">' + why + '</span>' : '');
+    /* SPEAK = take the floor (camera only). REACTION = interrupt (camera + banner).
+       The GM can switch either off: both off = "listen". */
+    function paintButtons() {
+      if (!state) return;
+      const P = state.players || {};
+      const listen = P.speak === false && P.react === false;
+      const seated = !!state.open && Object.keys(state.slots || {}).some((sid) => state.slots[sid] === P.mine);
+      const now = Date.now();
+      const whyS = !state.open ? 'court not in session' : P.speak === false ? 'listen' : !seated ? 'not in the courtroom' : now < speakUntil ? '…' : '';
+      const whyR = !state.open ? 'court not in session' : P.react === false ? (listen ? 'listen' : 'reactions are off') : now < cooldownUntil ? '…' : '';
+      $('#acts').classList.toggle('listen', listen && !!state.open);
+      const set = (b, label, why) => {
+        b.disabled = !!why;
+        const html = label + (why && why !== '…' ? '<span class="why' + (why === 'listen' ? ' listen' : '') + '">' + why + '</span>' : '');
+        if (b._html !== html) { b._html = html; b.innerHTML = html; }
+      };
+      set($('#speak'), 'SPEAK', whyS);
+      set($('#react'), 'REACTION!', whyR);
     }
+
+    /* ---------- who sides with whom ----------
+       The Primes' tokens around the stage: the defense in the left strip, the
+       prosecution in the right one, the jury along the top. The stage keeps its
+       16:9 shape in the middle. Trembling tokens = wavering jurors. */
+    let trackOn = true;
+    try { trackOn = localStorage.getItem('m1_trial_tracker') !== '0'; } catch (e) {}
+    let geo = null;
+    const tks = {};
+    const SIDE_C = { defense: '#e2465c', jury: '#e7b54d', prosecution: '#3fd0ea' };
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    function layout() {
+      const box = $('#stageBox'), sEl = $('#stage');
+      const W = box.clientWidth, H = box.clientHeight;
+      const on = trackOn && !!state && !!state.open;
+      $('#tracker').hidden = !on;
+      $('#trk').classList.toggle('on', trackOn);
+      if (!on || !W || !H) {
+        if (geo) { geo = null; sEl.removeAttribute('style'); }
+        placeTokens();
+        return;
+      }
+      const S = Math.round(clamp(W * 0.07, 62, 130)), T = Math.round(clamp(H * 0.11, 52, 90));
+      const w = Math.floor(Math.max(160, Math.min(W - 2 * S, (H - T) * 16 / 9)));
+      const h = Math.floor(w * 9 / 16);
+      const top = Math.max(0, Math.round((H - T - h) / 2)), left = Math.round((W - w) / 2);
+      const sig = [W, H, w, h, top, left, T].join();
+      if (!geo || geo.sig !== sig) {
+        Object.assign(sEl.style, { left: left + 'px', top: (top + T) + 'px', width: w + 'px', height: h + 'px', right: 'auto', bottom: 'auto' });
+        const put = (id, x, y, ww, hh) => Object.assign($(id).style, { left: x + 'px', top: y + 'px', width: Math.max(0, ww) + 'px', height: Math.max(0, hh) + 'px' });
+        put('#laneDef', 0, top + T, left, h);
+        put('#lanePro', left + w, top + T, W - left - w, h);
+        put('#laneJury', left, top, w, T);
+        put('#thDef', 0, top, left, T);
+        put('#thPro', left + w, top, W - left - w, T);
+        // "PROSECUTION" must fit its strip: the header size follows the strip's width
+        const hf = Math.round(clamp((Math.min(left, W - left - w) - 12) / 7.4, 10, 19)) + 'px';
+        $('#thDef').style.setProperty('--hf', hf); $('#thPro').style.setProperty('--hf', hf);
+        Object.assign($('#thJury').style, { left: (left + 14) + 'px', top: top + 'px', height: T + 'px', width: 'auto' });
+      }
+      geo = { sig, W, H, T, w, h, top, left, right: left + w };
+      placeTokens();
+    }
+    function placeTokens() {
+      const lists = { defense: [], jury: [], prosecution: [] };
+      const order = C.LINE.filter((sid) => sid[0] !== 'R').concat(C.LINE.filter((sid) => sid[0] === 'R').reverse());
+      order.forEach((sid) => {
+        const k = shown[sid], c = k && C.BY_KEY[k];
+        if (c && c.group === 'prime' && lists[C.SLOT[sid].side]) lists[C.SLOT[sid].side].push(k);
+      });
+      $('#thDef span').textContent = lists.defense.length;
+      $('#thPro span').textContent = lists.prosecution.length;
+      $('#thJury span').textContent = lists.jury.length;
+      const want = {};
+      if (geo) {
+        column(lists.defense, 0, geo.left, 'defense', want);
+        column(lists.prosecution, geo.right, geo.W - geo.right, 'prosecution', want);
+        row(lists.jury, want);
+      }
+      const wv = (state && state.open && state.waver) || {};
+      Object.keys(want).forEach((k) => {
+        const p = want[k];
+        let t = tks[k];
+        const tf = 'translate(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px)';
+        if (!t || t._gone) {
+          if (t) t.remove();
+          t = tks[k] = makeTk(k);
+          t.style.transition = 'none';
+          t.style.transform = tf;
+          $('#tracker').appendChild(t);
+          void t.offsetWidth;
+          t.style.transition = '';
+        }
+        t.style.width = p.w.toFixed(1) + 'px';
+        t.style.setProperty('--d', p.d + 'px');
+        t.style.setProperty('--c', SIDE_C[p.side]);
+        t.classList.toggle('nolab', !p.lab);
+        if (t._tf !== tf) { t._tf = tf; t.style.transform = tf; }
+        t.classList.add('in');
+        const w = !!wv[k];
+        if (t._wv !== w) { t._wv = w; t.style.setProperty('--wd', (-Math.random() * 1.9).toFixed(2) + 's'); t.classList.toggle('wv', w); }
+      });
+      Object.keys(tks).forEach((k) => {
+        const t = tks[k];
+        if (want[k] || t._gone) return;
+        t._gone = true;
+        t.classList.remove('in');
+        setTimeout(() => { if (tks[k] === t && t._gone) { t.remove(); delete tks[k]; } }, 500);
+      });
+    }
+    function makeTk(k) {
+      const c = C.BY_KEY[k];
+      const t = document.createElement('div');
+      t.className = 'tk';
+      t.title = c.name;
+      t.innerHTML = '<div class="f"><img alt=""></div><div class="n"></div>';
+      const img = t.querySelector('img');
+      img.src = tokenSrc(c);
+      img.onerror = () => { img.onerror = null; img.classList.add('headcrop'); img.src = '/sprites/' + k + '.webp'; };
+      t.querySelector('.n').textContent = c.name;
+      return t;
+    }
+    // a side strip: one column of tokens, two or three when there are many
+    function column(list, x0, cw, side, want) {
+      const n = list.length;
+      if (!n) return;
+      const ch = geo.h - 14, y0 = geo.top + geo.T + 10;
+      let best = null;
+      for (let k = 1; k <= 3; k++) {
+        const rows = Math.ceil(n / k), cellW = (cw - 12) / k;
+        for (const lab of [15, 0]) {
+          const d = Math.floor(Math.min(64, cellW - 8, ch / rows - lab - 8));
+          if (lab && d < 36) continue;
+          if (!best || d > best.d + 3) best = { k, cellW, d, lab };
+          break;
+        }
+      }
+      const cellH = best.d + best.lab + 8;
+      list.forEach((key, i) => {
+        const col = i % best.k, r = Math.floor(i / best.k);
+        want[key] = { x: x0 + 6 + col * best.cellW, y: y0 + r * cellH, w: best.cellW, d: Math.max(18, best.d), lab: !!best.lab, side };
+      });
+    }
+    // the jury strip: one line, like the jury on stage
+    function row(list, want) {
+      const n = list.length;
+      if (!n) return;
+      const lw = $('#thJury').offsetWidth + 26;
+      const x0 = geo.left + lw, aw = geo.w - lw - 14;
+      const lab = geo.T >= 72 ? 14 : 0;
+      const d = Math.max(18, Math.floor(Math.min(64, geo.T - 12 - lab, aw / n - 12)));
+      const cellW = Math.min(aw / n, d + 40);
+      const xs = x0 + (aw - cellW * n) / 2;
+      list.forEach((key, i) => {
+        want[key] = { x: xs + i * cellW, y: geo.top + (geo.T - d - lab) / 2 - 1, w: cellW, d, lab: !!lab, side: 'jury' };
+      });
+    }
+    new ResizeObserver(() => layout()).observe($('#stageBox'));
+    $('#trk').onclick = () => {
+      trackOn = !trackOn;
+      try { localStorage.setItem('m1_trial_tracker', trackOn ? '1' : '0'); } catch (e) {}
+      layout();
+    };
     function paintEmotes(c, P) {
       const box = $('#emotes');
       const on = (P.emoteOn || {})[c.key] || 1;
@@ -287,9 +498,15 @@
     };
     $('#react').onclick = async () => {
       cooldownUntil = Date.now() + C.REACT_COOLDOWN;
-      paintReact();
-      setTimeout(paintReact, C.REACT_COOLDOWN + 50);
+      paintButtons();
+      setTimeout(paintButtons, C.REACT_COOLDOWN + 50);
       await play({ action: 'react' });
+    };
+    $('#speak').onclick = async () => {
+      speakUntil = Date.now() + C.SPEAK_COOLDOWN;
+      paintButtons();
+      setTimeout(paintButtons, C.SPEAK_COOLDOWN + 50);
+      await play({ action: 'speak' });
     };
 
     /* ---------- emote editor ---------- */
@@ -376,6 +593,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.target.closest('input, textarea')) return;
       if (e.key === 'f' || e.key === 'F') toggleFs();
+      if (e.key === 't' || e.key === 'T') $('#trk').click();
       if (e.key === 'Escape') closeEditor();
     });
     // one click anywhere unlocks sound (browsers require it)

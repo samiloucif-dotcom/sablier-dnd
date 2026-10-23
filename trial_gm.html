@@ -131,7 +131,25 @@
     .pl .who span { color: var(--muted); font-size: 11px; }
     .pl.on .who span { color: #46c98b; }
     .pl button { font-size: 11px; padding: 3px 7px; border-radius: 6px; border: 1px solid var(--line2); background: var(--panel2); cursor: pointer; }
-    .reactsw { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
+    /* players' buttons: SPEAK / REACTION on or off ("listen") */
+    .sw { border-radius: 20px; padding: 7px 12px; font-weight: 600; font-size: 12.5px; }
+    .sw::before { content: '●'; margin-right: 6px; color: #e2465c; }
+    .sw.on::before { color: #46c98b; }
+    .sw.on { border-color: #3d7f63; }
+    .sw:not(.on) { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(226,70,92,.7); }
+
+    /* wavering: an NPC about to take a side (Resolve 4 in the tracker) */
+    .tok .wv { display: none; position: absolute; top: calc(var(--tok) - 18px); right: -7px; width: 22px; height: 22px; border-radius: 50%;
+      border: 1px solid var(--line2); background: #10141f; color: var(--muted); font: 700 13px/1 system-ui, sans-serif; place-items: center;
+      cursor: pointer; padding: 0; z-index: 2; touch-action: manipulation; }
+    .tok .wv:hover { border-color: var(--amber); color: var(--amber); }
+    [data-zone="L-major"] .tok .wv, [data-zone="L-minor"] .tok .wv, [data-zone="B"] .tok .wv,
+    [data-zone="R-major"] .tok .wv, [data-zone="R-minor"] .tok .wv { display: grid; }
+    .tok.waver .wv { background: var(--amber); color: #1a1205; border-color: #fff; box-shadow: 0 0 10px rgba(232,181,89,.85); }
+    .tok.waver .face { animation: gmWaver 1.9s linear infinite; box-shadow: 0 0 0 2px var(--amber), 0 0 14px rgba(232,181,89,.6); }
+    @keyframes gmWaver { 0%, 46%, 100% { transform: none } 49% { transform: translateX(-2px) rotate(-6deg) } 52% { transform: translateX(2px) rotate(5deg) }
+      55% { transform: translateX(-2px) rotate(-4deg) } 58% { transform: translateX(2px) rotate(3deg) } 62% { transform: translateX(-1px) rotate(-2deg) } 68% { transform: none } }
+    .dragghost .wv { display: none !important; }
 
     /* demo: player stand-in */
     .sim { margin: 6px 16px 0; padding: 10px 12px; border: 1px dashed var(--line2); border-radius: 12px; background: rgba(63,208,234,.04); }
@@ -172,6 +190,9 @@
     <button class="btn" id="sweepBtn" title="The camera makes one slow full turn of the room (S)">↻ Sweep the room</button>
     <button class="btn ghost" id="exampleBtn" title="Seat the example cast">Example seating</button>
     <button class="btn ghost" id="clearBtn">Clear the room</button>
+    <span class="lbl">Players</span>
+    <button class="btn sw on" id="speakSw" title="Players' SPEAK button (the camera comes to them). Click to switch off/on.">SPEAK</button>
+    <button class="btn sw on" id="reactSw" title="Players' REACTION button (camera + banner). Click to switch off/on. Both off = they listen.">REACTION</button>
     <span class="spacer"></span>
     <span class="sync" id="sync"></span>
     <a class="link" href="/trial" target="_blank" id="playerLink">Player view ↗</a>
@@ -186,7 +207,6 @@
       <div class="grid3" data-zone="L-minor"></div>
       <h4 style="color:var(--pro)">Players at the table</h4>
       <div class="players" id="players"></div>
-      <label class="reactsw"><input type="checkbox" id="reactOn"> Players can press REACTION</label>
     </section>
 
     <section class="center">
@@ -229,6 +249,7 @@
     <h4>Player screen — demo stand-in for what each player does on <b>/trial</b></h4>
     <div class="simrow">
       <span class="simlbl">Play as</span><div class="simpcs" id="simPcs"></div>
+      <button class="simreact" id="simSpeak" style="background:linear-gradient(180deg,#46d6f0,#0a7f9e);border-color:#9eefff">SPEAK</button>
       <button class="simreact" id="simReact">REACTION!</button>
       <span class="simlbl">Emotes</span><div class="simemo" id="simEmo"></div>
       <input type="file" id="simFile" accept="image/*" hidden>
@@ -242,7 +263,9 @@
     <span><b>Click again</b>: punch-in</span>
     <span><b>Drag back down here</b> to take someone out</span>
     <span><b>Type words</b> above the jury, then click any banner style</span>
-    <span><b>Players</b> join at <b>/trial</b>: they pick a character, press REACTION, wear emotes</span>
+    <span><b>〰</b> on an NPC's token: wavering (Resolve 4) — they tremble on every screen</span>
+    <span><b>Court in session</b>: moving an NPC to another area = the camera follows them + a banner</span>
+    <span><b>Players</b> join at <b>/trial</b>: they pick a character, press SPEAK or REACTION, wear emotes</span>
   </div>
 
   <script src="/trial_core.js"></script>
@@ -298,6 +321,12 @@
       nm.className = 'nm';
       nm.textContent = c.name;
       t.append(face, nm);
+      if (c.group !== 'pc') {
+        const wv = document.createElement('button');
+        wv.className = 'wv'; wv.type = 'button'; wv.textContent = '〰';
+        wv.title = 'Wavering (Resolve 4): ' + c.name + ' trembles on every screen. Click again to stop.';
+        t.appendChild(wv);
+      }
       return t;
     };
     const tokCache = {};
@@ -345,6 +374,7 @@
       Object.keys(tokCache).forEach((k) => {
         tokCache[k].classList.toggle('focus', state.focus.key === k);
         tokCache[k].classList.toggle('picked', picked === k);
+        tokCache[k].classList.toggle('waver', !!(state.waver || {})[k]);
       });
       // top bar
       const ob = $('#openBtn');
@@ -361,7 +391,11 @@
       const P = view().players || {};
       const taken = P.taken || Object.keys(P.claims || {});
       const box = $('#players');
-      const sig = JSON.stringify([taken, P.emoteOn, P.emotes, P.react]);
+      $('#speakSw').classList.toggle('on', P.speak !== false);
+      $('#reactSw').classList.toggle('on', P.react !== false);
+      $('#speakSw').textContent = P.speak !== false ? 'SPEAK' : 'SPEAK off';
+      $('#reactSw').textContent = P.react !== false ? 'REACTION' : 'REACTION off';
+      const sig = JSON.stringify([taken, P.emoteOn, P.emotes]);
       if (box._sig === sig) return;
       box._sig = sig;
       box.innerHTML = '';
@@ -378,9 +412,9 @@
         if (on) { const b = document.createElement('button'); b.textContent = 'Release'; b.title = 'Free this character so someone else can pick it'; b.onclick = () => act({ action: 'release', key: c.key }); row.appendChild(b); }
         box.appendChild(row);
       });
-      $('#reactOn').checked = P.react !== false;
     }
-    $('#reactOn').onchange = (e) => act({ action: 'allowReact', on: e.target.checked });
+    $('#speakSw').onclick = () => act({ action: 'allowSpeak', on: (view().players || {}).speak === false });
+    $('#reactSw').onclick = () => act({ action: 'allowReact', on: (view().players || {}).react === false });
 
     /* ---------- talking to the server ---------- */
     function paintSync() {
@@ -435,6 +469,7 @@
     const setOver = (el) => { if (overEl === el) return; if (overEl) overEl.classList.remove('over'); overEl = el; if (el) el.classList.add('over'); };
 
     document.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.wv')) return;           // the wavering switch is a button, not a handle
       const t = e.target.closest('.tok');
       if (!t || t.classList.contains('dragghost') || e.button > 0) return;
       e.preventDefault();
@@ -509,6 +544,12 @@
     document.addEventListener('pointercancel', (e) => endDrag(e, true));
     // tap-to-place on an empty seat
     document.addEventListener('click', (e) => {
+      const wv = e.target.closest('.wv');
+      if (wv) {
+        const k = wv.closest('.tok').dataset.key;
+        act({ action: 'waver', key: k, on: !(state.waver || {})[k] });
+        return;
+      }
       if (!picked) return;
       const s = e.target.closest('[data-slot]');
       if (s && !s.querySelector('.tok')) { const k = picked; picked = null; act({ action: 'place', key: k, slot: s.dataset.slot }); }
@@ -603,6 +644,7 @@
         });
       }
       $('#simReact').onclick = () => simAct({ action: 'react' });
+      $('#simSpeak').onclick = () => simAct({ action: 'speak' });
       $('#simFile').onchange = (e) => {
         const f = e.target.files[0]; e.target.value = '';
         if (!f) return;
