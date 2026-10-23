@@ -11,14 +11,14 @@
   "T2": "polychroma",
   "T1": "eve"
  },
- "updated": "2026-10-23T16:44:19.967Z",
+ "updated": "2026-10-23T16:44:29.720Z",
  "waver": {},
  "players": {
   "claims": {
    "angele": "2p66u7xxqyxfymig9a"
   },
   "react": false,
-  "speak": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
