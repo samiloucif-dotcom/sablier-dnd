@@ -22,8 +22,10 @@
   "T3": "eve",
   "R8": "carnage"
  },
- "updated": "2026-10-23T16:39:46.882Z",
- "waver": {},
+ "updated": "2026-10-23T16:40:07.926Z",
+ "waver": {
+  "framschtak": 1
+ },
  "players": {
   "claims": {
    "mune": "2p66u7xxqyxfymig9a",
