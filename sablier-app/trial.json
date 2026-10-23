@@ -20,14 +20,16 @@
   "B3": "doulahex",
   "T1": "eve"
  },
- "updated": "2026-10-23T17:06:24.058Z",
+ "updated": "2026-10-23T17:06:32.990Z",
  "waver": {},
  "invite": {
   "on": true,
   "at": 1792775184058
  },
  "players": {
-  "claims": {},
+  "claims": {
+   "angele": "bjgb6x22h5eidfs4xv"
+  },
   "react": true,
   "speak": true,
   "emotes": {
