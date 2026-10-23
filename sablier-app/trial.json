@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "angele",
@@ -22,7 +22,7 @@
   "T3": "eve",
   "R8": "carnage"
  },
- "updated": "2026-10-23T16:37:58.494Z",
+ "updated": "2026-10-23T16:38:08.616Z",
  "waver": {},
  "players": {
   "claims": {
