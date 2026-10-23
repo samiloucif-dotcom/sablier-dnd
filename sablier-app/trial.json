@@ -22,7 +22,7 @@
   "T3": "eve",
   "R8": "carnage"
  },
- "updated": "2026-10-23T16:38:08.616Z",
+ "updated": "2026-10-23T16:38:37.796Z",
  "waver": {},
  "players": {
   "claims": {
@@ -30,7 +30,7 @@
    "bardik": "bjgb6x22h5eidfs4xv",
    "pryah": "2crhmw8vzdfbha2qcd"
   },
-  "react": false,
+  "react": true,
   "speak": true,
   "emotes": {},
   "emoteOn": {}
