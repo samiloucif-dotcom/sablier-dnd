@@ -22,7 +22,7 @@
   "T3": "eve",
   "R8": "carnage"
  },
- "updated": "2026-10-23T16:39:01.016Z",
+ "updated": "2026-10-23T16:39:46.882Z",
  "waver": {},
  "players": {
   "claims": {
@@ -32,7 +32,16 @@
   },
   "react": true,
   "speak": false,
-  "emotes": {},
-  "emoteOn": {}
+  "emotes": {
+   "pryah": {
+    "2": {
+     "name": "angele thinking",
+     "ver": 1
+    }
+   }
+  },
+  "emoteOn": {
+   "pryah": 2
+  }
  }
 }
