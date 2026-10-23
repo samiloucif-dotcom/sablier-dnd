@@ -22,7 +22,7 @@
   "R8": "carnage",
   "L3": "framschtak"
  },
- "updated": "2026-10-23T16:40:22.736Z",
+ "updated": "2026-10-23T16:41:40.293Z",
  "waver": {},
  "players": {
   "claims": {
@@ -38,10 +38,17 @@
      "name": "angele thinking",
      "ver": 1
     }
+   },
+   "bardik": {
+    "2": {
+     "name": "dangan_bardik",
+     "ver": 1
+    }
    }
   },
   "emoteOn": {
-   "pryah": 2
+   "pryah": 2,
+   "bardik": 2
   }
  }
 }
