@@ -10,11 +10,6 @@
   "R5": "askii",
   "T2": "polychroma",
   "T1": "eve",
-  "L1": "balerion",
-  "L2": "paxel",
-  "B1": "carnage",
-  "B2": "citello",
-  "B3": "doulahex",
   "B4": "esteban",
   "B5": "framschtak",
   "B6": "gasper",
@@ -22,8 +17,12 @@
   "B8": "nerasho",
   "B9": "norvodavius"
  },
- "updated": "2026-10-23T16:59:27.662Z",
+ "updated": "2026-10-23T17:05:47.444Z",
  "waver": {},
+ "invite": {
+  "on": false,
+  "at": 0
+ },
  "players": {
   "claims": {},
   "react": true,
