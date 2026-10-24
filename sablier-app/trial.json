@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T17:00:25.940Z",
+ "updated": "2026-10-24T17:00:51.478Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -63,6 +63,10 @@
     "4": {
      "name": "happy",
      "ver": 1
+    },
+    "5": {
+     "name": "Fureur blonde en uniform",
+     "ver": 1
     }
    },
    "askii": {
@@ -79,7 +83,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 4,
+   "angele": 5,
    "askii": 1
   }
  }
