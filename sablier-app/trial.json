@@ -22,7 +22,7 @@
   "R9": "doulahex",
   "R10": "gasper"
  },
- "updated": "2026-10-24T18:07:24.093Z",
+ "updated": "2026-10-24T18:07:44.036Z",
  "waver": {
   "carnage": 1
  },
@@ -103,9 +103,9 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
-   "angele": 4,
+   "angele": 3,
    "askii": 1
   }
  }
