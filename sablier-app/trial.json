@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "pryah",
@@ -22,18 +22,16 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-24T14:23:09.222Z",
+ "updated": "2026-10-24T14:28:49.456Z",
  "waver": {},
  "invite": {
-  "on": true,
-  "at": 1792851775521
+  "on": false,
+  "at": 1792852123886
  },
  "players": {
-  "claims": {
-   "mune": "iav39bk76a827hhfsq"
-  },
+  "claims": {},
   "react": false,
-  "speak": true,
+  "speak": false,
   "emotes": {
    "pryah": {
     "2": {
