@@ -22,7 +22,7 @@
   "R6": "esteban",
   "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:24:07.910Z",
+ "updated": "2026-10-24T17:24:17.436Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -93,10 +93,6 @@
     "4": {
      "name": "images.jpgdd",
      "ver": 1
-    },
-    "5": {
-     "name": "images",
-     "ver": 1
     }
    }
   },
@@ -104,7 +100,7 @@
    "pryah": 1,
    "bardik": 1,
    "angele": 2,
-   "askii": 5
+   "askii": 1
   }
  }
 }
