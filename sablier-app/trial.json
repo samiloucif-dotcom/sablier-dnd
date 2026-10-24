@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "pryah",
@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-24T16:52:46.292Z",
+ "updated": "2026-10-24T16:53:15.081Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -30,7 +30,11 @@
  },
  "players": {
   "claims": {
-   "askii": "ubpgd6q42i83q6zi96"
+   "askii": "ubpgd6q42i83q6zi96",
+   "angele": "4dpcrug7erfruax46e",
+   "bardik": "7ta54nestapycj6tm9",
+   "pryah": "gwuepm2pe6q5wecxtn",
+   "mune": "iav39bk76a827hhfsq"
   },
   "react": false,
   "speak": false,
