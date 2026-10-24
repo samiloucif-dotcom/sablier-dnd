@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T16:54:59.336Z",
+ "updated": "2026-10-24T16:55:16.963Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -36,7 +36,7 @@
    "pryah": "gwuepm2pe6q5wecxtn",
    "mune": "iav39bk76a827hhfsq"
   },
-  "react": true,
+  "react": false,
   "speak": true,
   "emotes": {
    "pryah": {
