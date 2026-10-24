@@ -12,7 +12,6 @@
   "B5": "framschtak",
   "B6": "gasper",
   "B7": "hayeva",
-  "B8": "nerasho",
   "B1": "carnage",
   "B2": "paxel",
   "B3": "doulahex",
@@ -20,12 +19,12 @@
   "L1": "citello",
   "L2": "balerion",
   "R6": "esteban",
-  "R7": "norvodavius"
+  "R7": "norvodavius",
+  "R8": "nerasho"
  },
- "updated": "2026-10-24T17:51:23.899Z",
+ "updated": "2026-10-24T17:51:45.805Z",
  "waver": {
   "gasper": 1,
-  "nerasho": 1,
   "doulahex": 1
  },
  "invite": {
