@@ -22,9 +22,10 @@
   "R9": "doulahex",
   "R10": "gasper"
  },
- "updated": "2026-10-24T18:07:44.036Z",
+ "updated": "2026-10-24T18:08:46.040Z",
  "waver": {
-  "carnage": 1
+  "carnage": 1,
+  "framschtak": 1
  },
  "invite": {
   "on": true,
