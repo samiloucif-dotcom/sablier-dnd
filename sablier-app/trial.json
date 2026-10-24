@@ -22,7 +22,7 @@
   "R13": "paxel",
   "B5": "balerion"
  },
- "updated": "2026-10-24T18:36:41.350Z",
+ "updated": "2026-10-24T18:36:52.237Z",
  "waver": {
   "citello": 1
  },
@@ -105,7 +105,7 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 5,
+   "angele": 4,
    "askii": 5
   }
  }
