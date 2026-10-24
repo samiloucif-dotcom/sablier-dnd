@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T16:54:09.224Z",
+ "updated": "2026-10-24T16:54:44.180Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -36,7 +36,7 @@
    "pryah": "gwuepm2pe6q5wecxtn",
    "mune": "iav39bk76a827hhfsq"
   },
-  "react": false,
+  "react": true,
   "speak": true,
   "emotes": {
    "pryah": {
@@ -50,11 +50,18 @@
      "name": "dangan_bardik",
      "ver": 1
     }
+   },
+   "angele": {
+    "3": {
+     "name": "thinking",
+     "ver": 1
+    }
    }
   },
   "emoteOn": {
    "pryah": 1,
-   "bardik": 1
+   "bardik": 1,
+   "angele": 3
   }
  }
 }
