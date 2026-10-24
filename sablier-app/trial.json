@@ -18,10 +18,11 @@
   "R10": "gasper",
   "R11": "carnage",
   "R12": "framschtak",
-  "R13": "balerion",
-  "R14": "hayeva"
+  "R14": "hayeva",
+  "R13": "paxel",
+  "B5": "balerion"
  },
- "updated": "2026-10-24T18:36:00.826Z",
+ "updated": "2026-10-24T18:36:41.350Z",
  "waver": {
   "citello": 1
  },
@@ -104,8 +105,8 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 1,
-   "askii": 2
+   "angele": 5,
+   "askii": 5
   }
  }
 }
