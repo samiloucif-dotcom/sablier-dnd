@@ -22,9 +22,10 @@
   "R10": "gasper",
   "R11": "carnage"
  },
- "updated": "2026-10-24T18:13:30.163Z",
+ "updated": "2026-10-24T18:14:19.955Z",
  "waver": {
-  "framschtak": 1
+  "framschtak": 1,
+  "paxel": 1
  },
  "invite": {
   "on": true,
