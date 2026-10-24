@@ -22,7 +22,7 @@
   "L2": "balerion",
   "R6": "esteban"
  },
- "updated": "2026-10-24T17:05:39.008Z",
+ "updated": "2026-10-24T17:05:56.793Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -47,6 +47,10 @@
     "3": {
      "name": "no thats wrong",
      "ver": 1
+    },
+    "4": {
+     "name": "middle",
+     "ver": 1
     }
    },
    "bardik": {
@@ -67,10 +71,6 @@
     "4": {
      "name": "happy",
      "ver": 1
-    },
-    "5": {
-     "name": "Fureur aux cheveux d’arg",
-     "ver": 1
     }
    },
    "askii": {
@@ -87,7 +87,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 5,
+   "angele": 1,
    "askii": 1
   }
  }
