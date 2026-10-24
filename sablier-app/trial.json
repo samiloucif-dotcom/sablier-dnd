@@ -14,18 +14,17 @@
   "B7": "hayeva",
   "B1": "carnage",
   "B2": "paxel",
-  "B3": "doulahex",
   "T1": "eve",
   "L1": "citello",
   "L2": "balerion",
   "R6": "esteban",
   "R7": "norvodavius",
-  "R8": "nerasho"
+  "R8": "nerasho",
+  "R9": "doulahex"
  },
- "updated": "2026-10-24T17:54:17.953Z",
+ "updated": "2026-10-24T17:54:33.954Z",
  "waver": {
-  "gasper": 1,
-  "doulahex": 1
+  "gasper": 1
  },
  "invite": {
   "on": true,
