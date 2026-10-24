@@ -22,7 +22,7 @@
   "R6": "esteban",
   "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:10:56.082Z",
+ "updated": "2026-10-24T17:11:18.715Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -85,11 +85,15 @@
     "3": {
      "name": "an-iq-too-high",
      "ver": 1
+    },
+    "4": {
+     "name": "images.jpgdd",
+     "ver": 1
     }
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
    "angele": 5,
    "askii": 1
