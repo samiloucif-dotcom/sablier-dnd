@@ -20,10 +20,9 @@
   "L1": "citello",
   "L2": "balerion",
   "R6": "esteban",
-  "R7": "norvodavius",
-  "T3": "maevis"
+  "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:33:17.838Z",
+ "updated": "2026-10-24T17:33:49.900Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -102,7 +101,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 5,
    "bardik": 1,
    "angele": 2,
    "askii": 5
