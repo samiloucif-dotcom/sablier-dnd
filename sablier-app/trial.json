@@ -22,7 +22,7 @@
   "R12": "framschtak",
   "R13": "balerion"
  },
- "updated": "2026-10-24T18:19:19.566Z",
+ "updated": "2026-10-24T18:19:41.656Z",
  "waver": {
   "paxel": 1,
   "hayeva": 1
@@ -104,7 +104,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 5,
    "bardik": 1,
    "angele": 4,
    "askii": 5
