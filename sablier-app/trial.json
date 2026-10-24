@@ -22,8 +22,10 @@
   "R13": "paxel",
   "B5": "balerion"
  },
- "updated": "2026-10-24T19:07:31.233Z",
- "waver": {},
+ "updated": "2026-10-24T19:08:27.900Z",
+ "waver": {
+  "citello": 1
+ },
  "invite": {
   "on": true,
   "at": 1792860753256
