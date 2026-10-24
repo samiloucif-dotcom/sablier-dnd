@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T17:01:36.622Z",
+ "updated": "2026-10-24T17:02:54.586Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -62,10 +62,6 @@
     },
     "4": {
      "name": "happy",
-     "ver": 1
-    },
-    "5": {
-     "name": "Fureur blonde en uniform",
      "ver": 1
     }
    },
