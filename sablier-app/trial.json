@@ -22,7 +22,7 @@
   "R13": "balerion",
   "R14": "hayeva"
  },
- "updated": "2026-10-24T18:25:41.483Z",
+ "updated": "2026-10-24T18:28:28.484Z",
  "waver": {
   "paxel": 1,
   "citello": 1
@@ -104,10 +104,10 @@
    }
   },
   "emoteOn": {
-   "pryah": 5,
+   "pryah": 3,
    "bardik": 1,
-   "angele": 3,
-   "askii": 1
+   "angele": 1,
+   "askii": 5
   }
  }
 }
