@@ -9,7 +9,6 @@
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
-  "B7": "hayeva",
   "B2": "paxel",
   "T1": "eve",
   "L1": "citello",
@@ -20,12 +19,12 @@
   "R10": "gasper",
   "R11": "carnage",
   "R12": "framschtak",
-  "R13": "balerion"
+  "R13": "balerion",
+  "R14": "hayeva"
  },
- "updated": "2026-10-24T18:25:11.980Z",
+ "updated": "2026-10-24T18:25:35.109Z",
  "waver": {
   "paxel": 1,
-  "hayeva": 1,
   "citello": 1
  },
  "invite": {
