@@ -22,7 +22,7 @@
   "R11": "carnage",
   "R12": "framschtak"
  },
- "updated": "2026-10-24T18:15:12.185Z",
+ "updated": "2026-10-24T18:16:45.665Z",
  "waver": {
   "paxel": 1,
   "hayeva": 1
@@ -39,8 +39,8 @@
    "askii": "ubpgd6q42i83q6zi96",
    "angele": "4dpcrug7erfruax46e"
   },
-  "react": true,
-  "speak": false,
+  "react": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
