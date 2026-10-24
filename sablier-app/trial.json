@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T17:04:46.835Z",
+ "updated": "2026-10-24T17:04:59.670Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -67,10 +67,6 @@
     "4": {
      "name": "happy",
      "ver": 1
-    },
-    "5": {
-     "name": "Fureur aux cheveux d’arg",
-     "ver": 1
     }
    },
    "askii": {
@@ -87,7 +83,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 5,
+   "angele": 1,
    "askii": 1
   }
  }
