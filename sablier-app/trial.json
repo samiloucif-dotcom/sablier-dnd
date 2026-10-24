@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "pryah",
@@ -22,13 +22,13 @@
   "R13": "paxel",
   "B5": "balerion"
  },
- "updated": "2026-10-24T19:08:40.100Z",
+ "updated": "2026-10-24T19:18:33.197Z",
  "waver": {
   "citello": 1
  },
  "invite": {
-  "on": true,
-  "at": 1792860753256
+  "on": false,
+  "at": 1792869512340
  },
  "players": {
   "claims": {
