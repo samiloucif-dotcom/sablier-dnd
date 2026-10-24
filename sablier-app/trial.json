@@ -22,7 +22,7 @@
   "R6": "esteban",
   "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:41:44.549Z",
+ "updated": "2026-10-24T17:42:38.203Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -101,7 +101,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 3,
    "bardik": 1,
    "angele": 3,
    "askii": 5
