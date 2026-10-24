@@ -22,8 +22,10 @@
   "R6": "esteban",
   "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:13:21.100Z",
- "waver": {},
+ "updated": "2026-10-24T17:15:58.314Z",
+ "waver": {
+  "citello": 1
+ },
  "invite": {
   "on": true,
   "at": 1792860753256
