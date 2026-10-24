@@ -22,11 +22,11 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-24T14:22:41.624Z",
+ "updated": "2026-10-24T14:22:55.521Z",
  "waver": {},
  "invite": {
-  "on": false,
-  "at": 1792851756266
+  "on": true,
+  "at": 1792851775521
  },
  "players": {
   "claims": {},
