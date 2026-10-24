@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-24T16:53:15.081Z",
+ "updated": "2026-10-24T16:53:30.303Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -37,7 +37,7 @@
    "mune": "iav39bk76a827hhfsq"
   },
   "react": false,
-  "speak": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
