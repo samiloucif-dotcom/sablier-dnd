@@ -22,14 +22,16 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-24T16:52:33.256Z",
+ "updated": "2026-10-24T16:52:46.292Z",
  "waver": {},
  "invite": {
   "on": true,
   "at": 1792860753256
  },
  "players": {
-  "claims": {},
+  "claims": {
+   "askii": "ubpgd6q42i83q6zi96"
+  },
   "react": false,
   "speak": false,
   "emotes": {
