@@ -9,7 +9,6 @@
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
-  "B5": "framschtak",
   "B7": "hayeva",
   "B2": "paxel",
   "T1": "eve",
@@ -20,12 +19,13 @@
   "R8": "nerasho",
   "R9": "doulahex",
   "R10": "gasper",
-  "R11": "carnage"
+  "R11": "carnage",
+  "R12": "framschtak"
  },
- "updated": "2026-10-24T18:14:19.955Z",
+ "updated": "2026-10-24T18:15:12.185Z",
  "waver": {
-  "framschtak": 1,
-  "paxel": 1
+  "paxel": 1,
+  "hayeva": 1
  },
  "invite": {
   "on": true,
