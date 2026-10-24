@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "pryah",
@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "paxel"
  },
- "updated": "2026-10-23T17:08:13.270Z",
+ "updated": "2026-10-24T14:01:37.011Z",
  "waver": {},
  "invite": {
   "on": false,
