@@ -13,16 +13,16 @@
   "B6": "gasper",
   "B7": "hayeva",
   "B8": "nerasho",
-  "B9": "norvodavius",
   "B1": "carnage",
   "B2": "paxel",
   "B3": "doulahex",
   "T1": "eve",
   "L1": "citello",
   "L2": "balerion",
-  "R6": "esteban"
+  "R6": "esteban",
+  "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:06:07.683Z",
+ "updated": "2026-10-24T17:06:24.556Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -74,7 +74,7 @@
     },
     "5": {
      "name": "Fureur aux cheveux d’arg",
-     "ver": 1
+     "ver": 2
     }
    },
    "askii": {
