@@ -9,7 +9,6 @@
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
-  "B4": "esteban",
   "B5": "framschtak",
   "B6": "gasper",
   "B7": "hayeva",
@@ -20,9 +19,10 @@
   "B3": "doulahex",
   "T1": "eve",
   "L1": "citello",
-  "L2": "balerion"
+  "L2": "balerion",
+  "R6": "esteban"
  },
- "updated": "2026-10-24T17:05:12.538Z",
+ "updated": "2026-10-24T17:05:27.667Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -67,10 +67,6 @@
     "4": {
      "name": "happy",
      "ver": 1
-    },
-    "5": {
-     "name": "Fureur aux cheveux d’arg",
-     "ver": 1
     }
    },
    "askii": {
@@ -87,7 +83,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 5,
+   "angele": 1,
    "askii": 1
   }
  }
