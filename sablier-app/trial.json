@@ -22,7 +22,7 @@
   "L1": "citello",
   "L2": "balerion"
  },
- "updated": "2026-10-24T17:04:33.942Z",
+ "updated": "2026-10-24T17:04:46.835Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -85,7 +85,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
    "angele": 5,
    "askii": 1
