@@ -22,8 +22,12 @@
   "R6": "esteban",
   "R7": "norvodavius"
  },
- "updated": "2026-10-24T17:45:30.218Z",
- "waver": {},
+ "updated": "2026-10-24T17:47:23.374Z",
+ "waver": {
+  "gasper": 1,
+  "nerasho": 1,
+  "doulahex": 1
+ },
  "invite": {
   "on": true,
   "at": 1792860753256
