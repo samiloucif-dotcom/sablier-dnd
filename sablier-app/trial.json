@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -21,16 +21,14 @@
   "B8": "norvodavius",
   "B9": "paxel"
  },
- "updated": "2026-11-06T16:40:01.255Z",
+ "updated": "2026-11-06T16:40:27.051Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1792869512340
  },
  "players": {
-  "claims": {
-   "angele": "2p66u7xxqyxfymig9a"
-  },
+  "claims": {},
   "react": false,
   "speak": true,
   "emotes": {
