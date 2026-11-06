@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -21,14 +21,16 @@
   "B8": "norvodavius",
   "B9": "paxel"
  },
- "updated": "2026-11-06T16:39:11.979Z",
+ "updated": "2026-11-06T16:39:37.800Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1792869512340
  },
  "players": {
-  "claims": {},
+  "claims": {
+   "angele": "2p66u7xxqyxfymig9a"
+  },
   "react": false,
   "speak": false,
   "emotes": {
@@ -96,7 +98,7 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 4,
+   "angele": 2,
    "askii": 1
   }
  }
