@@ -3,9 +3,9 @@
  "open": false,
  "route": "jury",
  "slots": {
-  "R1": "pryah",
+  "R1": "bardik",
   "R2": "mune",
-  "R3": "bardik",
+  "R3": "pryah",
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
@@ -21,7 +21,7 @@
   "B8": "norvodavius",
   "B9": "paxel"
  },
- "updated": "2026-11-06T16:37:46.490Z",
+ "updated": "2026-11-06T16:38:23.940Z",
  "waver": {},
  "invite": {
   "on": false,
