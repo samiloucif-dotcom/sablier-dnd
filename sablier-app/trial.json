@@ -21,7 +21,7 @@
   "B8": "norvodavius",
   "B9": "paxel"
  },
- "updated": "2026-11-06T16:40:27.051Z",
+ "updated": "2026-11-06T16:40:44.816Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -30,7 +30,7 @@
  "players": {
   "claims": {},
   "react": false,
-  "speak": true,
+  "speak": false,
   "emotes": {
    "pryah": {
     "2": {
