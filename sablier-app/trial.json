@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "citello"
  },
- "updated": "2026-11-07T12:30:19.435Z",
+ "updated": "2026-11-07T12:30:32.609Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -99,7 +99,7 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 3,
+   "angele": 1,
    "askii": 1
   }
  }
