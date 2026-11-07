@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:00:03.924Z",
+ "updated": "2026-11-07T16:33:19.837Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -28,8 +28,8 @@
  },
  "cp": 10,
  "dice": {
-  "seq": 7,
-  "active": 7,
+  "seq": 8,
+  "active": 8,
   "checks": [
    {
     "id": 1,
@@ -311,6 +311,26 @@
      }
     },
     "doneAt": 1794067203924,
+    "closed": true
+   },
+   {
+    "id": 8,
+    "at": 1794069199837,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Dexterity Saving Throw",
+      "absent": false,
+      "roll": null
+     },
+     "pryah": {
+      "skill": "Strength",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
