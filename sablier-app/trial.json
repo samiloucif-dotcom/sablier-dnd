@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T13:01:42.256Z",
+ "updated": "2026-11-07T13:03:28.375Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -30,8 +30,8 @@
  },
  "cp": 11,
  "dice": {
-  "seq": 2,
-  "active": 2,
+  "seq": 3,
+  "active": 3,
   "checks": [
    {
     "id": 1,
@@ -80,6 +80,41 @@
      }
     },
     "doneAt": 1794056445772,
+    "closed": true
+   },
+   {
+    "id": 3,
+    "at": 1794056608375,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Intelligence",
+      "absent": true,
+      "roll": null
+     },
+     "bardik": {
+      "skill": "Dexterity",
+      "absent": true,
+      "roll": null
+     },
+     "angele": {
+      "skill": "Charisma",
+      "absent": false,
+      "roll": null
+     },
+     "mune": {
+      "skill": "Wisdom",
+      "absent": true,
+      "roll": null
+     },
+     "pryah": {
+      "skill": "Strength",
+      "absent": true,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
