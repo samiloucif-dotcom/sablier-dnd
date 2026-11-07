@@ -10,18 +10,17 @@
   "R5": "askii",
   "T2": "polychroma",
   "B1": "hayeva",
-  "L1": "citello",
   "B7": "nerasho",
   "B9": "paxel",
-  "L2": "balerion",
   "B6": "gasper",
   "B5": "framschtak",
   "B4": "esteban",
   "B3": "doulahex",
   "B2": "carnage",
-  "R6": "norvodavius"
+  "R6": "norvodavius",
+  "B8": "balerion"
  },
- "updated": "2026-11-07T14:06:29.468Z",
+ "updated": "2026-11-07T14:06:39.435Z",
  "waver": {},
  "invite": {
   "on": false,
