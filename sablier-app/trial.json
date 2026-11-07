@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T13:15:14.063Z",
+ "updated": "2026-11-07T13:15:40.997Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -223,12 +223,30 @@
      "askii": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        17
+       ],
+       "kept": 17,
+       "mod": -1,
+       "total": 16,
+       "at": 1794057335254
+      }
      },
      "angele": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        1
+       ],
+       "kept": 1,
+       "mod": 7,
+       "total": 8,
+       "at": 1794057340997
+      }
      },
      "pryah": {
       "skill": "Persuasion",
