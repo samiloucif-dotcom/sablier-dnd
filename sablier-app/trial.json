@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,16 +22,18 @@
   "B3": "doulahex",
   "B2": "citello"
  },
- "updated": "2026-11-06T16:41:33.620Z",
+ "updated": "2026-11-07T12:30:19.435Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1792869512340
  },
  "players": {
-  "claims": {},
-  "react": false,
-  "speak": false,
+  "claims": {
+   "angele": "2p66u7xxqyxfymig9a"
+  },
+  "react": true,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
