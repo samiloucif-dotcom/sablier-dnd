@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T13:00:29.411Z",
+ "updated": "2026-11-07T13:00:45.772Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -67,10 +67,19 @@
      "angele": {
       "skill": "Wisdom Saving Throw",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        18
+       ],
+       "kept": 18,
+       "mod": 2,
+       "total": 20,
+       "at": 1794056445772
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794056445772,
     "closed": false
    }
   ]
