@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T12:58:19.884Z",
+ "updated": "2026-11-07T12:59:06.271Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -30,13 +30,29 @@
  },
  "cp": 10,
  "dice": {
-  "seq": 0,
-  "active": null,
-  "checks": []
+  "seq": 1,
+  "active": 1,
+  "checks": [
+   {
+    "id": 1,
+    "at": 1794056340906,
+    "dc": null,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Persuasion",
+      "absent": true,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
+    "closed": false
+   }
+  ]
  },
  "players": {
   "claims": {
-   "askii": "2p66u7xxqyxfymig9a"
+   "angele": "2p66u7xxqyxfymig9a"
   },
   "react": true,
   "speak": true,
