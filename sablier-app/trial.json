@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,11 +22,11 @@
   "B2": "carnage",
   "R6": "norvodavius"
  },
- "updated": "2026-11-07T13:25:09.923Z",
+ "updated": "2026-11-07T14:06:21.201Z",
  "waver": {},
  "invite": {
-  "on": true,
-  "at": 1794057142547
+  "on": false,
+  "at": 1794060376635
  },
  "cp": 13,
  "dice": {
@@ -269,9 +269,7 @@
   ]
  },
  "players": {
-  "claims": {
-   "angele": "2p66u7xxqyxfymig9a"
-  },
+  "claims": {},
   "react": true,
   "speak": true,
   "emotes": {
@@ -339,7 +337,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 2,
+   "angele": 1,
    "askii": 1
   }
  }
