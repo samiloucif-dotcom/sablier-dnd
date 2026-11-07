@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T15:50:52.123Z",
+ "updated": "2026-11-07T15:51:09.157Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -272,18 +272,30 @@
     "items": {
      "askii": {
       "skill": "Wisdom Saving Throw",
-      "absent": true,
-      "roll": null
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        10
+       ],
+       "kept": 10,
+       "mod": 0,
+       "total": 10,
+       "at": 1794066669157
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794066669157,
     "closed": false
    }
   ]
  },
  "players": {
   "claims": {
-   "askii": "ubpgd6q42i83q6zi96"
+   "askii": "ubpgd6q42i83q6zi96",
+   "mune": "7ta54nestapycj6tm9",
+   "pryah": "gwuepm2pe6q5wecxtn",
+   "angele": "2p66u7xxqyxfymig9a"
   },
   "react": true,
   "speak": true,
