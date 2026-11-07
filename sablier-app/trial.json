@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:38:57.744Z",
+ "updated": "2026-11-07T16:39:16.299Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -360,10 +360,19 @@
      "askii": {
       "skill": "Investigation",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        11
+       ],
+       "kept": 11,
+       "mod": 7,
+       "total": 18,
+       "at": 1794069556299
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794069556299,
     "closed": false
    }
   ]
