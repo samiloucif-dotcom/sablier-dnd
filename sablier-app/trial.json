@@ -22,7 +22,7 @@
   "B2": "carnage",
   "R6": "norvodavius"
  },
- "updated": "2026-11-07T13:24:56.741Z",
+ "updated": "2026-11-07T13:25:09.923Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -339,7 +339,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 1,
+   "angele": 2,
    "askii": 1
   }
  }
