@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T15:50:43.710Z",
+ "updated": "2026-11-07T15:50:52.123Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -282,7 +282,9 @@
   ]
  },
  "players": {
-  "claims": {},
+  "claims": {
+   "askii": "ubpgd6q42i83q6zi96"
+  },
   "react": true,
   "speak": true,
   "emotes": {
