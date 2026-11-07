@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T13:15:40.997Z",
+ "updated": "2026-11-07T13:15:49.188Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -251,10 +251,19 @@
      "pryah": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        15
+       ],
+       "kept": 15,
+       "mod": 0,
+       "total": 15,
+       "at": 1794057349188
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794057349188,
     "closed": false
    }
   ]
