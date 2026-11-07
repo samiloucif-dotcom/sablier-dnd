@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T15:51:09.157Z",
+ "updated": "2026-11-07T16:00:03.924Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -28,8 +28,8 @@
  },
  "cp": 10,
  "dice": {
-  "seq": 6,
-  "active": 6,
+  "seq": 7,
+  "active": 7,
   "checks": [
    {
     "id": 1,
@@ -286,6 +286,31 @@
      }
     },
     "doneAt": 1794066669157,
+    "closed": true
+   },
+   {
+    "id": 7,
+    "at": 1794067201492,
+    "dc": 80,
+    "dcMode": "sum",
+    "items": {
+     "askii": {
+      "skill": "Wisdom Saving Throw",
+      "absent": false,
+      "roll": {
+       "mode": "adv",
+       "dice": [
+        17,
+        19
+       ],
+       "kept": 19,
+       "mod": 0,
+       "total": 19,
+       "at": 1794067203924
+      }
+     }
+    },
+    "doneAt": 1794067203924,
     "closed": false
    }
   ]
