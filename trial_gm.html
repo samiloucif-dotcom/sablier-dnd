@@ -58,7 +58,7 @@
     .row.jury { gap: 6px; }
     .rowlab { text-align: center; font: 700 11px/1 Cinzel, Georgia, serif; letter-spacing: .2em; text-transform: uppercase; color: var(--c); margin-bottom: 6px; }
     #preview { position: relative; width: 100%; height: clamp(240px, calc(100vh - 520px), 620px); background: #000;
-      border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+      border-radius: 10px; overflow: hidden; border: 1px solid var(--line); isolation: isolate; }
 
     /* slots */
     .slot { position: relative; border-radius: 10px; transition: background .12s, box-shadow .12s; }
@@ -128,6 +128,16 @@
 
     /* players at the table */
     .players { display: flex; flex-direction: column; gap: 4px; }
+    /* Credibility Points (the players see them top-right of the stage while the court is in session) */
+    .cpc { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 10px; padding: 8px; border-radius: 12px;
+      background: linear-gradient(180deg, rgba(63,208,234,.10), rgba(63,208,234,.03)); border: 1px solid rgba(63,208,234,.35); }
+    .cpc .lab { font: 700 10.5px/1.15 Cinzel, Georgia, serif; letter-spacing: .12em; text-transform: uppercase; color: var(--pro); text-align: center; }
+    .cpc button { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line2); background: #10141f; color: #fff; font: 700 22px/1 system-ui; cursor: pointer; }
+    .cpc button:hover { border-color: var(--pro); }
+    .cpc #cpVal { min-width: 44px; text-align: center; font: 400 34px/1 Anton, Impact, sans-serif; color: #fff; }
+    .cpc #cpVal.zero { color: #ff6b81; }
+    .cpc .rs { width: 28px; height: 28px; font-size: 14px; color: var(--muted); }
+    #dicePanel { margin-top: 2px; }
     .pl { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 8px; background: rgba(255,255,255,.02); }
     .pl img { width: 26px; height: 26px; border-radius: 50%; }
     .pl .who { flex: 1; min-width: 0; font-size: 12px; line-height: 1.2; }
@@ -244,9 +254,18 @@
 
     <section class="bank right" style="--c: var(--pro)">
       <h3>Prosecution</h3>
+      <div class="cpc" title="The players see this top-right of the stage while the court is in session">
+        <button type="button" id="cpMinus" title="−1 credibility point">−</button>
+        <div><div class="lab">Credibility<br>Points</div></div>
+        <b id="cpVal">10</b>
+        <button type="button" id="cpPlus" title="+1 credibility point">+</button>
+        <button type="button" class="rs" id="cpReset" title="Back to 10 (new trial)">↺</button>
+      </div>
       <div class="major" data-zone="R-major"></div>
       <h4>Joined the prosecution</h4>
       <div class="grid3" data-zone="R-minor"></div>
+      <h4 style="color:var(--gold, #f1c66e)">Skill checks</h4>
+      <div id="dicePanel"></div>
     </section>
   </main>
 
@@ -256,6 +275,7 @@
       <span class="simlbl">Play as</span><div class="simpcs" id="simPcs"></div>
       <button class="simreact" id="simSpeak" style="background:linear-gradient(180deg,#46d6f0,#0a7f9e);border-color:#9eefff">SPEAK</button>
       <button class="simreact" id="simReact">REACTION!</button>
+      <button class="simreact" id="simRollAll" style="background:linear-gradient(180deg,#5b2a9c,#34165e);border-color:#f1c66e" title="Rolls for every other asked character (in the real app each player rolls on their own screen)">🎲 Others roll</button>
       <span class="simlbl">Emotes</span><div class="simemo" id="simEmo"></div>
       <input type="file" id="simFile" accept="image/*" hidden>
     </div>
@@ -276,6 +296,8 @@
 
   <script src="/trial_core.js"></script>
   <script src="/trial_stage.js"></script>
+  <script src="/trial_dice.js"></script>
+  <script src="/trial_dice_gm.js"></script>
   <script>
   (function () {
     'use strict';
@@ -340,7 +362,13 @@
 
     let picked = null;   // tap-to-place
 
+    let diceGM = null, demoDice = null;
     function render() {
+      if (diceGM) diceGM.update(view());
+      if (demoDice) demoDice.update(C.playerView(state, Date.now(), 'demo-player-0001'));
+      const cpv = state.cp == null ? 10 : state.cp;
+      $('#cpVal').textContent = cpv;
+      $('#cpVal').classList.toggle('zero', cpv <= 0);
       const seated = {};
       $$('.slot').forEach((d) => {
         const sid = d.dataset.slot, s = C.SLOT[sid], key = state.slots[sid];
@@ -619,6 +647,12 @@
       else if (e.key === 'Escape') { picked = null; $('#preview').classList.remove('big'); render(); }
     });
 
+    /* ---------- Credibility Points & skill checks ---------- */
+    $('#cpMinus').onclick = () => act({ action: 'cp', delta: -1 });
+    $('#cpPlus').onclick = () => act({ action: 'cp', delta: 1 });
+    $('#cpReset').onclick = () => act({ action: 'cp', set: 10 });
+    diceGM = TrialDiceGM.mount($('#dicePanel'), { getState: () => view(), act });
+
     /* ---------- demo: a stand-in for one player's controls ---------- */
     if (DEMO) {
       const SIM = 'demo-player-0001';
@@ -657,6 +691,23 @@
       }
       $('#simReact').onclick = () => simAct({ action: 'react' });
       $('#simSpeak').onclick = () => simAct({ action: 'speak' });
+      /* the dice as the demo player sees them (the server rolls in the real app) */
+      const d20 = () => 1 + Math.floor(Math.random() * 20);
+      const demoRoll = (key, mode, mod) => C.reduce(state, { action: 'diceRolled', key, roll: C.makeRoll(mode, mod, d20) }, Date.now());
+      demoDice = TrialDice.mount({
+        post: async (a) => {
+          if (a.action === 'roll') { const k = C.claimOf(state, SIM); if (k) demoRoll(k, a.mode, a.mod); }
+          else C.playerAct(state, Object.assign({ cid: SIM }, a), Date.now());
+          render(); stage.setState(view()); paintSim();
+          return { ok: true, state: C.playerView(state, Date.now(), SIM) };
+        },
+        bottom: () => 16,
+      });
+      $('#simRollAll').onclick = () => {
+        const c = C.activeCheck(state), mine = C.claimOf(state, SIM);
+        if (!c) { $('#sync').textContent = 'ask for a skill check first'; setTimeout(paintSync, 1800); return; }
+        Object.keys(c.items).forEach((k, i) => { if (k !== mine && !c.items[k].roll) setTimeout(() => { demoRoll(k, ['normal', 'adv', 'dis'][i % 3], (i * 2) - 1); render(); }, i * 350); });
+      };
       $('#simFile').onchange = (e) => {
         const f = e.target.files[0]; e.target.value = '';
         if (!f) return;

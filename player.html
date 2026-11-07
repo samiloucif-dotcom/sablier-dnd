@@ -159,6 +159,37 @@
   </div>
 
   <script src="/app.js"></script>
+  <script src="/trial_core.js"></script>
+  <script src="/trial_dice.js"></script>
+  <script>
+    /* ---------- skill checks during exploration ----------
+       The GM asks for a roll from the cockpit (or the trial dashboard): the
+       asked player gets "Roll for …" here, everyone sees the dice. A chip
+       bottom-left says who this screen plays (same choice as on /trial). */
+    (function () {
+      var C = window.TrialCore;
+      var cid = null;
+      try { cid = localStorage.getItem('m1_trial_cid'); } catch (e) {}
+      if (!C.validCid(cid)) {
+        cid = Array.from(crypto.getRandomValues(new Uint8Array(18))).map(function (b) { return 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]; }).join('');
+        try { localStorage.setItem('m1_trial_cid', cid); } catch (e) {}
+      }
+      var rev = null;
+      function post(a) {
+        return fetch('/trial/play', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ cid: cid }, a)) })
+          .then(function (r) { return r.json(); }).catch(function () { return { ok: false, error: 'could not reach the table' }; });
+      }
+      var dice = TrialDice.mount({
+        post: post, identity: true, bottom: 18,
+        soundOn: function () { return typeof soundReady !== 'undefined' && soundReady && !soundMuted; },
+      });
+      function poll() {
+        fetch('/trial/state?cid=' + encodeURIComponent(cid), { cache: 'no-store' }).then(function (r) { return r.json(); })
+          .then(function (j) { if (j.rev !== rev) { rev = j.rev; dice.update(j); } }).catch(function () {});
+      }
+      poll(); setInterval(poll, 500);
+    })();
+  </script>
   <script>
     // Géométrie du verre (viewBox 1024x1536, mesurée sur le cadre FINAL)
     var GT = 382, NECK = 769, GB = 1135, SX = 305, SW = 412, CX = 512;

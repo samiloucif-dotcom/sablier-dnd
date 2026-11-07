@@ -16,7 +16,7 @@
     button, input { font: inherit; color: inherit; }
     #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
     #stageBox { position: relative; flex: 1; min-height: 0; }
-    #stage { position: absolute; inset: 0; }
+    #stage { position: absolute; inset: 0; isolation: isolate; }   /* the actors' z-index stays inside the stage */
 
     /* ---------- the bar ---------- */
     .bar { display: flex; align-items: center; gap: 14px; padding: 10px 14px; flex-wrap: wrap;
@@ -61,6 +61,25 @@
     .speak:disabled { filter: grayscale(1) brightness(.6); cursor: not-allowed; }
     .acts { display: flex; gap: 12px; align-items: center; }
     .tools button.on { border-color: var(--gold); color: var(--gold); }
+
+    /* ---------- Credibility Points (top-right of the stage, court in session) ---------- */
+    .cp { position: absolute; top: 10px; right: 12px; z-index: 2000; display: flex; align-items: center; gap: 10px; pointer-events: none;
+      padding: 6px 12px 6px 14px; border-radius: 12px; background: linear-gradient(90deg, rgba(10,6,18,.55), rgba(10,6,18,.88));
+      border: 1px solid rgba(63,208,234,.55); box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 18px rgba(63,208,234,.18);
+      opacity: 0; transform: translateY(-6px); transition: opacity .4s, transform .4s; }
+    .cp.on { opacity: 1; transform: none; }
+    .cp span { font: 700 clamp(10px, 1.1vw, 14px)/1.05 Cinzel, Georgia, serif; letter-spacing: .14em; text-transform: uppercase; color: #9fe9f7; text-align: right; }
+    .cp b { min-width: 1.4em; text-align: center; font: 400 clamp(26px, 3vw, 42px)/1 Anton, Impact, sans-serif; color: #fff;
+      text-shadow: 0 2px 0 #04394a, 0 0 14px rgba(63,208,234,.6); }
+    .cp.low b { color: #ff9aa8; text-shadow: 0 2px 0 #4a0012, 0 0 14px rgba(226,70,92,.7); }
+    .cp.zero { border-color: #e2465c; }
+    .cp i { position: absolute; right: 12px; top: 100%; font: 400 24px/1 Anton, Impact, sans-serif; font-style: normal; pointer-events: none;
+      animation: cpFloat 1.3s ease-out forwards; }
+    .cp i.up { color: #7ff0b0; text-shadow: 0 0 12px rgba(80,230,150,.8); } .cp i.down { color: #ff7a8a; text-shadow: 0 0 12px rgba(226,70,92,.8); }
+    .cp.bump-up b { animation: cpUp .6s cubic-bezier(.2,1.6,.4,1); } .cp.bump-down { animation: cpShake .5s linear; }
+    @keyframes cpFloat { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(26px) } }
+    @keyframes cpUp { 0% { transform: scale(1.7) } 100% { transform: none } }
+    @keyframes cpShake { 0%,100% { transform: none } 20% { transform: translateX(-6px) } 40% { transform: translateX(5px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(3px) } }
 
     /* ---------- who sides with whom (around the stage) ---------- */
     .tracker { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
@@ -151,7 +170,7 @@
 <body>
   <div id="app">
     <div id="stageBox">
-      <div id="stage"></div>
+      <div id="stage"><div class="cp" id="cp" aria-live="polite"><span>Credibility<br>Points</span><b id="cpN">10</b></div></div>
       <div class="tracker" id="tracker" hidden>
         <div class="lane def" id="laneDef"></div><div class="lane pro" id="lanePro"></div><div class="lane jury" id="laneJury"></div>
         <div class="th def" id="thDef"><b>DEFENSE</b><span></span></div>
@@ -206,6 +225,7 @@
 
   <script src="/trial_core.js"></script>
   <script src="/trial_stage.js"></script>
+  <script src="/trial_dice.js"></script>
   <script>
   (function () {
     'use strict';
@@ -252,12 +272,39 @@
     setInterval(poll, 250);
     poll();
 
+    /* ---------- skill checks: the "Roll for …" window and the dice everyone sees ---------- */
+    const dice = TrialDice.mount({
+      cid, post: play, toast,
+      soundOn: () => window.TrialSFX && window.TrialSFX.enabled !== false,
+      bottom: () => { const b = $('#bar'); return (b && !b.hidden ? b.offsetHeight : 0) + 12; },
+    });
+    /* the Credibility Points: shown while the court is in session, they pop when they change */
+    let cpWas = null;
+    function paintCp() {
+      const el = $('#cp'), on = !!(state && state.open && state.cp != null);
+      el.classList.toggle('on', on);
+      if (!on) { cpWas = null; return; }
+      const v = state.cp;
+      $('#cpN').textContent = v;
+      el.classList.toggle('low', v <= 3);
+      el.classList.toggle('zero', v <= 0);
+      if (cpWas != null && v !== cpWas) {
+        const up = v > cpWas, d = document.createElement('i');
+        d.className = up ? 'up' : 'down'; d.textContent = (up ? '+' : '−') + Math.abs(v - cpWas);
+        el.appendChild(d); setTimeout(() => d.remove(), 1400);
+        el.classList.remove('bump-up', 'bump-down'); void el.offsetWidth; el.classList.add(up ? 'bump-up' : 'bump-down');
+      }
+      cpWas = v;
+    }
+
     const pcs = C.CAST.filter((c) => c.group === 'pc');
     const tokenSrc = (c) => '/tokens/' + encodeURIComponent(c.token);
 
     /* ---------- painting ---------- */
     function paint() {
       if (!state) return;
+      if (typeof dice !== 'undefined') dice.update(state);
+      if (typeof paintCp === 'function') paintCp();
       const P = state.players || {};
       const mine = P.mine;
       if (mine) watching = false;

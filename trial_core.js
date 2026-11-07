@@ -128,6 +128,55 @@
     if (a === b || !(a in AREA) || !(b in AREA)) return null;
     return b === 'jury' ? 'jury' : a === 'jury' ? b : 'switch';
   }
+  /* ---------- credibility & skill checks ----------
+     CP = the prosecution's Credibility Points, shown top-right on the players'
+     trial screen while the court is in session; the GM moves them ±1.
+     A skill check: the GM picks PCs and a skill for each; each picked player
+     gets a "Roll for …" window (modifier, Roll / with advantage / with
+     disadvantage). The SERVER rolls the d20s, so every screen shows the same
+     dice; the GM gets the log (optional DC: each roll, or the sum). */
+  const CP_START = 10, CP_MIN = 0, CP_MAX = 20;
+  const SKILLS = ['Strength', 'Strength Saving Throw', 'Athletics',
+    'Dexterity', 'Dexterity Saving Throw', 'Acrobatics', 'Sleight of Hand', 'Stealth',
+    'Constitution', 'Constitution Saving Throw',
+    'Intelligence', 'Intelligence Saving Throw', 'Arcana', 'History', 'Investigation', 'Nature', 'Religion',
+    'Wisdom', 'Wisdom Saving Throw', 'Animal Handling', 'Insight', 'Medicine', 'Perception', 'Survival',
+    'Charisma', 'Charisma Saving Throw', 'Deception', 'Intimidation', 'Performance', 'Persuasion']
+    .sort((a, b) => a.localeCompare(b, 'en'));
+  /* each PC's detective-style opening check (Campaign_Bible §10) */
+  const OPENING_CHECKS = { mune: 'Investigation', askii: 'Intelligence', angele: 'Persuasion', pryah: 'Intimidation', bardik: 'Insight' };
+  const DICE_KEEP = 12;                    // checks kept in the GM's log
+  const ROLL_MODES = ['normal', 'adv', 'dis'];
+  const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
+  /* one roll; d20() gives 1..20 (the server passes a crypto one) */
+  function makeRoll(mode, mod, d20) {
+    mode = ROLL_MODES.indexOf(mode) >= 0 ? mode : 'normal';
+    mod = clampInt(mod, -20, 30);
+    const dice = mode === 'normal' ? [d20()] : [d20(), d20()];
+    const kept = mode === 'adv' ? Math.max(dice[0], dice[1]) : mode === 'dis' ? Math.min(dice[0], dice[1]) : dice[0];
+    return { mode, dice, kept, mod, total: kept + mod };
+  }
+  const isPlayed = (st, key) => st.players.claims ? !!st.players.claims[key] : (st.players.taken || []).indexOf(key) >= 0;
+  const activeCheck = (st) => {
+    const D = st.dice;
+    return D && D.active ? D.checks.find((c) => c.id === D.active) || null : null;
+  };
+  function cleanCheck(c) {                 // for sanitize (a saved state)
+    if (!c || typeof c !== 'object') return null;
+    const items = {};
+    Object.keys(c.items || {}).forEach((k) => {
+      const it = c.items[k];
+      if (PCS.indexOf(k) < 0 || !it || SKILLS.indexOf(it.skill) < 0) return;
+      const r = it.roll;
+      items[k] = { skill: it.skill, absent: !!it.absent, roll: r && Array.isArray(r.dice) ? {
+        mode: ROLL_MODES.indexOf(r.mode) >= 0 ? r.mode : 'normal', dice: r.dice.slice(0, 2).map((d) => clampInt(d, 1, 20)),
+        kept: clampInt(r.kept, 1, 20), mod: clampInt(r.mod, -20, 30), total: clampInt(r.total, -19, 50), at: Number(r.at) || 0 } : null };
+    });
+    if (!Object.keys(items).length) return null;
+    return { id: clampInt(c.id, 1, 1e9), at: Number(c.at) || 0, dc: c.dc == null ? null : clampInt(c.dc, 1, 300),
+      dcMode: c.dcMode === 'sum' ? 'sum' : 'each', items, doneAt: Number(c.doneAt) || 0, closed: !!c.closed };
+  }
+
   /* "Wavering" (a juror's Resolve has reached 4 in the GM's tracker): their
      sprite and token tremble. Only an NPC seated on the floor can waver; taking
      a side, leaving the room or a new seating clears it. */
@@ -149,6 +198,8 @@
       waver: {},              // cast key -> 1: trembling, about to take a side
       moves: { seq: 0, list: [] },   // the last side changes (moments, never saved)
       invite: { on: false, at: 0 },  // "Invite players": the hourglass stops and shows JOIN CLASS TRIAL
+      cp: CP_START,                  // the prosecution's Credibility Points
+      dice: { seq: 0, active: null, checks: [] },   // skill checks (the last DICE_KEEP, newest last)
       players: { claims: {}, react: true, speak: true, emotes: {}, emoteOn: {}, lastReact: {}, lastSpeak: {} },
       updated: '',
     };
@@ -161,6 +212,8 @@
       v: 1, open: !!st.open, route: st.route, slots: Object.assign({}, st.slots), updated: st.updated,
       waver: Object.assign({}, st.waver || {}),
       invite: { on: !!(st.invite && st.invite.on), at: (st.invite && st.invite.at) || 0 },
+      cp: st.cp == null ? CP_START : st.cp,
+      dice: JSON.parse(JSON.stringify(st.dice || { seq: 0, active: null, checks: [] })),
       players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
     };
@@ -179,6 +232,13 @@
     st.updated = String(raw.updated || '');
     Object.keys(raw.waver || {}).forEach((k) => { if (raw.waver[k] && canWaver(st, k)) st.waver[k] = 1; });
     if (raw.invite && typeof raw.invite === 'object') st.invite = { on: !!raw.invite.on, at: Number(raw.invite.at) || 0 };
+    if (raw.cp != null) st.cp = clampInt(raw.cp, CP_MIN, CP_MAX);
+    if (raw.dice && Array.isArray(raw.dice.checks)) {
+      const checks = raw.dice.checks.map(cleanCheck).filter(Boolean).slice(-DICE_KEEP);
+      const seq = Math.max(clampInt(raw.dice.seq, 0, 1e9), checks.reduce((m, c) => Math.max(m, c.id), 0));
+      const active = checks.some((c) => c.id === raw.dice.active && !c.closed) ? raw.dice.active : null;
+      st.dice = { seq, active, checks };
+    }
     const rp = raw.players || {};
     const used = {};
     Object.keys(rp.claims || {}).forEach((k) => {
@@ -223,6 +283,8 @@
     if (!st.waver) st.waver = {};
     if (!st.moves) st.moves = { seq: 0, list: [] };
     if (!st.invite) st.invite = { on: false, at: 0 };
+    if (st.cp == null) st.cp = CP_START;
+    if (!st.dice) st.dice = { seq: 0, active: null, checks: [] };
     let persist = false;
     switch (a.action) {
       case 'place': {
@@ -321,6 +383,53 @@
         break;
       case 'route':
         st.route = a.route === 'short' ? 'short' : 'jury';
+        persist = true;
+        break;
+      /* ----- credibility ----- */
+      case 'cp': {
+        const v = a.set != null ? clampInt(a.set, CP_MIN, CP_MAX) : clampInt(st.cp + clampInt(a.delta, -5, 5), CP_MIN, CP_MAX);
+        if (v === st.cp) return { changed: false };
+        st.cp = v;
+        persist = true;
+        break;
+      }
+      /* ----- skill checks ----- */
+      case 'check': {                          // { items: { pryah: 'Insight', … }, dc?, dcMode? }
+        const items = {};
+        Object.keys(a.items || {}).forEach((k) => {
+          if (PCS.indexOf(k) >= 0 && SKILLS.indexOf(a.items[k]) >= 0) items[k] = { skill: a.items[k], absent: !isPlayed(st, k), roll: null };
+        });
+        if (!Object.keys(items).length) return { changed: false };
+        const D = st.dice, prev = activeCheck(st);
+        if (prev) prev.closed = true;           // a new check replaces the one still open
+        const dc = a.dc == null || a.dc === '' ? null : clampInt(a.dc, 1, 300);
+        const c = { id: D.seq + 1, at: now, dc, dcMode: a.dcMode === 'sum' ? 'sum' : 'each', items, doneAt: 0, closed: false };
+        D.seq = c.id;
+        D.checks = D.checks.concat([c]).slice(-DICE_KEEP);
+        D.active = c.id;
+        persist = true;
+        break;
+      }
+      case 'diceRolled': {                     // internal: the server rolled for a player
+        const c = activeCheck(st), it = c && c.items[a.key];
+        if (!it || it.roll || !a.roll) return { changed: false };
+        it.roll = Object.assign({}, a.roll, { at: now });
+        it.absent = false;
+        const waiting = Object.keys(c.items).filter((k) => !c.items[k].roll && !c.items[k].absent);
+        if (!waiting.length) c.doneAt = now;
+        persist = true;
+        break;
+      }
+      case 'checkClose': {                     // the GM ends the check: the windows close everywhere
+        const c = activeCheck(st);
+        if (!c) return { changed: false };
+        c.closed = true;
+        st.dice.active = null;
+        persist = true;
+        break;
+      }
+      case 'diceClear':                        // empties the log (keeps a check still open)
+        st.dice.checks = st.dice.checks.filter((c) => c.id === st.dice.active);
         persist = true;
         break;
       /* ----- the GM and the players ----- */
@@ -451,14 +560,27 @@
       emotes, emoteOn: Object.assign({}, P.emoteOn) };
   }
 
-  /* Players get nothing about the room until the court is open. */
+  /* The open check, as the table sees it: who rolls what, and the dice once
+     thrown. No DC (that stays with the GM). */
+  function dicePublic(st) {
+    const c = activeCheck(st);
+    if (!c) return { check: null };
+    const items = {};
+    Object.keys(c.items).forEach((k) => { const it = c.items[k]; items[k] = { skill: it.skill, absent: it.absent, roll: it.roll }; });
+    return { check: { id: c.id, at: c.at, doneAt: c.doneAt, items } };
+  }
+
+  /* Players get nothing about the room until the court is open. Skill checks
+     work either way (the hourglass page uses them too). */
   function playerView(st, now, cid) {
     const players = playersPublic(st, cid);
-    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players };
+    const dice = dicePublic(st);
+    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players, dice };
     return {
       rev: st.rev, open: true, route: st.route,
       slots: st.slots, focus: st.focus, fx: st.fx, sweep: st.sweep,
-      waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players,
+      waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players, dice,
+      cp: st.cp == null ? CP_START : st.cp,
     };
   }
 
@@ -473,6 +595,7 @@
     CAST, BY_KEY, SLOTS, SLOT, LINE, BENCH, RING, PROSECUTION_CORE, FX_KINDS, PCS, EMOTE_SLOTS, REACT_COOLDOWN, SPEAK_COOLDOWN,
     initialState, persistable, sanitize, reduce, playerAct, playerView, gmView, playersPublic, slotOf, claimOf, validCid,
     sideShift, canWaver,
+    CP_START, CP_MIN, CP_MAX, SKILLS, OPENING_CHECKS, ROLL_MODES, makeRoll, activeCheck, dicePublic,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TrialCore = api;

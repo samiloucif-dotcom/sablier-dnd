@@ -38,6 +38,8 @@ const STATIC = {
   '/trial_core.js': 'trial_core.js',     // Class Trial stage (public : no GM data inside)
   '/trial_bg.jpg': 'trial_bg.jpg',       // the tribunal (07_Citadel and maps/Scenes/X Class Trial Tribunal)
   '/trial_stage.js': 'trial_stage.js',
+  '/trial_dice.js': 'trial_dice.js',       // skill checks, players' side (the d20s, "Roll for …")
+  '/trial_dice_gm.js': 'trial_dice_gm.js', // skill checks, GM side (SKILL CHECK window + log) — no secrets inside
 };
 const GM_STATIC = { '/data.js': 'data.js', '/locations.js': 'locations.js',
   '/board.css': 'board.css', '/board.js': 'board.js', '/warden.js': 'warden.js' };
@@ -452,7 +454,10 @@ function serveGm(res) {
         '<a href="' + GM_PATH + '/warden" class="mj-link" style="bottom:14px;right:16px">'
         + '\u26e8 Chronovestigation Board</a>\n'
         + '<a href="' + GM_PATH + '/trial" class="mj-link" style="bottom:54px;right:16px">'
-        + '\u2696 Class Trial stage</a>\n</body>');
+        + '\u2696 Class Trial stage</a>\n'
+        // skill checks during exploration: a small dock bottom-left (SKILL CHECK + the roll log)
+        + '<script src="/trial_core.js"></script><script src="/trial_dice_gm.js"></script>'
+        + '<script>TrialDiceGM.dock();</script>\n</body>');
     res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
     res.end(out);
   });

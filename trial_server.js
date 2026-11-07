@@ -15,6 +15,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const CORE = require('./trial_core.js');
 const STORE = require('./store_github.js');
 
@@ -89,9 +90,23 @@ function saveEmote(id) {
   } catch (e2) {}
 }
 
+/* a fair d20, rolled here so every screen shows the same dice */
+const d20 = () => crypto.randomInt(1, 21);
+
 function playerAction(body) {
   body = body || {};
   const now = Date.now();
+  if (body.action === 'roll') {                       // { cid, mode: normal|adv|dis, mod }
+    const key = CORE.claimOf(st, body.cid);
+    if (!key) return { ok: false, error: 'pick a character first' };
+    const c = CORE.activeCheck(st), it = c && c.items[key];
+    if (!it) return { ok: false, error: 'no roll asked of you' };
+    if (it.roll) return { ok: false, error: 'already rolled' };
+    const roll = CORE.makeRoll(body.mode, body.mod, d20);
+    CORE.reduce(st, { action: 'diceRolled', key, roll }, now);
+    persist();
+    return { ok: true, roll };
+  }
   if (body.action === 'emoteSave') {
     const key = CORE.claimOf(st, body.cid);
     const n = Number(body.n);
