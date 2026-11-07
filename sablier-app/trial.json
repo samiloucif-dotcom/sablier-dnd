@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:33:36.231Z",
+ "updated": "2026-11-07T16:38:57.744Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -28,8 +28,8 @@
  },
  "cp": 10,
  "dice": {
-  "seq": 8,
-  "active": 8,
+  "seq": 9,
+  "active": 9,
   "checks": [
    {
     "id": 1,
@@ -349,6 +349,21 @@
      }
     },
     "doneAt": 1794069216231,
+    "closed": true
+   },
+   {
+    "id": 9,
+    "at": 1794069537744,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Investigation",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
