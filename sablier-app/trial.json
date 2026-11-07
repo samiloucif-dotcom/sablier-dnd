@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T13:04:23.820Z",
+ "updated": "2026-11-07T13:04:34.356Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -132,8 +132,17 @@
      },
      "mune": {
       "skill": "Wisdom",
-      "absent": true,
-      "roll": null
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        15
+       ],
+       "kept": 15,
+       "mod": 4,
+       "total": 19,
+       "at": 1794056674356
+      }
      },
      "pryah": {
       "skill": "Strength",
@@ -141,7 +150,7 @@
       "roll": null
      }
     },
-    "doneAt": 1794056658106,
+    "doneAt": 1794056674356,
     "closed": false
    }
   ]
