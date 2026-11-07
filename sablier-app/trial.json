@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:33:19.837Z",
+ "updated": "2026-11-07T16:33:26.597Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -327,7 +327,16 @@
      "pryah": {
       "skill": "Strength",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        9
+       ],
+       "kept": 9,
+       "mod": 1,
+       "total": 10,
+       "at": 1794069206597
+      }
      }
     },
     "doneAt": 0,
