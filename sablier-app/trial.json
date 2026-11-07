@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T12:59:50.927Z",
+ "updated": "2026-11-07T13:00:29.411Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -30,8 +30,8 @@
  },
  "cp": 10,
  "dice": {
-  "seq": 1,
-  "active": 1,
+  "seq": 2,
+  "active": 2,
   "checks": [
    {
     "id": 1,
@@ -56,6 +56,21 @@
      }
     },
     "doneAt": 1794056352845,
+    "closed": true
+   },
+   {
+    "id": 2,
+    "at": 1794056429411,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Wisdom Saving Throw",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
