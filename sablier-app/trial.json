@@ -22,8 +22,10 @@
   "B3": "doulahex",
   "B2": "citello"
  },
- "updated": "2026-11-07T12:30:32.609Z",
- "waver": {},
+ "updated": "2026-11-07T12:30:53.948Z",
+ "waver": {
+  "doulahex": 1
+ },
  "invite": {
   "on": false,
   "at": 1792869512340
