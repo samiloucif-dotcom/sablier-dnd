@@ -22,15 +22,21 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T12:33:17.391Z",
+ "updated": "2026-11-07T12:58:19.884Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1792869512340
  },
+ "cp": 10,
+ "dice": {
+  "seq": 0,
+  "active": null,
+  "checks": []
+ },
  "players": {
   "claims": {
-   "angele": "2p66u7xxqyxfymig9a"
+   "askii": "2p66u7xxqyxfymig9a"
   },
   "react": true,
   "speak": true,
