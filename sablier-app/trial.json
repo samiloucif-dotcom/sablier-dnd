@@ -13,16 +13,16 @@
   "B1": "hayeva",
   "L1": "citello",
   "B7": "nerasho",
-  "B8": "norvodavius",
   "B9": "paxel",
   "L2": "balerion",
   "B6": "gasper",
   "B5": "framschtak",
   "B4": "esteban",
   "B3": "doulahex",
-  "B2": "carnage"
+  "B2": "carnage",
+  "R6": "norvodavius"
  },
- "updated": "2026-11-07T13:17:04.587Z",
+ "updated": "2026-11-07T13:24:56.741Z",
  "waver": {},
  "invite": {
   "on": true,
