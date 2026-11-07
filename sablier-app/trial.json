@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,11 +22,11 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T12:59:12.845Z",
+ "updated": "2026-11-07T12:59:36.490Z",
  "waver": {},
  "invite": {
-  "on": false,
-  "at": 1792869512340
+  "on": true,
+  "at": 1794056376490
  },
  "cp": 10,
  "dice": {
