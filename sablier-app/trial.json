@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,7 +22,7 @@
   "B3": "doulahex",
   "B2": "carnage"
  },
- "updated": "2026-11-07T12:59:36.490Z",
+ "updated": "2026-11-07T12:59:50.927Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -131,7 +131,7 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 3,
+   "angele": 1,
    "askii": 1
   }
  }
