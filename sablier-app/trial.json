@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:33:26.597Z",
+ "updated": "2026-11-07T16:33:36.231Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -322,7 +322,16 @@
      "angele": {
       "skill": "Dexterity Saving Throw",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        2
+       ],
+       "kept": 2,
+       "mod": 1,
+       "total": 3,
+       "at": 1794069216231
+      }
      },
      "pryah": {
       "skill": "Strength",
@@ -339,7 +348,7 @@
       }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794069216231,
     "closed": false
    }
   ]
