@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-09T16:46:40.429Z",
+ "updated": "2026-11-09T16:46:46.436Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -106,7 +106,7 @@
     }
    ],
    "audio": null,
-   "loop": false,
+   "loop": true,
    "audioAll": true
   }
  ],
