@@ -20,13 +20,14 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-07T16:44:47.062Z",
+ "updated": "2026-11-09T16:44:52.842Z",
  "waver": {},
  "invite": {
   "on": false,
-  "at": 1794060376635
+  "at": 1794242687127
  },
  "cp": 10,
+ "shows": [],
  "dice": {
   "seq": 10,
   "active": 10,
@@ -408,8 +409,8 @@
    "pryah": "gwuepm2pe6q5wecxtn",
    "bardik": "2p66u7xxqyxfymig9a"
   },
-  "react": true,
-  "speak": true,
+  "react": false,
+  "speak": false,
   "emotes": {
    "pryah": {
     "2": {
