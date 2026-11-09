@@ -311,12 +311,16 @@
     });
 
     /* ---------- the strip while one plays ---------- */
+    // 🎧 Here: hear the music on this computer too (off when this screen sits in the same room as the players' screens)
+    let here = true;
+    try { here = localStorage.getItem('m1_show_here') !== '0'; } catch (e) {}
     const strip = document.createElement('div');
     strip.className = 'sg sg-strip';
     strip.innerHTML = '<button type="button" class="nav" data-go="-1" title="Previous (←)">◀</button><div class="pos"><b></b><span></span></div>'
       + '<button type="button" class="nav" data-go="1" title="Next (→)">▶</button>'
       + '<span class="lab">Give control to</span><select data-ctrl></select>'
       + '<button type="button" class="sm" data-mus title="Music on / off">♪ Music</button><button type="button" class="sm" data-rst title="Music from the top">⟲</button>'
+      + '<button type="button" class="sm" data-here title="Hear the music on this computer too — turn it off when the players\' screens are in the same room">🎧 Here</button>'
       + '<button type="button" class="sm end" data-stop title="End the slideshow">■ End</button>';
     document.body.appendChild(strip);
     strip.addEventListener('click', (e) => {
@@ -325,6 +329,11 @@
       if (e.target.closest('[data-stop]')) o.act({ action: 'stop' });
       if (e.target.closest('[data-mus]')) { const p = playing(); if (p) o.act({ action: 'music', on: p.music === false }); }
       if (e.target.closest('[data-rst]')) o.act({ action: 'music', restart: true });
+      if (e.target.closest('[data-here]')) {
+        here = !here;
+        try { localStorage.setItem('m1_show_here', here ? '1' : '0'); } catch (err) {}
+        paintStrip();
+      }
     });
     strip.addEventListener('change', (e) => { if (e.target.matches('[data-ctrl]')) o.act({ action: 'slideCtrl', key: e.target.value || null }); });
     document.addEventListener('keydown', (e) => {
@@ -347,12 +356,14 @@
       if (sel._h !== html) { sel._h = html; sel.innerHTML = html; }
       sel.value = P.ctrl || '';
       const mus = strip.querySelector('[data-mus]');
-      mus.hidden = strip.querySelector('[data-rst]').hidden = !x.audio;
+      const hr = strip.querySelector('[data-here]');
+      mus.hidden = strip.querySelector('[data-rst]').hidden = hr.hidden = !x.audio;
+      hr.classList.toggle('off', !here);
       mus.classList.toggle('off', P.music === false);
     }
 
     /* ---------- what the players see, small, in the preview ---------- */
-    const preview = o.preview ? root.TrialShow.mount({ container: o.preview, gm: true, base, src: fileUrl, post: async (a) => { o.act(a); return { ok: true }; } }) : null;
+    const preview = o.preview ? root.TrialShow.mount({ container: o.preview, gm: true, base, src: fileUrl, soundOn: () => here, post: async (a) => { o.act(a); return { ok: true }; } }) : null;
 
     let sig = null;
     function update() {

@@ -10,9 +10,14 @@
  *    someone who arrives late; it fades out when the slideshow ends. If the
  *    browser refuses sound before a first tap, a "Tap for the music" button
  *    appears.
+ *  - Every screen plays the music in step: they all follow the server's
+ *    clock (TrialShow.clock, fed by the page's polls), jump when more than
+ *    0.4 s off and otherwise speed up / slow down by a few % (pitch kept)
+ *    until they are within a few hundredths of a second.
  *
  *   const show = TrialShow.mount({ base, post, gm, container, soundOn, toast });
  *   show.update(slides, serverNow)      // slides = view.slides (or null)
+ *   TrialShow.clock(serverNow, t0, t1)  // after each poll: sent at t0, answered at t1 (Date.now())
  */
 (function (root) {
   'use strict';
@@ -50,6 +55,27 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const assets = () => (root.TRIAL_ASSETS != null ? root.TRIAL_ASSETS : '/');
 
+  /* ---------- the server's clock, as well as this page can tell it ----------
+   * A reading timed by the page (sent at t0, answered at t1) is off by at most
+   * half its round trip, so the quickest recent one wins. Untimed readings
+   * (a view's serverNow) always arrive late, so the one that came quickest —
+   * the largest offset — wins. A view painted twice is not a new reading. */
+  const CLOCK = { samples: [], last: 0 };
+  function clockSample(serverNow, t0, t1) {
+    if (!serverNow || serverNow === CLOCK.last) return;
+    CLOCK.last = serverNow;
+    const at = Date.now(), timed = t0 != null && t1 != null && t1 >= t0;
+    CLOCK.samples.push({ at, off: timed ? serverNow - (t0 + t1) / 2 : serverNow - at, err: timed ? (t1 - t0) / 2 : null });
+    CLOCK.samples = CLOCK.samples.filter((x) => at - x.at < 90000).slice(-80);
+  }
+  function clockOffset() {
+    const S = CLOCK.samples;
+    if (!S.length) return 0;
+    const timed = S.filter((x) => x.err != null);
+    if (timed.length) return timed.reduce((a, b) => (b.err < a.err ? b : a)).off;
+    return S.reduce((a, b) => (b.off > a.off ? b : a)).off;
+  }
+
   function mount(o) {
     o = o || {};
     if (!document.getElementById('sh-css')) { const s = document.createElement('style'); s.id = 'sh-css'; s.textContent = CSS; document.head.appendChild(s); }
@@ -64,18 +90,24 @@
     host.appendChild(ov);
     const imgs = ov.querySelectorAll('.sh-img'), bg = ov.querySelector('.sh-bg');
     const au = new Audio(); au.preload = 'auto';
-    let cur = null, shownSrc = null, front = 0, skew = 0, mineCtl = false, busy = false, fadeT = null, lastSeq = null, hintT = null;
+    au.preservesPitch = au.mozPreservesPitch = au.webkitPreservesPitch = true;   // nudging the speed never changes the key
+    let cur = null, shownSrc = null, front = 0, mineCtl = false, busy = false, fadeT = null, lastSeq = null, hintT = null;
     const url = (id) => (o.src ? o.src(id) : (o.base || '') + '/trial/slide/' + id);
-    const now = () => Date.now() + skew;
+    const now = () => Date.now() + clockOffset();
 
     /* ---------- pictures ---------- */
     function show(src) {
       if (src === shownSrc) return;
       shownSrc = src;
       const back = imgs[1 - front];
+      let fired = false;
+      // A picture already loaded (the next page, fetched ahead) is ready at once AND still fires
+      // "load": the swap must happen only once, or the second time hides the picture again.
       const done = () => {
-        if (shownSrc !== src) return;
-        back.classList.add('vis'); imgs[front].classList.remove('vis'); front = 1 - front;
+        if (fired || shownSrc !== src) return;
+        fired = true; back.onload = back.onerror = null;
+        imgs.forEach((im) => im.classList.toggle('vis', im === back));
+        front = back === imgs[0] ? 0 : 1;
         bg.style.backgroundImage = 'url("' + src + '")';
       };
       back.onload = done; back.onerror = done;
@@ -112,45 +144,78 @@
     /* ---------- music ---------- */
     const sndBtn = ov.querySelector('.sh-snd');
     sndBtn.onclick = () => { sndBtn.hidden = true; syncAudio(true); };
+    let fadeAim = null;                        // where the fade running now is going (null: none)
     function fadeTo(v, ms, then) {
       clearInterval(fadeT);
+      fadeAim = v;
       const from = au.volume, t0 = performance.now();
       fadeT = setInterval(() => {
         const k = Math.min(1, (performance.now() - t0) / ms);
         au.volume = Math.max(0, Math.min(1, from + (v - from) * k));
-        if (k >= 1) { clearInterval(fadeT); fadeT = null; if (then) then(); }
+        if (k >= 1) { clearInterval(fadeT); fadeT = null; fadeAim = null; if (then) then(); }
       }, 40);
+    }
+    let lead = 0.05, lastSeek = 0, heldSince = 0, confirmedAt = null, metaWait = false, refused = false;
+    const setRate = (r) => { if (Math.abs(au.playbackRate - r) > 0.001) au.playbackRate = r; };
+    function seekTo(t, dur) {
+      let x = t + lead;
+      if (isFinite(dur) && dur > 0) x = cur.loop ? x % dur : Math.min(x, dur - 0.05);
+      try { au.currentTime = x; lastSeek = Date.now(); } catch (e) {}
+      setRate(1);
     }
     function syncAudio(force) {
       const want = cur && cur.audio && cur.music && (o.gm || cur.audioAll) && (!o.soundOn || o.soundOn());
       if (!want) {
-        if (!au.paused) fadeTo(0, 1200, () => au.pause());
+        setRate(1);
+        if (!au.paused && fadeAim !== 0) fadeTo(0, 1200, () => au.pause());   // (once: the checks come faster than the fade)
         sndBtn.hidden = true;
         return;
       }
+      // The GM's own click is applied here before the server has it, with this computer's clock:
+      // wait (a moment) for the server's start time instead of starting off-beat.
+      if (o.gm && CLOCK.samples.length && cur.audioAt !== confirmedAt) {
+        if (!heldSince) heldSince = Date.now();
+        if (Date.now() - heldSince < 2500) return;
+      } else heldSince = 0;
       const src = url(cur.audio);
-      if (au.dataset.src !== src) { au.dataset.src = src; au.src = src; au.volume = 0; }
+      if (au.dataset.src !== src) { au.dataset.src = src; au.src = src; au.volume = 0; lead = 0.05; lastSeek = 0; }
       au.loop = !!cur.loop;
       let t = Math.max(0, (now() - cur.audioAt) / 1000);
       const dur = au.duration;
       if (isFinite(dur) && dur > 0) {
         if (cur.loop) t = t % dur;
-        else if (t >= dur - 0.25) { if (!au.paused) fadeTo(0, 800, () => au.pause()); return; }
+        else if (t >= dur - 0.25) { setRate(1); if (!au.paused && fadeAim !== 0) fadeTo(0, 800, () => au.pause()); return; }
       }
-      if (au.readyState >= 1 && Math.abs(au.currentTime - t) > 1.5) { try { au.currentTime = t; } catch (e) {} }
-      else if (au.readyState < 1) au.addEventListener('loadedmetadata', () => syncAudio(), { once: true });
+      if (au.readyState < 1) {
+        if (!metaWait) { metaWait = true; au.addEventListener('loadedmetadata', () => { metaWait = false; syncAudio(); }, { once: true }); }
+      } else if (au.paused) {                                          // about to start (not while waiting for a tap)
+        if ((!refused || force) && Math.abs(au.currentTime - t - lead) > 0.03) seekTo(t, dur);
+      } else if (!au.seeking && au.readyState >= 3) {                  // playing: measure, then correct
+        let d = au.currentTime - t;                                     // > 0: ahead of the others
+        if (cur.loop && isFinite(dur) && dur > 0) { if (d > dur / 2) d -= dur; else if (d < -dur / 2) d += dur; }
+        if (Math.abs(d) > 0.4) {
+          if (Date.now() - lastSeek > 1500) {
+            // still off just after a jump: the jump itself takes time here, so aim that much further
+            if (lastSeek && Date.now() - lastSeek < 8000) lead = Math.max(0, Math.min(1.5, lead - d));
+            seekTo(t, dur);
+          }
+        } else if (Math.abs(d) > 0.025) setRate(1 - Math.max(-0.06, Math.min(0.06, d * 0.35)));
+        else setRate(1);
+      }
       if (au.paused || force) {
         const p = au.play();
-        if (p && p.then) p.then(() => { sndBtn.hidden = true; fadeTo(0.9, 1500); }).catch(() => { if (!o.container) sndBtn.hidden = false; });
-      } else if (au.volume < 0.85 && !fadeT) fadeTo(0.9, 800);
+        if (p && p.then) p.then(() => { refused = false; sndBtn.hidden = true; fadeTo(0.9, 1500); }).catch(() => { refused = true; if (!o.container) sndBtn.hidden = false; });
+      } else if ((au.volume < 0.85 && !fadeT) || fadeAim === 0) fadeTo(0.9, 800);
     }
-    setInterval(() => { if (cur) syncAudio(); }, 2000);
+    au.addEventListener('playing', () => { if (cur) syncAudio(); });
+    setInterval(() => { if (cur) syncAudio(); }, 500);
 
     /* ---------- state ---------- */
     function update(v, serverNow) {
-      if (serverNow) skew = serverNow - Date.now();
+      clockSample(serverNow);
       const was = cur;
       cur = v && v.n ? v : null;
+      if (cur && serverNow) confirmedAt = cur.audioAt;
       ov.classList.toggle('on', !!cur);
       if (!cur) {
         if (was) { syncAudio(); shownSrc = null; setTimeout(() => { if (!cur) imgs.forEach((i) => { i.classList.remove('vis'); i.removeAttribute('src'); }); }, 700); }
@@ -181,5 +246,5 @@
     return { update, el: ov, audio: au };
   }
 
-  root.TrialShow = { mount };
+  root.TrialShow = { mount, clock: clockSample, offset: clockOffset };
 })(typeof window !== 'undefined' ? window : this);

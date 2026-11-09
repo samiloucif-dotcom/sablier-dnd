@@ -252,8 +252,11 @@
       if (busy) return;
       busy = true;
       try {
+        const t0 = Date.now();
         const r = await fetch('/trial/state?cid=' + encodeURIComponent(cid), { cache: 'no-store' });
+        const t1 = Date.now();
         const j = await r.json();
+        if (window.TrialShow && TrialShow.clock) TrialShow.clock(j.serverNow, t0, t1);    // keeps the music in step
         fails = 0; $('#conn').style.display = 'none';
         if (j.rev !== rev) { rev = j.rev; state = j; stage.setState(j); paint(); }
       } catch (e) {
