@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:00:35.136Z",
+ "updated": "2026-11-09T17:01:01.657Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1072,7 +1072,7 @@
    },
    {
     "loc": "X In transit",
-    "act": ""
+    "act": "Goes down to the 1st floor"
    },
    {
     "loc": "",
