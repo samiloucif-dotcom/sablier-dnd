@@ -325,10 +325,10 @@
 
   /* ======================= the page parts ======================= */
   const CSS = `
-.dz-table{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);z-index:70;display:flex;gap:14px;align-items:flex-end;
+.dz-table{position:fixed;left:0;right:0;margin:0 auto;width:max-content;transform:translateY(20px);z-index:70;display:flex;gap:14px;align-items:flex-end;
   padding:12px 16px 10px;border-radius:18px;background:linear-gradient(180deg,rgba(16,11,25,.97),rgba(8,6,14,.985));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(241,198,110,.35);
   box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;max-width:calc(100vw - 16px);overflow-x:auto}
-.dz-table.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.dz-table.on{opacity:1;transform:none;pointer-events:auto}
 .dz-seat{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:170px;font-family:system-ui,sans-serif;color:#eee}
 .dz-seat.mine .dz-who span{color:#f7d684}
 .dz-who{display:flex;align-items:center;gap:7px;font:700 13px/1 Cinzel,Georgia,serif;letter-spacing:.04em}

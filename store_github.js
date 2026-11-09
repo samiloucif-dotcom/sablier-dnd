@@ -164,4 +164,44 @@ function flushAll() {
   flushAll().finally(() => process.exit(0));
 }));
 
-module.exports = { enabled, load, save, flushAll, ensureBranch, etat, BRANCH, REPO };
+/* ---------- binary files (slideshow pictures, music) ----------
+   Written once, read back raw: the JSON contents endpoint stops at 1 MB, the raw
+   one goes up to 100 MB. One upload at a time, so two commits never race on
+   the data branch. */
+let binQueue = Promise.resolve();
+function saveBinary(file, buf, message) {
+  if (!enabled) return Promise.resolve(false);
+  const job = binQueue.then(async () => {
+    const body = { message: message || ('trial slides: ' + file), content: buf.toString('base64'), branch: BRANCH };
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const j = await api('/repos/' + REPO + '/contents/' + encodeURIComponent(file), {
+          method: 'PUT', headers: head({ 'Content-Type': 'application/json' }), body: JSON.stringify(body),
+        });
+        shas[file] = j.content && j.content.sha;
+        etat.ok = true; etat.err = null; etat.at = new Date().toISOString();
+        return true;
+      } catch (e) {
+        if (e.status === 422 && !body.sha) {           // already there (same name): fetch its sha, overwrite
+          await refreshSha(file);
+          if (shas[file]) body.sha = shas[file];
+        } else if (e.status !== 409) { etat.ok = false; etat.err = e.message; console.warn('  /!\\ GitHub upload failed : ' + e.message); return false; }
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+      }
+    }
+    return false;
+  });
+  binQueue = job.catch(() => false);
+  return job;
+}
+async function loadBinary(file) {
+  if (!enabled) return null;
+  try {
+    const r = await fetch(API + '/repos/' + REPO + '/contents/' + encodeURIComponent(file) + '?ref=' + encodeURIComponent(BRANCH),
+      { headers: head({ 'Accept': 'application/vnd.github.raw' }) });
+    if (!r.ok) return null;
+    return Buffer.from(await r.arrayBuffer());
+  } catch (e) { return null; }
+}
+
+module.exports = { enabled, load, save, flushAll, ensureBranch, etat, BRANCH, REPO, saveBinary, loadBinary };

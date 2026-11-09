@@ -226,6 +226,7 @@
   <script src="/trial_core.js"></script>
   <script src="/trial_stage.js"></script>
   <script src="/trial_dice.js"></script>
+  <script src="/trial_show.js"></script>
   <script>
   (function () {
     'use strict';
@@ -278,6 +279,13 @@
       soundOn: () => window.TrialSFX && window.TrialSFX.enabled !== false,
       bottom: () => { const b = $('#bar'); return (b && !b.hidden ? b.offsetHeight : 0) + 12; },
     });
+    /* ---------- slideshows: full screen; the presenter turns the pages; the music plays hidden ---------- */
+    const slideshow = TrialShow.mount({
+      base: '', post: play, toast,
+      players: () => (state && state.players) || {},
+      soundOn: () => !window.TrialSFX || !window.TrialSFX.ctx || window.TrialSFX.enabled !== false,
+    });
+    window.__trialShow = slideshow;       // for debugging from the console
     /* the Credibility Points: shown while the court is in session, they pop when they change */
     let cpWas = null;
     function paintCp() {
@@ -304,6 +312,7 @@
     function paint() {
       if (!state) return;
       if (typeof dice !== 'undefined') dice.update(state);
+      if (typeof slideshow !== 'undefined') slideshow.update(state.slides, state.serverNow);
       if (typeof paintCp === 'function') paintCp();
       const P = state.players || {};
       const mine = P.mine;

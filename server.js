@@ -17,7 +17,9 @@ const os = require('os');
 const { M1_LOCATIONS } = require('./locations.js');
 const BOARD = require('./board_server.js');
 const STORE = require('./store_github.js');   // sauvegarde durable (GitHub, branche « data »)
-const TRIAL = require('./trial_server.js');   // Class Trial stage (GM_PATH/trial -> /trial)
+const TRIAL = require('./trial_server.js');
+const SLIDES = require('./trial_slidestore.js');
+const TRIAL_CORE = require('./trial_core.js');   // Class Trial stage (GM_PATH/trial -> /trial)
 
 const PORT = process.env.PORT || 3000;
 /* Adresse du cockpit MJ. Elle n'est PAS devinable depuis l'adresse joueur :
@@ -40,6 +42,8 @@ const STATIC = {
   '/trial_stage.js': 'trial_stage.js',
   '/trial_dice.js': 'trial_dice.js',       // skill checks, players' side (the d20s, "Roll for …")
   '/trial_dice_gm.js': 'trial_dice_gm.js', // skill checks, GM side (SKILL CHECK window + log) — no secrets inside
+  '/trial_show.js': 'trial_show.js',       // slideshows, players' side (full screen, the presenter's ◀ ▶, music)
+  '/trial_show_gm.js': 'trial_show_gm.js', // slideshows, GM side (list, editor, play controls) — no secrets inside
 };
 const GM_STATIC = { '/data.js': 'data.js', '/locations.js': 'locations.js',
   '/board.css': 'board.css', '/board.js': 'board.js', '/warden.js': 'warden.js' };
@@ -502,6 +506,11 @@ const server = http.createServer((req, res) => {
       if (sub === '/warden') return serveFile(res, path.join(PUBLIC, 'warden.html'));
       if (sub === '/trial') return serveTrialGm(res);
       if (sub === '/trial/state') return sendJSON(res, TRIAL.gmView());
+      if (sub.startsWith('/trial/slide/')) {                     // any slideshow file (the editor's thumbnails)
+        const id = sub.slice('/trial/slide/'.length), mime = TRIAL.slideMime(id);
+        if (!mime) { res.writeHead(404); return res.end('Not found'); }
+        return SLIDES.serve(req, res, id, mime);
+      }
       if (sub === '/state') return sendJSON(res, snapshot(true));
       if (sub === '/board/state') return sendJSON(res, BOARD.wardenView());
       if (sub === '/board.json') {
@@ -540,6 +549,11 @@ const server = http.createServer((req, res) => {
     /* ---------- Class Trial stage (players) : waiting screen until the GM opens the court ---------- */
     if (pathname === '/trial') return serveFile(res, path.join(PUBLIC, 'trial.html'));
     if (pathname === '/trial/state') return sendJSON(res, TRIAL.playerView(url.searchParams.get('cid')));
+    if (pathname.startsWith('/trial/slide/')) {                 // the slideshow playing: only up to the next slide
+      const id = pathname.slice('/trial/slide/'.length), mime = TRIAL.slideVisible(id);
+      if (!mime) { res.writeHead(404); return res.end('Not found'); }
+      return SLIDES.serve(req, res, id, mime);
+    }
     if (pathname.startsWith('/trial/emote/')) {                 // pictures the players uploaded as emotes
       const [key, n] = pathname.slice('/trial/emote/'.length).split('/');
       const e = TRIAL.emote(decodeURIComponent(key || ''), n);
@@ -565,6 +579,28 @@ const server = http.createServer((req, res) => {
     }
     res.writeHead(404);
     return res.end('Not found');
+  }
+
+  if (req.method === 'POST' && pathname === GM_PATH + '/trial/upload') {
+    /* a slideshow picture or its music: raw bytes, ?show=<id>&kind=slide|audio&w=&h=&name= */
+    const q = url.searchParams, show = q.get('show') || '', kind = q.get('kind') === 'audio' ? 'audio' : 'slide';
+    const mime = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    const okType = kind === 'audio' ? TRIAL_CORE.AUDIO_MIME.test(mime) : TRIAL_CORE.IMAGE_MIME.test(mime);
+    if (!TRIAL.hasShow(show) || !okType || !SLIDES.EXT[mime]) {
+      req.resume(); res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: !TRIAL.hasShow(show) ? 'unknown slideshow' : 'this kind of file is not supported (' + (mime || '?') + ')' }));
+    }
+    SLIDES.readRaw(req, SLIDES.MAX[kind === 'audio' ? 'audio' : 'image']).then((buf) => {
+      if (!buf.length) throw new Error('empty file');
+      const id = SLIDES.put(mime, buf);
+      if (kind === 'audio') TRIAL.gmAction({ action: 'audioSet', id: show, audio: { id, mime, name: q.get('name') || 'music', size: buf.length } });
+      else TRIAL.gmAction({ action: 'slideAdded', id: show, slide: { id, mime, w: Number(q.get('w')) || 0, h: Number(q.get('h')) || 0 } });
+      sendJSON(res, Object.assign({ ok: true, file: id }, { state: TRIAL.gmView() }));
+    }).catch((e) => {
+      res.writeHead(e.message === 'too big' ? 413 : 400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: e.message === 'too big' ? 'file too big' : e.message }));
+    });
+    return;
   }
 
   if (req.method === 'POST') {

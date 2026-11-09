@@ -18,6 +18,7 @@ const path = require('path');
 const crypto = require('crypto');
 const CORE = require('./trial_core.js');
 const STORE = require('./store_github.js');
+const SLIDES = require('./trial_slidestore.js');
 
 const FILE = path.join(__dirname, 'trial.json');
 const STORE_PATH = 'sablier-app/trial.json';
@@ -93,6 +94,16 @@ function saveEmote(id) {
 /* a fair d20, rolled here so every screen shows the same dice */
 const d20 = () => crypto.randomInt(1, 21);
 
+/* every file the slideshows use: id -> mime */
+function slideFiles() {
+  const out = {};
+  (st.shows || []).forEach((x) => {
+    x.slides.forEach((sl) => { out[sl.id] = sl.mime; });
+    if (x.audio) out[x.audio.id] = x.audio.mime;
+  });
+  return out;
+}
+
 function playerAction(body) {
   body = body || {};
   const now = Date.now();
@@ -146,9 +157,17 @@ module.exports = {
     }
   },
   gmAction(body) {
+    const before = slideFiles();
     const r = CORE.reduce(st, body, Date.now());
     if (r.persist) persist();
+    // pictures / music no longer in any slideshow: drop the local copy
+    const after = slideFiles();
+    Object.keys(before).forEach((id) => { if (!after[id]) SLIDES.remove(id, before[id]); });
   },
+  /* ---------- slideshow files ---------- */
+  hasShow(id) { return !!CORE.findShow(st, id); },
+  slideMime(id) { return slideFiles()[id] || null; },              // any file of any slideshow (GM)
+  slideVisible(id) { return CORE.fileVisible(st, id) ? slideFiles()[id] : null; },   // what players may fetch now
   playerAction,
   gmView() { return CORE.gmView(st, Date.now()); },
   playerView(cid) { return CORE.playerView(st, Date.now(), cid); },

@@ -222,6 +222,8 @@
       <div class="grid3" data-zone="L-minor"></div>
       <h4 style="color:var(--pro)">Players at the table</h4>
       <div class="players" id="players"></div>
+      <h4 style="color:var(--gold, #f1c66e)">Slideshows</h4>
+      <div id="showPanel"></div>
     </section>
 
     <section class="center">
@@ -298,6 +300,8 @@
   <script src="/trial_stage.js"></script>
   <script src="/trial_dice.js"></script>
   <script src="/trial_dice_gm.js"></script>
+  <script src="/trial_show.js"></script>
+  <script src="/trial_show_gm.js"></script>
   <script>
   (function () {
     'use strict';
@@ -362,9 +366,10 @@
 
     let picked = null;   // tap-to-place
 
-    let diceGM = null, demoDice = null;
+    let diceGM = null, demoDice = null, showGM = null;
     function render() {
       if (diceGM) diceGM.update(view());
+      if (showGM) showGM.update();
       if (demoDice) demoDice.update(C.playerView(state, Date.now(), 'demo-player-0001'));
       const cpv = state.cp == null ? 10 : state.cp;
       $('#cpVal').textContent = cpv;
@@ -652,6 +657,9 @@
     $('#cpPlus').onclick = () => act({ action: 'cp', delta: 1 });
     $('#cpReset').onclick = () => act({ action: 'cp', set: 10 });
     diceGM = TrialDiceGM.mount($('#dicePanel'), { getState: () => view(), act });
+    /* ---------- slideshows (Closing Argument, Punishment…) ---------- */
+    showGM = TrialShowGM.mount($('#showPanel'), { base: BASE, getState: () => view(), act, adopt, demo: DEMO, preview: $('#preview') });
+    showGM.update();
 
     /* ---------- demo: a stand-in for one player's controls ---------- */
     if (DEMO) {

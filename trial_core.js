@@ -177,6 +177,47 @@
       dcMode: c.dcMode === 'sum' ? 'sum' : 'each', items, doneAt: Number(c.doneAt) || 0, closed: !!c.closed };
   }
 
+  /* ---------- slideshows ----------
+     The GM builds slideshows (pictures + an optional music file) and plays
+     one full screen on the players' trial page — the Closing Argument comic,
+     the Punishment. "Give control to…" lets one player's character turn the
+     pages while they narrate; the GM can always turn them too.
+     Players are only ever told the slides up to the next one (no peeking at
+     the execution). The pictures themselves live in trial_slidestore.js. */
+  const SHOWS_MAX = 40, SLIDES_MAX = 150;
+  const validId = (x) => typeof x === 'string' && /^[a-z0-9]{8,24}$/.test(x);
+  const cleanName = (x, d) => String(x == null ? '' : x).replace(/\s+/g, ' ').trim().slice(0, 60) || d;
+  const findShow = (st, id) => (st.shows || []).find((x) => x.id === id) || null;
+  const AUDIO_MIME = /^audio\/(mpeg|mp3|ogg|wav|x-wav|wave|mp4|aac|x-m4a|webm)$/;
+  const IMAGE_MIME = /^image\/(webp|jpeg|png|gif)$/;
+  function cleanSlide(x) {
+    if (!x || !validId(x.id) || !IMAGE_MIME.test(String(x.mime))) return null;
+    return { id: x.id, mime: x.mime, w: clampInt(x.w, 0, 20000), h: clampInt(x.h, 0, 20000) };
+  }
+  function cleanAudio(x) {
+    if (!x || !validId(x.id) || !AUDIO_MIME.test(String(x.mime))) return null;
+    return { id: x.id, mime: x.mime, name: cleanName(x.name, 'music'), size: clampInt(x.size, 0, 1e9) };
+  }
+  function cleanShow(x) {
+    if (!x || !validId(x.id)) return null;
+    return { id: x.id, name: cleanName(x.name, 'Slideshow'),
+      slides: (Array.isArray(x.slides) ? x.slides : []).map(cleanSlide).filter(Boolean).slice(0, SLIDES_MAX),
+      audio: cleanAudio(x.audio), loop: !!x.loop, audioAll: x.audioAll !== false };
+  }
+  /* what the players' screens get while a slideshow plays */
+  function slidesPublic(st) {
+    const P = st.show, x = P && P.on && findShow(st, P.id);
+    if (!x || !x.slides.length) return null;
+    return { id: x.id, name: x.name, idx: P.idx, n: x.slides.length, ctrl: P.ctrl, seq: P.seq,
+      ids: x.slides.map((sl, i) => (i <= P.idx + 1 ? sl.id : null)),        // up to the next slide only
+      audio: x.audio ? x.audio.id : null, music: P.music !== false, audioAll: x.audioAll !== false, loop: !!x.loop, audioAt: P.audioAt };
+  }
+  /* may a player's browser fetch this file right now? */
+  function fileVisible(st, fileId) {
+    const v = slidesPublic(st);
+    return !!v && (v.ids.indexOf(fileId) >= 0 || v.audio === fileId);
+  }
+
   /* "Wavering" (a juror's Resolve has reached 4 in the GM's tracker): their
      sprite and token tremble. Only an NPC seated on the floor can waver; taking
      a side, leaving the room or a new seating clears it. */
@@ -199,6 +240,8 @@
       moves: { seq: 0, list: [] },   // the last side changes (moments, never saved)
       invite: { on: false, at: 0 },  // "Invite players": the hourglass stops and shows JOIN CLASS TRIAL
       cp: CP_START,                  // the prosecution's Credibility Points
+      shows: [],                     // slideshows: [{ id, name, slides: [{ id, mime, w, h }], audio, loop, audioAll }]
+      show: { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true },   // the one playing (a moment, not saved)
       dice: { seq: 0, active: null, checks: [] },   // skill checks (the last DICE_KEEP, newest last)
       players: { claims: {}, react: true, speak: true, emotes: {}, emoteOn: {}, lastReact: {}, lastSpeak: {} },
       updated: '',
@@ -213,6 +256,7 @@
       waver: Object.assign({}, st.waver || {}),
       invite: { on: !!(st.invite && st.invite.on), at: (st.invite && st.invite.at) || 0 },
       cp: st.cp == null ? CP_START : st.cp,
+      shows: JSON.parse(JSON.stringify(st.shows || [])),
       dice: JSON.parse(JSON.stringify(st.dice || { seq: 0, active: null, checks: [] })),
       players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
@@ -233,6 +277,7 @@
     Object.keys(raw.waver || {}).forEach((k) => { if (raw.waver[k] && canWaver(st, k)) st.waver[k] = 1; });
     if (raw.invite && typeof raw.invite === 'object') st.invite = { on: !!raw.invite.on, at: Number(raw.invite.at) || 0 };
     if (raw.cp != null) st.cp = clampInt(raw.cp, CP_MIN, CP_MAX);
+    if (Array.isArray(raw.shows)) st.shows = raw.shows.map(cleanShow).filter(Boolean).slice(0, SHOWS_MAX);
     if (raw.dice && Array.isArray(raw.dice.checks)) {
       const checks = raw.dice.checks.map(cleanCheck).filter(Boolean).slice(-DICE_KEEP);
       const seq = Math.max(clampInt(raw.dice.seq, 0, 1e9), checks.reduce((m, c) => Math.max(m, c.id), 0));
@@ -285,6 +330,8 @@
     if (!st.invite) st.invite = { on: false, at: 0 };
     if (st.cp == null) st.cp = CP_START;
     if (!st.dice) st.dice = { seq: 0, active: null, checks: [] };
+    if (!st.shows) st.shows = [];
+    if (!st.show) st.show = { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true };
     let persist = false;
     switch (a.action) {
       case 'place': {
@@ -432,6 +479,97 @@
         st.dice.checks = st.dice.checks.filter((c) => c.id === st.dice.active);
         persist = true;
         break;
+      /* ----- slideshows: the editor ----- */
+      case 'showNew': {
+        if (!validId(a.id) || findShow(st, a.id) || st.shows.length >= SHOWS_MAX) return { changed: false };
+        st.shows.push({ id: a.id, name: cleanName(a.name, 'Slideshow'), slides: [], audio: null, loop: false, audioAll: true });
+        persist = true;
+        break;
+      }
+      case 'showEdit': {                       // { id, name?, loop?, audioAll? }
+        const x = findShow(st, a.id);
+        if (!x) return { changed: false };
+        if (a.name != null) x.name = cleanName(a.name, x.name);
+        if (a.loop != null) x.loop = !!a.loop;
+        if (a.audioAll != null) x.audioAll = !!a.audioAll;
+        persist = true;
+        break;
+      }
+      case 'showDelete': {
+        const i = st.shows.findIndex((x) => x.id === a.id);
+        if (i < 0) return { changed: false };
+        st.shows.splice(i, 1);
+        if (st.show.id === a.id) st.show.on = false;
+        persist = true;
+        break;
+      }
+      case 'slideAdded': {                     // the server stored a picture: { id, slide }
+        const x = findShow(st, a.id), sl = cleanSlide(a.slide);
+        if (!x || !sl || x.slides.length >= SLIDES_MAX || x.slides.some((y) => y.id === sl.id)) return { changed: false };
+        x.slides.push(sl);
+        persist = true;
+        break;
+      }
+      case 'slideOrder': {                     // { id, order: [slide ids] } — a new order of the same slides
+        const x = findShow(st, a.id), o = Array.isArray(a.order) ? a.order : [];
+        if (!x || o.length !== x.slides.length) return { changed: false };
+        const by = {}; x.slides.forEach((y) => { by[y.id] = y; });
+        if (o.some((k) => !by[k]) || new Set(o).size !== o.length) return { changed: false };
+        const cur = x.slides[st.show.on && st.show.id === x.id ? st.show.idx : -1];
+        x.slides = o.map((k) => by[k]);
+        if (cur) st.show.idx = x.slides.indexOf(cur);
+        persist = true;
+        break;
+      }
+      case 'slideDelete': {
+        const x = findShow(st, a.id), i = x ? x.slides.findIndex((y) => y.id === a.slide) : -1;
+        if (i < 0) return { changed: false };
+        x.slides.splice(i, 1);
+        if (st.show.on && st.show.id === x.id) {
+          if (!x.slides.length) st.show.on = false;
+          else if (st.show.idx >= i) { st.show.idx = Math.max(0, Math.min(x.slides.length - 1, st.show.idx - (st.show.idx > i ? 1 : 0))); st.show.seq++; }
+        }
+        persist = true;
+        break;
+      }
+      case 'audioSet': {                       // the server stored a music file: { id, audio }
+        const x = findShow(st, a.id);
+        if (!x) return { changed: false };
+        x.audio = a.audio ? cleanAudio(a.audio) : null;
+        persist = true;
+        break;
+      }
+      /* ----- slideshows: playing ----- */
+      case 'play': {
+        const x = findShow(st, a.id);
+        if (!x || !x.slides.length) return { changed: false };
+        st.show = { on: true, id: x.id, idx: clampInt(a.idx, 0, x.slides.length - 1), ctrl: st.show.ctrl || null,
+          seq: (st.show.seq || 0) + 1, audioAt: now, music: true };
+        break;
+      }
+      case 'slideGo': {                        // { delta: ±1 } or { to }
+        const P = st.show, x = P.on && findShow(st, P.id);
+        if (!x) return { changed: false };
+        const to = clampInt(a.to != null ? a.to : P.idx + clampInt(a.delta, -1, 1), 0, x.slides.length - 1);
+        if (to === P.idx) return { changed: false };
+        P.idx = to; P.seq++;
+        break;
+      }
+      case 'slideCtrl': {                      // "Give control to…": a PC key, or null = only the GM
+        const k = a.key && PCS.indexOf(a.key) >= 0 ? a.key : null;
+        if (st.show.ctrl === k) return { changed: false };
+        st.show.ctrl = k;
+        break;
+      }
+      case 'music': {                          // { on } — mute / unmute; { restart: true } — from the top
+        if (a.restart) st.show.audioAt = now;
+        else st.show.music = !!a.on;
+        break;
+      }
+      case 'stop':
+        if (!st.show.on) return { changed: false };
+        st.show.on = false;
+        break;
       /* ----- the GM and the players ----- */
       case 'release': {                        // GM frees a claimed character
         const cl = st.players.claims;
@@ -506,6 +644,15 @@
         st.fx = { kind: 'reaction', text: '', key: mine, seq: st.fx.seq + 1, at: now };
         break;
       }
+      case 'slide': {                        // the presenter turns the page: { delta: ±1 }
+        const S = st.show, x = S && S.on && findShow(st, S.id);
+        if (!x) return { changed: false, error: 'no slideshow is playing' };
+        if (!mine || S.ctrl !== mine) return { changed: false, error: 'the GM has not handed you the slideshow' };
+        const to = clampInt(S.idx + clampInt(a.delta, -1, 1), 0, x.slides.length - 1);
+        if (to === S.idx) return { changed: false };
+        S.idx = to; S.seq++;
+        break;
+      }
       case 'speak': {                        // takes the floor: the camera comes to them, no banner
         if (!mine) return { changed: false, error: 'pick a character first' };
         if (!st.open) return { changed: false, error: 'the court is not in session' };
@@ -575,11 +722,12 @@
   function playerView(st, now, cid) {
     const players = playersPublic(st, cid);
     const dice = dicePublic(st);
-    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players, dice };
+    const slides = slidesPublic(st);
+    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players, dice, slides };
     return {
       rev: st.rev, open: true, route: st.route,
       slots: st.slots, focus: st.focus, fx: st.fx, sweep: st.sweep,
-      waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players, dice,
+      waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players, dice, slides,
       cp: st.cp == null ? CP_START : st.cp,
     };
   }
@@ -596,6 +744,7 @@
     initialState, persistable, sanitize, reduce, playerAct, playerView, gmView, playersPublic, slotOf, claimOf, validCid,
     sideShift, canWaver,
     CP_START, CP_MIN, CP_MAX, SKILLS, OPENING_CHECKS, ROLL_MODES, makeRoll, activeCheck, dicePublic,
+    SLIDES_MAX, IMAGE_MIME, AUDIO_MIME, validId, findShow, slidesPublic, fileVisible,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TrialCore = api;
