@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:00:22.111Z",
+ "updated": "2026-11-09T17:00:35.136Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1071,7 +1071,7 @@
     "act": "Enjoys the guest house"
    },
    {
-    "loc": "",
+    "loc": "X In transit",
     "act": ""
    },
    {
