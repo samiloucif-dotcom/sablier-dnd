@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-09T16:46:11.818Z",
+ "updated": "2026-11-09T16:46:40.429Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -31,7 +31,80 @@
   {
    "id": "yjmytmyyey5ga8",
    "name": "Carnage Reconstruction",
-   "slides": [],
+   "slides": [
+    {
+     "id": "pvc7jkvy25dsdx72",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "w6hf8hhhhgjhpfe9",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 496
+    },
+    {
+     "id": "wxe3t6nmzwfjv3ge",
+     "mime": "image/webp",
+     "w": 772,
+     "h": 679
+    },
+    {
+     "id": "73a7suypwiu6rrd5",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "hpf5fgqafksyw93c",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "6m9f26icfaj3w9sa",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 926
+    },
+    {
+     "id": "8qvk6wq6tk54kzt9",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1094
+    },
+    {
+     "id": "f4tn97bjgbd98mp9",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1038
+    },
+    {
+     "id": "fn2u5r8jxrpg8bcj",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 931
+    },
+    {
+     "id": "2k8ap3hekug8zx26",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 929
+    },
+    {
+     "id": "fh879mj5kqv4fi5f",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 929
+    },
+    {
+     "id": "paufjg7skmm7j47f",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 930
+    }
+   ],
    "audio": null,
    "loop": false,
    "audioAll": true
