@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:05:50.569Z",
+ "updated": "2026-11-09T17:06:51.181Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1092,11 +1092,11 @@
    },
    {
     "loc": "0 Main hall",
-    "act": ""
+    "act": "Frustrated in the main hall, hears the noise"
    },
    {
     "loc": "0 Main hall",
-    "act": ""
+    "act": "Witnesses the fall"
    }
   ]
  }
