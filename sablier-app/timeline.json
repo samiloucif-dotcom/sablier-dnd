@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:00:14.377Z",
+ "updated": "2026-11-09T17:00:22.111Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1068,7 +1068,7 @@
    },
    {
     "loc": "3 Guest House",
-    "act": ""
+    "act": "Enjoys the guest house"
    },
    {
     "loc": "",
