@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:03:16.978Z",
+ "updated": "2026-11-09T17:03:36.427Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1083,7 +1083,7 @@
     "act": "Talks to Norvodavius and checks his dorm"
    },
    {
-    "loc": "",
+    "loc": "1 Chill Zone",
     "act": ""
    },
    {
