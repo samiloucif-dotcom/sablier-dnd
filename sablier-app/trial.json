@@ -20,14 +20,23 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-09T16:45:07.899Z",
+ "updated": "2026-11-09T16:46:03.918Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1794242687127
  },
  "cp": 10,
- "shows": [],
+ "shows": [
+  {
+   "id": "yjmytmyyey5ga8",
+   "name": "Slideshow 1",
+   "slides": [],
+   "audio": null,
+   "loop": false,
+   "audioAll": true
+  }
+ ],
  "dice": {
   "seq": 10,
   "active": 10,
