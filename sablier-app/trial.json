@@ -20,7 +20,7 @@
   "R6": "norvodavius",
   "B8": "balerion"
  },
- "updated": "2026-11-09T16:51:01.977Z",
+ "updated": "2026-11-09T16:51:27.205Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -31,10 +31,83 @@
   {
    "id": "5g6vr9rj5wgxvz",
    "name": "Slideshow 1",
-   "slides": [],
+   "slides": [
+    {
+     "id": "2bvg5p9penbwr3i8",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "ckmxv2iuz5wdvk6p",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 496
+    },
+    {
+     "id": "su269j3r8k6r92ci",
+     "mime": "image/webp",
+     "w": 772,
+     "h": 679
+    },
+    {
+     "id": "mu4nu2u2xwwe3uf6",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "trrwsvh5m3iqv8j2",
+     "mime": "image/webp",
+     "w": 1024,
+     "h": 495
+    },
+    {
+     "id": "cbatwi9t8bju8rpr",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 926
+    },
+    {
+     "id": "hk55eyray5bwsmqw",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1094
+    },
+    {
+     "id": "bv2b44bhwsjnmify",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1038
+    },
+    {
+     "id": "ehg9hssr8h5arc2p",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 931
+    },
+    {
+     "id": "m8s7qmb8b8c5stsm",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 929
+    },
+    {
+     "id": "sf5nck5iys43zd6y",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 929
+    },
+    {
+     "id": "k47qpteh85yfb5zs",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 930
+    }
+   ],
    "audio": null,
-   "loop": false,
-   "audioAll": true
+   "loop": true,
+   "audioAll": false
   }
  ],
  "dice": {
