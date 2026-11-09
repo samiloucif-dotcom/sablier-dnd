@@ -11,16 +11,16 @@
   "T2": "polychroma",
   "B1": "hayeva",
   "B7": "nerasho",
-  "B9": "paxel",
   "B6": "gasper",
   "B5": "framschtak",
   "B4": "esteban",
   "B3": "doulahex",
-  "B2": "carnage",
   "R6": "norvodavius",
-  "B8": "balerion"
+  "B8": "balerion",
+  "L1": "carnage",
+  "L2": "paxel"
  },
- "updated": "2026-11-09T17:43:26.463Z",
+ "updated": "2026-11-09T17:48:49.081Z",
  "waver": {},
  "invite": {
   "on": false,
