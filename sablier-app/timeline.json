@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-09T17:01:14.331Z",
+ "updated": "2026-11-09T17:02:37.971Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -1076,7 +1076,7 @@
    },
    {
     "loc": "1 Dorms B (Carnage Balerion Framschtak, Pryah, Müne)",
-    "act": ""
+    "act": "Checks her room"
    },
    {
     "loc": "",
