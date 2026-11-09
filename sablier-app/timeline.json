@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-04T14:19:40.104Z",
+ "updated": "2026-11-09T16:58:53.038Z",
  "source": "amorce depuis Timeline_Grille_09h00-10h00.xlsx via gen_data.py",
  "slots": [
   {
@@ -95,7 +95,8 @@
   "Djetecht Eve",
   "Sitrip Ayo",
   "Mr Jacques",
-  "Polychroma"
+  "Polychroma",
+  "Markel"
  ],
  "routines": {
   "Balerion": [
@@ -1046,6 +1047,56 @@
    {
     "loc": "X In transit",
     "act": "Flies to the 4th floor to rejoin Framschtak"
+   }
+  ],
+  "Markel": [
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
+   },
+   {
+    "loc": "",
+    "act": ""
    }
   ]
  }
