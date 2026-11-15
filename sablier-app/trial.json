@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:46:58.647Z",
+ "updated": "2026-11-15T19:47:13.563Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -595,10 +595,19 @@
      "askii": {
       "skill": "Perception",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        7
+       ],
+       "kept": 7,
+       "mod": 0,
+       "total": 7,
+       "at": 1794772033563
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794772033563,
     "closed": false
    }
   ]
