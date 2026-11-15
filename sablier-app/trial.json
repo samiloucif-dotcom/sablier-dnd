@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T20:37:43.544Z",
+ "updated": "2026-11-15T20:38:58.723Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,33 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 21,
-  "active": 21,
+  "seq": 22,
+  "active": 22,
   "checks": [
-   {
-    "id": 10,
-    "at": 1794069882109,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "bardik": {
-      "skill": "Sleight of Hand",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        14
-       ],
-       "kept": 14,
-       "mod": 5,
-       "total": 19,
-       "at": 1794069887062
-      }
-     }
-    },
-    "doneAt": 1794069887062,
-    "closed": true
-   },
    {
     "id": 11,
     "at": 1794771835600,
@@ -480,6 +456,21 @@
      }
     },
     "doneAt": 1794775063544,
+    "closed": true
+   },
+   {
+    "id": 22,
+    "at": 1794775138723,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Dexterity Saving Throw",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
