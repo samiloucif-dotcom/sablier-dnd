@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T20:02:36.303Z",
+ "updated": "2026-11-15T20:10:49.335Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,47 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 19,
-  "active": 19,
+  "seq": 20,
+  "active": 20,
   "checks": [
-   {
-    "id": 8,
-    "at": 1794069199837,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "angele": {
-      "skill": "Dexterity Saving Throw",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        2
-       ],
-       "kept": 2,
-       "mod": 1,
-       "total": 3,
-       "at": 1794069216231
-      }
-     },
-     "pryah": {
-      "skill": "Strength",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        9
-       ],
-       "kept": 9,
-       "mod": 1,
-       "total": 10,
-       "at": 1794069206597
-      }
-     }
-    },
-    "doneAt": 1794069216231,
-    "closed": true
-   },
    {
     "id": 9,
     "at": 1794069537744,
@@ -494,6 +456,30 @@
      }
     },
     "doneAt": 1794772956303,
+    "closed": true
+   },
+   {
+    "id": 20,
+    "at": 1794773446405,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "bardik": {
+      "skill": "Investigation",
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        8
+       ],
+       "kept": 8,
+       "mod": 3,
+       "total": 11,
+       "at": 1794773449335
+      }
+     }
+    },
+    "doneAt": 1794773449335,
     "closed": false
    }
   ]
