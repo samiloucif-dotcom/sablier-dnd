@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:47:46.395Z",
+ "updated": "2026-11-15T19:48:52.877Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,33 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 13,
-  "active": 13,
+  "seq": 14,
+  "active": 14,
   "checks": [
-   {
-    "id": 2,
-    "at": 1794056429411,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "angele": {
-      "skill": "Wisdom Saving Throw",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        18
-       ],
-       "kept": 18,
-       "mod": 2,
-       "total": 20,
-       "at": 1794056445772
-      }
-     }
-    },
-    "doneAt": 1794056445772,
-    "closed": true
-   },
    {
     "id": 3,
     "at": 1794056608375,
@@ -607,6 +583,21 @@
      }
     },
     "doneAt": 1794772066395,
+    "closed": true
+   },
+   {
+    "id": 14,
+    "at": 1794772132877,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "bardik": {
+      "skill": "Perception",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
