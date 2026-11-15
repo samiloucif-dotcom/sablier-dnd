@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:14:23.263Z",
+ "updated": "2026-11-15T18:16:16.595Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -657,12 +657,7 @@
      "ver": 1
     }
    },
-   "bardik": {
-    "2": {
-     "name": "dangan_bardik",
-     "ver": 1
-    }
-   },
+   "bardik": {},
    "angele": {
     "2": {
      "name": "accusing",
