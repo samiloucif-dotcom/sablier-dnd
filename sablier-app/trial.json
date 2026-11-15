@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -9,18 +9,18 @@
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
-  "B1": "hayeva",
-  "B6": "gasper",
-  "B3": "doulahex",
-  "R6": "norvodavius",
-  "B8": "balerion",
+  "B1": "balerion",
   "L1": "carnage",
   "L2": "paxel",
-  "R7": "framschtak",
-  "R8": "esteban",
-  "R9": "nerasho"
+  "B9": "norvodavius",
+  "B8": "nerasho",
+  "B7": "hayeva",
+  "B6": "gasper",
+  "B5": "framschtak",
+  "B4": "esteban",
+  "B3": "doulahex"
  },
- "updated": "2026-11-10T13:30:01.849Z",
+ "updated": "2026-11-15T16:25:26.617Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -490,9 +490,7 @@
   ]
  },
  "players": {
-  "claims": {
-   "pryah": "2p66u7xxqyxfymig9a"
-  },
+  "claims": {},
   "react": false,
   "speak": false,
   "emotes": {
