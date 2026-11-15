@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:12:23.618Z",
+ "updated": "2026-11-15T18:12:46.959Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -569,7 +569,7 @@
    "npc": "framschtak",
    "name": "Know your craft",
    "text": "Analyze a piece of physical evidence",
-   "on": false,
+   "on": true,
    "used": 1
   },
   {
