@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:10:51.144Z",
+ "updated": "2026-11-15T18:11:09.089Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -634,7 +634,7 @@
    "pryah": "2p66u7xxqyxfymig9a"
   },
   "react": false,
-  "speak": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
@@ -704,7 +704,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 3,
    "bardik": 1,
    "angele": 1,
    "askii": 1,
