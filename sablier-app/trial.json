@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:18:59.172Z",
+ "updated": "2026-11-15T18:19:45.503Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -609,7 +609,7 @@
    "npc": "hayeva",
    "name": "Circle of truth",
    "text": "One person answers truthfully one question",
-   "on": true,
+   "on": false,
    "used": 0
   },
   {
@@ -625,7 +625,7 @@
    "npc": "norvodavius",
    "name": "Arcana master",
    "text": "Provides informations about an unknown spell or magic use",
-   "on": true,
+   "on": false,
    "used": 0
   }
  ],
