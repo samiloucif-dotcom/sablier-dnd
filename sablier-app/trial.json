@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:53:56.515Z",
+ "updated": "2026-11-15T19:55:01.453Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -510,10 +510,19 @@
      "askii": {
       "skill": "Animal Handling",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        13
+       ],
+       "kept": 13,
+       "mod": 0,
+       "total": 13,
+       "at": 1794772501453
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794772501453,
     "closed": false
    }
   ]
