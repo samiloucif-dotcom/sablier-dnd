@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T20:43:44.334Z",
+ "updated": "2026-11-15T20:43:58.345Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -467,10 +467,19 @@
      "askii": {
       "skill": "Dexterity",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        12
+       ],
+       "kept": 12,
+       "mod": 2,
+       "total": 14,
+       "at": 1794775438345
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794775438345,
     "closed": false
    }
   ]
