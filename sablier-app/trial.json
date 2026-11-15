@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:08:37.484Z",
+ "updated": "2026-11-15T18:08:46.631Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -592,6 +592,14 @@
    "id": "naz5i9crv8",
    "npc": "esteban",
    "name": "Charm the jury",
+   "text": "Makes one member of the jury like the prosecution",
+   "on": false,
+   "used": 0
+  },
+  {
+   "id": "ycpquwa8ej",
+   "npc": "",
+   "name": "",
    "text": "",
    "on": false,
    "used": 0
