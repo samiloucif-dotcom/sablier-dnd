@@ -225,8 +225,10 @@
 
   <script src="/trial_core.js"></script>
   <script src="/trial_stage.js"></script>
+  <script src="/trial_faceoff.js"></script>
   <script src="/trial_dice.js"></script>
   <script src="/trial_show.js"></script>
+  <script src="/trial_powers.js"></script>
   <script>
   (function () {
     'use strict';
@@ -289,6 +291,11 @@
       soundOn: () => !window.TrialSFX || !window.TrialSFX.ctx || window.TrialSFX.enabled !== false,
     });
     window.__trialShow = slideshow;       // for debugging from the console
+    /* ---------- trial powers: the buttons top-left of the stage, the votes, "You unlocked …" ---------- */
+    const powers = window.TrialPowers ? TrialPowers.mount({
+      host: $('#stage'), post: play, toast,
+      sound: () => window.TrialSFX && window.TrialSFX.enabled !== false,
+    }) : null;
     /* the Credibility Points: shown while the court is in session, they pop when they change */
     let cpWas = null;
     function paintCp() {
@@ -316,6 +323,7 @@
       if (!state) return;
       if (typeof dice !== 'undefined') dice.update(state);
       if (typeof slideshow !== 'undefined') slideshow.update(state.slides, state.serverNow);
+      if (typeof powers !== 'undefined' && powers) powers.update(state);
       if (typeof paintCp === 'function') paintCp();
       const P = state.players || {};
       const mine = P.mine;

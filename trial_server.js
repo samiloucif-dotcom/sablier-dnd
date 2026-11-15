@@ -8,10 +8,13 @@
  *
  * The reducer lives in trial_core.js so the dashboard can apply a click instantly
  * and the server stays the single truth. Saved: the room (seats, open/closed,
- * route) and the players' side (who plays whom, their emotes) — locally in
- * trial.json + trial_emotes/, and, when GH_TOKEN is set, on the GitHub "data"
- * branch like timeline.json and board.json. Focus clicks and banners are
+ * route), the trial powers and the players' side (who plays whom, their emotes,
+ * the NPCs' extra sprites) — locally in trial.json + trial_emotes/, and, when
+ * GH_TOKEN is set, on the GitHub "data" branch like timeline.json and
+ * board.json. Focus clicks, banners, brainstorming, the face-off and votes are
  * moments, not data: they are never written anywhere.
+ * The server throws every die (skill checks, the face-off) so every screen
+ * shows the same one, and only lets players fetch the NPC sprite an NPC wears.
  */
 const fs = require('fs');
 const path = require('path');
@@ -157,12 +160,43 @@ module.exports = {
     }
   },
   gmAction(body) {
-    const before = slideFiles();
-    const r = CORE.reduce(st, body, Date.now());
+    body = body || {};
+    const now = Date.now();
+    /* an NPC sprite: { key, n, data (data: URL), name } — stored like the players' emotes */
+    if (body.action === 'npcSpriteSave') {
+      const key = String(body.key || ''), n = Number(body.n);
+      if (!CORE.BY_KEY[key] || CORE.isPC(key) || CORE.NPC_SPRITE_SLOTS.indexOf(n) < 0) return { ok: false, error: 'not an NPC sprite slot' };
+      const m = MIME_OK.exec(String(body.data || ''));
+      if (!m) return { ok: false, error: 'not a picture (png, webp, jpeg or gif)' };
+      const buf = Buffer.from(m[2], 'base64');
+      if (buf.length > EMO_MAX) return { ok: false, error: 'picture too big' };
+      const id = key + '_' + n;
+      emo[id] = { mime: m[1], buf };
+      saveEmote(id);
+      CORE.reduce(st, { action: 'emoteStored', key, n, name: body.name }, now);
+      if (body.wear) CORE.reduce(st, { action: 'npcSprite', key, n }, now);
+      persist();
+      return { ok: true };
+    }
+    /* the face-off die: the server throws it, so every screen shows the same face */
+    if (body.action === 'foRoll') {
+      const F = st.faceoff || {}, owners = CORE.foOwners(F.left || []);
+      body = { action: 'foRoll', face: owners.length ? crypto.randomInt(owners.length) : -1 };
+    }
+    const before = slideFiles(), emoBefore = emoteIds();
+    const r = CORE.reduce(st, body, now);
     if (r.persist) persist();
     // pictures / music no longer in any slideshow: drop the local copy
     const after = slideFiles();
     Object.keys(before).forEach((id) => { if (!after[id]) SLIDES.remove(id, before[id]); });
+    // an NPC sprite deleted: drop the local copy (the GitHub one stays in the branch's history)
+    const emoNow = emoteIds();
+    emoBefore.forEach((id) => {
+      if (emoNow.indexOf(id) >= 0) return;
+      delete emo[id];
+      try { fs.unlinkSync(path.join(EMO_DIR, id + '.json')); } catch (e) {}
+    });
+    return { ok: r.changed !== false };
   },
   /* ---------- slideshow files ---------- */
   hasShow(id) { return !!CORE.findShow(st, id); },
@@ -173,9 +207,13 @@ module.exports = {
   playerView(cid) { return CORE.playerView(st, Date.now(), cid); },
   /* the invitation, for the hourglass page (/state): { on, at } */
   invite() { const i = st.invite || {}; return { on: !!i.on, at: i.at || 0 }; },
-  /* an uploaded emote picture, or null */
-  emote(key, n) {
-    const e = emo[String(key) + '_' + Number(n)];
-    return e && (st.players.emotes[key] || {})[n] ? e : null;
+  /* an uploaded emote picture (a PC's emote, an NPC's sprite), or null.
+     Players (gm false) only get an NPC's sprite while that NPC wears it. */
+  emote(key, n, gm) {
+    key = String(key); n = Number(n);
+    const e = emo[key + '_' + n];
+    if (!e || !(st.players.emotes[key] || {})[n]) return null;
+    if (!gm && !CORE.isPC(key) && st.players.emoteOn[key] !== n) return null;
+    return e;
   },
 };

@@ -249,6 +249,48 @@
 .ts-cutin img{width:100%;height:100%;object-fit:cover;display:block}
 @keyframes tsCutIn{from{transform:translateX(105%) skewX(-16deg)}to{transform:none}}
 @keyframes tsCutOut{to{transform:translateX(-105%) skewX(-16deg)}}
+/* BRAINSTORMING: the banner's sparks */
+.ts-spark{position:absolute;width:calc(var(--sh)*var(--s));height:calc(var(--sh)*var(--s));border-radius:50%;opacity:0;
+  background:radial-gradient(circle,#fff 0 18%,rgba(140,255,240,.9) 30%,rgba(79,224,208,0) 70%);mix-blend-mode:screen;
+  animation:tsSpark 1.1s ease-out var(--d) both}
+@keyframes tsSpark{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(.4) translateY(calc(var(--sh)*-.06))}}
+.ts-brainwave{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;animation:tsShockF 1s ease-out .05s forwards;
+  background:radial-gradient(ellipse at 50% 50%,rgba(79,224,208,.55),rgba(79,224,208,0) 60%)}
+/* BRAINSTORMING: Polychroma's question and the countdown */
+.ts-brain{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s}
+.ts-brain.on{opacity:1}
+.ts-brain .ts-bdim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(2,10,14,.7),rgba(2,10,14,.25) 50%,rgba(2,10,14,0) 75%);opacity:0;transition:opacity .6s}
+.ts-brain.q .ts-bdim{opacity:1}
+.ts-brain .ts-bcard{position:absolute;left:6%;right:6%;bottom:5%;padding:calc(var(--sh)*.026) calc(var(--sw)*.03) calc(var(--sh)*.03);
+  border-radius:calc(var(--sh)*.022);background:linear-gradient(180deg,rgba(5,30,36,.95),rgba(3,15,21,.95));
+  border:calc(var(--sh)*.004) solid #4fe0d0;box-shadow:0 0 0 calc(var(--sh)*.005) rgba(0,0,0,.65),0 calc(var(--sh)*.03) calc(var(--sh)*.08) rgba(0,0,0,.7),0 0 calc(var(--sh)*.07) rgba(79,224,208,.28);
+  transform:translateY(16%) scale(.94);opacity:0;transition:transform .55s cubic-bezier(.2,1.35,.4,1),opacity .35s}
+.ts-brain.ask .ts-bcard,.ts-brain.q .ts-bcard{transform:none;opacity:1}
+.ts-brain .ts-bhead{display:flex;align-items:center;gap:calc(var(--sw)*.012)}
+.ts-brain .ts-blab{flex:1;font:400 calc(var(--sh)*.034)/1 'Anton',Impact,sans-serif;letter-spacing:.32em;color:#4fe0d0;text-shadow:0 0 calc(var(--sh)*.02) rgba(79,224,208,.6)}
+.ts-brain .ts-bnum{font:400 calc(var(--sh)*.085)/1 'Anton',Impact,sans-serif;color:#fff;min-width:2.1ch;text-align:right;
+  text-shadow:0 calc(var(--sh)*.004) 0 #03363a,0 0 calc(var(--sh)*.03) rgba(79,224,208,.6)}
+.ts-brain .ts-bq{margin-top:calc(var(--sh)*.012);font:800 var(--qf,calc(var(--sh)*.06))/1.2 'Cinzel',Georgia,serif;color:#fff;letter-spacing:.01em;
+  text-shadow:0 calc(var(--sh)*.004) 0 #000,0 0 calc(var(--sh)*.03) rgba(0,0,0,.6);overflow-wrap:anywhere}
+.ts-brain.ask .ts-bq{font:600 calc(var(--sh)*.04)/1.2 'Cinzel',Georgia,serif;color:#bff7f0;letter-spacing:.06em}
+.ts-brain.ask .ts-bq span{display:inline-block;animation:tsDots 1.4s infinite}
+.ts-brain.ask .ts-bq span:nth-child(2){animation-delay:.2s}.ts-brain.ask .ts-bq span:nth-child(3){animation-delay:.4s}
+@keyframes tsDots{0%,60%,100%{opacity:.2}30%{opacity:1}}
+.ts-brain .ts-bbar{margin-top:calc(var(--sh)*.022);height:calc(var(--sh)*.016);border-radius:calc(var(--sh)*.01);background:rgba(255,255,255,.1);overflow:hidden;display:none}
+.ts-brain.q .ts-bbar{display:block}
+.ts-brain .ts-bbar i{display:block;height:100%;width:100%;transform-origin:left center;background:linear-gradient(90deg,#14a59a,#4fe0d0,#d6fff9)}
+.ts-brain.ask .ts-bnum{display:none}
+.ts-brain.hurry .ts-bnum{color:#ff9aa8;text-shadow:0 calc(var(--sh)*.004) 0 #4a0012,0 0 calc(var(--sh)*.03) rgba(255,60,90,.7);animation:tsHurry 1s ease-out infinite}
+.ts-brain.hurry .ts-bbar i{background:linear-gradient(90deg,#b3122e,#ff5a6e)}
+.ts-brain.hurry .ts-bcard{border-color:#ff6b81}
+@keyframes tsHurry{0%{transform:scale(1.25)}35%{transform:none}}
+.ts-brain.over .ts-bnum{font-size:calc(var(--sh)*.05);letter-spacing:.06em;color:#ffd36b;min-width:0;animation:tsUp .5s cubic-bezier(.2,1.5,.4,1)}
+.ts-brain.over .ts-bcard{border-color:#ffd36b;box-shadow:0 0 0 calc(var(--sh)*.005) rgba(0,0,0,.65),0 0 calc(var(--sh)*.08) rgba(255,190,60,.45)}
+@keyframes tsUp{from{transform:scale(2.2);opacity:0}to{transform:none;opacity:1}}
+.ts-brain.pop .ts-bq{animation:tsQIn .6s cubic-bezier(.2,1.2,.4,1)}
+@keyframes tsQIn{from{opacity:0;transform:translateY(calc(var(--sh)*.03))}to{opacity:1;transform:none}}
+/* the face-off covers the stage, the question sits where the name plate is: the plate steps aside */
+.ts-fo-on .ts-plate,.ts-brain-on .ts-plate{opacity:0 !important}
 `;
   function injectCss() {
     if (document.getElementById('ts-css')) return;
@@ -326,6 +368,25 @@
         o.connect(og); og.connect(this.out); o.start(at); o.stop(at + 0.25);
       }
     },
+    tick(hi) {
+      if (!this.ok()) return;
+      const c = this.ctx, t = c.currentTime;
+      const o = c.createOscillator(); o.type = 'square'; o.frequency.value = hi ? 1560 : 1180;
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(hi ? 0.16 : 0.09, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      o.connect(g); g.connect(this.out); o.start(t); o.stop(t + 0.08);
+    },
+    buzz() {
+      if (!this.ok()) return;
+      const c = this.ctx, t = c.currentTime;
+      [110, 116.5].forEach((f) => {
+        const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f;
+        const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100;
+        const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.02);
+        g.gain.setValueAtTime(0.32, t + 0.75); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.05);
+        o.connect(lp); lp.connect(g); g.connect(this.out); o.start(t); o.stop(t + 1.1);
+      });
+    },
     sting() {
       if (!this.ok()) return;
       const c = this.ctx, t = c.currentTime;
@@ -361,11 +422,17 @@
     this.idle.innerHTML = '<div class="t1">CLASS TRIAL</div><div class="t2">The court is not in session</div>';
     this.badge = el('div', 'ts-badge');
     this.badge.textContent = 'COURT CLOSED — players see the waiting screen';
+    this.brainEl = el('div', 'ts-brain');           // BRAINSTORMING: the question and its countdown
+    this.brainEl.innerHTML = '<div class="ts-bdim"></div><div class="ts-bcard"><div class="ts-bhead"><div class="ts-blab">BRAINSTORMING</div><div class="ts-bnum"></div></div>'
+      + '<div class="ts-bq"></div><div class="ts-bbar"><i></i></div></div>';
     this.bg.appendChild(this.strip);
     this.camEl.append(this.bg, this.world, this.speed);
     this.shaker.append(this.camEl, this.vignette);
-    this.root.append(this.shaker, this.plate, this.fx, this.idle, this.badge);
+    this.root.append(this.shaker, this.brainEl, this.plate, this.fx, this.idle, this.badge);
     host.appendChild(this.root);
+    this._brain = null;
+    // ABOUT TO TIP: the face-off scene (trial_faceoff.js) sits over the courtroom, under the banners
+    this.fo = root.TrialFaceoff ? root.TrialFaceoff.create(this) : null;
 
     this.actors = {};          // key -> actor
     this.slots = {};           // what is on screen (side changes still waiting their turn are held back)
@@ -580,6 +647,9 @@
       this.moveQ = []; this.mv = null;
       this.fx.innerHTML = '';
       this.first = true; this.seq = { focus: -1, fx: -1, sweep: -1, move: -1 };
+      clearTimeout(this._focusT);
+      this.applyBrain(null, st);
+      if (this.fo) this.fo.update(null);
       if (this.opts.onLayout) this.opts.onLayout({}, this);
       return;
     }
@@ -600,15 +670,12 @@
     }
     this.applyRoom(now);
 
-    // ---- emotes: a player may be wearing another picture than their sprite
+    // ---- emotes: a player may be wearing another picture than their sprite (an NPC too: the GM dresses them)
     const pl = st.players || {};
+    this._pl = pl;
     Object.keys(this.actors).forEach((k) => {
       const a = this.actors[k];
-      const n = (pl.emoteOn || {})[k] || 1;
-      const meta = n > 1 && ((pl.emotes || {})[k] || []).find((e) => e.n === n);
-      const want = !meta ? this.A + 'sprites/' + k + '.webp'
-        : this.opts.emoteSrc ? this.opts.emoteSrc(k, n, meta.ver)
-        : this.A + 'trial/emote/' + encodeURIComponent(k) + '/' + n + '?v=' + meta.ver;
+      const want = this.spriteFor(k, pl);
       if (a.want === want) return;
       a.want = want;
       if (this.first) { a.img.src = want; return; }
@@ -622,10 +689,16 @@
     const f = st.focus || {};
     if (f.seq !== this.seq.focus) {
       this.seq.focus = f.seq;
+      clearTimeout(this._focusT);
+      const go = () => {
+        if (!f.key) { this.cam.key = null; this.cam.pan = null; this.hidePlate(); }
+        else if (f.key === this.cam.key && !this.cam.pan) this.punch();
+        else this.panTo(f.key);
+      };
+      const wait = f.delay ? f.delay - age(f.at) : 0;           // e.g. the camera leaves once the banner has played
       if (this.first) this.jumpTo(f.key);
-      else if (!f.key) { this.cam.key = null; this.cam.pan = null; this.hidePlate(); }
-      else if (f.key === this.cam.key && !this.cam.pan) this.punch();
-      else this.panTo(f.key);
+      else if (wait > 40) { const s = f.seq; this._focusT = setTimeout(() => { if (this.seq.focus === s) go(); }, wait); }
+      else go();
     }
     // ---- sweep the room
     const sw = st.sweep || {};
@@ -647,8 +720,77 @@
       }
     }
     this.applyWaver();
+    this.applyBrain(st.brain, st);
+    if (this.fo) this.fo.update(st.faceoff, { age, pl, first: this.first });
     this.first = false;
     this.runMoves(now);
+  };
+
+  /* ---- BRAINSTORMING: "Polychroma prepares her question…", then the question,
+     big, with its countdown (a number and a bar; red for the last 10 s; TIME'S
+     UP at 0, the question stays until the GM ends it). */
+  Stage.prototype.applyBrain = function (B, st) {
+    const L = this.brainEl;
+    this.root.classList.toggle('ts-brain-on', !!(B && B.on && this.open));
+    if (!B || !B.on || !this.open) {
+      if (this._brain) { L.classList.remove('on', 'ask', 'q', 'hurry', 'over', 'pop'); clearTimeout(this._brain.t); this._brain = null; }
+      return;
+    }
+    const sNow = st && st.serverNow ? st.serverNow : Date.now();
+    let b = this._brain;
+    if (!b || b.seq !== B.seq) {
+      if (b) clearTimeout(b.t);
+      b = this._brain = { seq: B.seq, qseq: null, end: 0, total: 0, shown: -1, buzzed: false };
+      const wait = B.q ? 0 : 2600 - (sNow - B.at);       // the card comes once the banner has played
+      L.classList.add('on');
+      L.classList.remove('ask', 'q', 'hurry', 'over', 'pop');
+      if (!B.q) b.t = setTimeout(() => { if (this._brain === b && !b.qseq) L.classList.add('ask'); }, Math.max(0, wait));
+      L.querySelector('.ts-bq').innerHTML = 'Polychroma prepares her question<span>.</span><span>.</span><span>.</span>';
+    }
+    if (B.q && b.qseq !== B.qseq) {
+      b.qseq = B.qseq;
+      const n = B.q.length;
+      const k = n <= 40 ? 0.074 : n <= 80 ? 0.062 : n <= 140 ? 0.052 : n <= 210 ? 0.044 : 0.038;
+      const q = L.querySelector('.ts-bq');
+      q.style.setProperty('--qf', 'calc(var(--sh)*' + k + ')');
+      q.textContent = B.q;
+      L.classList.remove('ask', 'pop'); void L.offsetWidth;
+      L.classList.add('q', 'pop');
+      b.buzzed = false;
+    }
+    if (B.q) {
+      const left = B.qAt + B.ms - sNow;
+      const end = performance.now() + left;
+      if (Math.abs(end - b.end) > 250 || b.total !== B.ms) { b.end = end; b.total = B.ms; b.buzzed = left <= -1500; b.shown = -1; }
+    }
+  };
+
+  Stage.prototype.tickBrain = function (now) {
+    const b = this._brain;
+    if (!b || !b.qseq || !b.end) return;
+    const left = b.end - now, L = this.brainEl;
+    const secs = Math.max(0, Math.ceil(left / 1000));
+    L.querySelector('.ts-bbar i').style.transform = 'scaleX(' + Math.max(0, Math.min(1, left / b.total)).toFixed(4) + ')';
+    if (secs === b.shown) return;
+    const was = b.shown;
+    b.shown = secs;
+    L.classList.toggle('hurry', secs > 0 && secs <= 10);
+    L.classList.toggle('over', secs === 0);
+    L.querySelector('.ts-bnum').textContent = secs > 0 ? String(secs) : 'TIME\u2019S UP!';
+    if (this.opts.sound && was > 0) {
+      if (secs === 0 && !b.buzzed) { b.buzzed = true; SFX.buzz(); }
+      else if (secs > 0 && secs <= 10) SFX.tick(secs <= 3);
+    }
+  };
+
+  /* The picture someone wears right now: their sprite, a PC's emote or an NPC's alternative sprite. */
+  Stage.prototype.spriteFor = function (k, pl) {
+    pl = pl || this._pl || {};
+    const n = (pl.emoteOn || {})[k] || 1;
+    const meta = n > 1 && ((pl.emotes || {})[k] || []).find((e) => e.n === n);
+    return !meta ? this.A + 'sprites/' + k + '.webp'
+      : this.opts.emoteSrc ? this.opts.emoteSrc(k, n, meta.ver)
+      : this.A + 'trial/emote/' + encodeURIComponent(k) + '/' + n + '?v=' + meta.ver;
   };
 
   /* What is on screen: the state's seats, with the side changes still waiting
@@ -983,6 +1125,19 @@
         sound = fx.move === 'jury' ? 'slam' : 'sting';
         break;
       }
+      case 'brainstorm': {
+        const lines = own.length ? own : ['BRAINSTORMING'];
+        html = '<div class="ts-flash soft" style="background:#4fe0d0"></div><div class="ts-brainwave"></div>';
+        for (let i = 0; i < 16; i++) {
+          html += '<div class="ts-spark" style="left:' + (8 + Math.random() * 84).toFixed(1) + '%;top:' + (18 + Math.random() * 62).toFixed(1)
+            + '%;--s:' + (0.03 + Math.random() * 0.05).toFixed(3) + ';--d:' + (0.15 + Math.random() * 1.4).toFixed(2) + 's"></div>';
+        }
+        html += band('50%', lines.length > 1 ? '20%' : '14%', '-6deg', 'linear-gradient(90deg,#03262c,#14a59a 45%,#03262c)', '#f1c66e')
+          + word('50%', '-6deg', lines, '--fs:calc(var(--sh)*' + fit(lines, 0.15, 3.0).toFixed(3) + ');--ink:#effffc;--shadow:#03363a;--glow:rgba(79,224,208,.7)', '',
+            own.length ? '' : 'POLYCHROMA ASKS');
+        sound = 'sting';
+        break;
+      }
       case 'whisper': {
         const lines = own.length ? own : ['…something here doesn’t add up.'];
         html = '<div class="ts-whisper" style="--fs:calc(var(--sh)*' + fit(lines, 0.05, 2.4).toFixed(3) + ')">' + lettersLines(lines) + '</div>';
@@ -1070,6 +1225,8 @@
       cam.pitch = lerp(cam.pitch, pitchOf(a), Math.min(1, dt / 300));
     }
     this.tickMoves(now);
+    this.tickBrain(now);
+    if (this.fo) { this.fo.frame(now); const v = this.fo.visible(); if (v !== this._foOn) { this._foOn = v; this.root.classList.toggle('ts-fo-on', v); } }
     const settle = cam.key ? easeOut(clamp((now - cam.settleT0) / 650, 0, 1)) : 0;
     const pt = (now - cam.punchT0) / 520;
     const punch = pt >= 0 && pt < 1 ? Math.sin(Math.PI * Math.min(1, pt * 2.2)) * (1 - pt) * 0.11 : 0;

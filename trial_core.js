@@ -111,6 +111,16 @@
   const SPEAK_COOLDOWN = 1200;            // ms between two SPEAKs of the same player
   const validCid = (cid) => typeof cid === 'string' && /^[A-Za-z0-9_-]{8,64}$/.test(cid);
 
+  /* ---------- NPC sprites ----------
+     Every NPC can have three more pictures on top of their own sprite (2, 3,
+     4). The GM uploads them and dresses the NPC in one with a click. They live
+     next to the players' emotes (players.emotes / emoteOn), so the stage shows
+     them the same way. Players are only ever told about the one an NPC is
+     wearing: a "true form" stays hidden until the GM shows it. */
+  const NPC_SPRITE_SLOTS = [2, 3, 4];
+  const isPC = (k) => PCS.indexOf(k) >= 0;
+  const spriteSlots = (k) => (isPC(k) ? EMOTE_SLOTS : BY_KEY[k] ? NPC_SPRITE_SLOTS : []);
+
   /* ---------- taking sides ----------
      An NPC (anyone but the five PCs) who goes from one area to another:
        jury → defense        'defense'      "[Name] joined the Defense team"
@@ -226,6 +236,71 @@
     return !!(c && c.group !== 'pc' && sid && SLOT[sid].side !== 'bench');
   };
 
+  /* ---------- BRAINSTORMING ----------
+     The banner, then the camera goes up to Polychroma; the GM types her
+     question and it shows big on every screen with a countdown. */
+  const BRAIN_MS = 60000;                 // the countdown
+  const BRAIN_PAN_DELAY = 2300;           // the camera leaves for Polychroma once the banner has played
+  const BRAIN_Q_MAX = 280;
+  const brainInit = () => ({ on: false, seq: 0, at: 0, q: '', qseq: 0, qAt: 0, ms: BRAIN_MS });
+
+  /* ---------- ABOUT TO TIP: the face-off ----------
+     After the banner, the defense and its ally (seats L1, L2) face the five
+     PCs. Each round: the GM says who speaks for the defense, a die picks the
+     prosecutor who answers (each PC who has not spoken yet owns the same
+     number of faces: d10 for five, d12 for four, d6 for three, d20 for two;
+     the last one needs no die), then the GM calls BREAK (a Polychroma token
+     for the prosecution) or FAIL (one for the defense). First to 3 wins. The
+     SERVER rolls (the GM's page sends no face). */
+  const FO_WIN = 3;
+  const FO_DIE = { 5: 10, 4: 12, 3: 6, 2: 20 };
+  const foOwners = (left) => {                     // face i of the die -> the prosecutor on it
+    const s = FO_DIE[left.length];
+    return s ? Array.from({ length: s }, (_, i) => left[i % left.length]) : [];
+  };
+  const foInit = () => ({ on: false, seq: 0, at: 0, phase: 'off', def: null, ally: null, pros: [], left: [],
+    speaker: null, role: null, pro: null, roll: null, rseq: 0, score: { def: 0, pro: 0 }, log: [], hit: null, hseq: 0, result: null, endAt: 0 });
+
+  /* ---------- trial powers ----------
+     The GM writes powers in a table (who grants it, its name, what it does)
+     and unlocks one: every player's screen plays "You unlocked …" and it
+     becomes a button. A player who clicks it proposes it; every player at the
+     table must accept (the proposer already has); one "deny" cancels. Once
+     accepted it is used: it leaves their screens and goes back to locked on
+     the GM's table. Players only ever see unlocked powers. */
+  const POWERS_MAX = 40;
+  function cleanPower(x) {
+    if (!x || !validId(x.id)) return null;
+    return { id: x.id, npc: x.npc && BY_KEY[x.npc] && !isPC(x.npc) ? x.npc : '', name: String(x.name == null ? '' : x.name).slice(0, 60),
+      text: String(x.text == null ? '' : x.text).slice(0, 500), on: !!x.on, used: clampInt(x.used, 0, 999) };
+  }
+  const findPower = (st, id) => (st.powers || []).find((p) => p.id === id) || null;
+  const powerName = (p) => String(p.name || '').replace(/\s+/g, ' ').trim();
+  const powerSnap = (p) => ({ id: p.id, name: powerName(p) || 'Power', text: String(p.text || '').trim(), npc: p.npc || null });
+  /* who is at the table (the server knows the claims; the GM's page only the list) */
+  const claimedKeys = (st) => (st.players.claims ? Object.keys(st.players.claims) : (st.players.taken || []).slice());
+  /* a vote after something changed: passes once everyone still at the table said yes */
+  function voteSettle(st, now) {
+    const V = st.vote;
+    if (!V || V.state !== 'open') return false;
+    const p = findPower(st, V.power);
+    if (!p || !p.on) { V.state = 'cancelled'; V.endAt = now; return true; }
+    const at = claimedKeys(st);
+    if (at.indexOf(V.by) < 0) { V.state = 'withdrawn'; V.endAt = now; return true; }
+    V.need = V.need.filter((k) => at.indexOf(k) >= 0);
+    if (!V.need.every((k) => V.votes[k] === true)) return false;
+    V.state = 'passed'; V.endAt = now;
+    p.on = false; p.used = (p.used || 0) + 1;
+    st.powerFx = { seq: (st.powerFx.seq || 0) + 1, kind: 'used', power: powerSnap(p), by: V.by, at: now };
+    return true;
+  }
+  function votePublic(st) {
+    const V = st.vote;
+    if (!V) return null;
+    return { id: V.id, power: V.snap, by: V.by, at: V.at, need: V.need.slice(), votes: Object.assign({}, V.votes),
+      state: V.state, endAt: V.endAt, deniedBy: V.deniedBy || null };
+  }
+
   function initialState() {
     return {
       v: 1,
@@ -243,6 +318,11 @@
       shows: [],                     // slideshows: [{ id, name, slides: [{ id, mime, w, h }], audio, loop, audioAll }]
       show: { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true },   // the one playing (a moment, not saved)
       dice: { seq: 0, active: null, checks: [] },   // skill checks (the last DICE_KEEP, newest last)
+      brain: brainInit(),            // BRAINSTORMING: Polychroma's question and its countdown (a moment)
+      faceoff: foInit(),             // ABOUT TO TIP: the face-off (a moment)
+      powers: [],                    // trial powers: [{ id, npc, name, text, on (in the players' hands), used }]
+      vote: null,                    // a player proposed a power: everyone at the table votes (a moment)
+      powerFx: { seq: 0 },           // "You unlocked …" / "… activated": every screen plays it (a moment)
       players: { claims: {}, react: true, speak: true, emotes: {}, emoteOn: {}, lastReact: {}, lastSpeak: {} },
       updated: '',
     };
@@ -258,6 +338,7 @@
       cp: st.cp == null ? CP_START : st.cp,
       shows: JSON.parse(JSON.stringify(st.shows || [])),
       dice: JSON.parse(JSON.stringify(st.dice || { seq: 0, active: null, checks: [] })),
+      powers: (st.powers || []).map(cleanPower).filter(Boolean),
       players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
     };
@@ -292,9 +373,8 @@
     });
     st.players.react = rp.react !== false;
     st.players.speak = rp.speak !== false;
-    Object.keys(rp.emotes || {}).forEach((k) => {
-      if (PCS.indexOf(k) < 0) return;
-      EMOTE_SLOTS.forEach((n) => {
+    Object.keys(rp.emotes || {}).forEach((k) => {           // the PCs' emotes and the NPCs' sprites
+      spriteSlots(k).forEach((n) => {
         const e = (rp.emotes[k] || {})[n];
         if (e && typeof e === 'object') {
           (st.players.emotes[k] = st.players.emotes[k] || {})[n] =
@@ -304,8 +384,9 @@
     });
     Object.keys(rp.emoteOn || {}).forEach((k) => {
       const n = Number(rp.emoteOn[k]);
-      if (PCS.indexOf(k) >= 0 && (n === 1 || (st.players.emotes[k] || {})[n])) st.players.emoteOn[k] = n;
+      if (BY_KEY[k] && (n === 1 || (st.players.emotes[k] || {})[n])) st.players.emoteOn[k] = n;
     });
+    if (Array.isArray(raw.powers)) st.powers = raw.powers.map(cleanPower).filter(Boolean).slice(0, POWERS_MAX);
     return st;
   }
 
@@ -320,6 +401,15 @@
     return null;
   }
 
+  /* states saved before brainstorming / face-off / powers existed */
+  function ensureNew(st) {
+    if (!st.brain) st.brain = brainInit();
+    if (!st.faceoff) st.faceoff = foInit();
+    if (!st.powers) st.powers = [];
+    if (st.vote === undefined) st.vote = null;
+    if (!st.powerFx) st.powerFx = { seq: 0 };
+  }
+
   /* Applies one GM action. Returns { changed, persist }. Mutates st. */
   function reduce(st, a, now) {
     a = a || {};
@@ -332,6 +422,7 @@
     if (!st.dice) st.dice = { seq: 0, active: null, checks: [] };
     if (!st.shows) st.shows = [];
     if (!st.show) st.show = { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true };
+    ensureNew(st);
     let persist = false;
     switch (a.action) {
       case 'place': {
@@ -576,9 +667,155 @@
         if (cl && cl[a.key]) delete cl[a.key];
         if (Array.isArray(st.players.taken)) st.players.taken = st.players.taken.filter((k) => k !== a.key);   // GM's own copy
         else if (!cl) return { changed: false };
+        voteSettle(st, now);                   // they may have been the last one the vote waited for
         persist = true;
         break;
       }
+      /* ----- NPC sprites (the pictures themselves: trial_server.js, 'npcSpriteSave') ----- */
+      case 'npcSprite': {                      // the GM dresses an NPC: { key, n } (1 = their own sprite)
+        const k = String(a.key || ''), n = Number(a.n);
+        if (!BY_KEY[k] || isPC(k)) return { changed: false };
+        if (n !== 1 && !(st.players.emotes[k] || {})[n]) return { changed: false };
+        if ((st.players.emoteOn[k] || 1) === n) return { changed: false };
+        st.players.emoteOn[k] = n;
+        persist = true;
+        break;
+      }
+      case 'npcSpriteDelete': {                // { key, n }
+        const k = String(a.key || ''), n = Number(a.n), m = st.players.emotes[k];
+        if (!BY_KEY[k] || isPC(k) || !m || !m[n]) return { changed: false };
+        delete m[n];
+        if (!Object.keys(m).length) delete st.players.emotes[k];
+        if (st.players.emoteOn[k] === n) st.players.emoteOn[k] = 1;
+        persist = true;
+        break;
+      }
+      /* ----- BRAINSTORMING ----- */
+      case 'brainstorm': {                     // the banner, then the camera goes up to Polychroma
+        st.fx = { kind: 'brainstorm', text: String(a.text || '').slice(0, 80), key: null, seq: st.fx.seq + 1, at: now };
+        st.brain = Object.assign(brainInit(), { on: true, seq: (st.brain.seq || 0) + 1, at: now, qseq: st.brain.qseq || 0 });
+        if (slotOf(st, 'polychroma')) st.focus = { key: 'polychroma', seq: st.focus.seq + 1, at: now, delay: BRAIN_PAN_DELAY };
+        break;
+      }
+      case 'brainQ': {                         // { text }: the question goes up, the countdown starts
+        const q = String(a.text || '').replace(/\s+/g, ' ').trim().slice(0, BRAIN_Q_MAX);
+        if (!q) return { changed: false };
+        if (!st.brain.on) st.brain = Object.assign(brainInit(), { on: true, seq: (st.brain.seq || 0) + 1, at: now, qseq: st.brain.qseq || 0 });
+        Object.assign(st.brain, { q, qseq: (st.brain.qseq || 0) + 1, qAt: now, ms: BRAIN_MS });
+        break;
+      }
+      case 'brainTime': {                      // { restart: true } or { add: ms }
+        const B = st.brain;
+        if (!B.on || !B.q) return { changed: false };
+        if (a.restart) { B.qAt = now; B.ms = BRAIN_MS; break; }
+        const add = clampInt(a.add, 5000, 120000);
+        if (B.qAt + B.ms <= now) { B.qAt = now; B.ms = add; }       // time was up: a fresh little countdown
+        else B.ms = Math.min(10 * 60000, B.ms + add);
+        break;
+      }
+      case 'brainEnd':
+        if (!st.brain.on) return { changed: false };
+        st.brain.on = false;
+        break;
+      /* ----- ABOUT TO TIP: the face-off ----- */
+      case 'faceoff': {                        // the banner (the GM's words if any), then the face-off
+        st.fx = { kind: 'tip', text: String(a.text || '').slice(0, 80), key: null, seq: st.fx.seq + 1, at: now };
+        const def = st.slots.L1 || null, ally = st.slots.L2 || null, F = st.faceoff;
+        if (!def && !ally) break;                // nobody defends: the banner only
+        if (F.on && F.phase !== 'end') break;    // one is running: the banner only (✕ Stop first to start again)
+        st.faceoff = Object.assign(foInit(), { on: true, seq: F.seq + 1, at: now, phase: 'defense', def, ally,
+          pros: PCS.slice(), left: PCS.slice(), rseq: F.rseq, hseq: F.hseq });
+        break;
+      }
+      case 'foSpeak': {                        // { who: 'def' | 'ally' } — who speaks for the defense
+        const F = st.faceoff, k = a.who === 'ally' ? F.ally : F.def;
+        if (!F.on || !k || (F.phase !== 'defense' && F.phase !== 'roll')) return { changed: false };
+        F.speaker = k; F.role = a.who === 'ally' ? 'ally' : 'def';
+        if (F.left.length === 1) {               // the last prosecutor: no die
+          F.pro = F.left[0]; F.rseq++;
+          F.roll = { auto: true, key: F.pro, at: now, seq: F.rseq };
+          F.phase = 'duel';
+        } else F.phase = 'roll';
+        break;
+      }
+      case 'foRoll': {                         // internal: the server rolled { face }
+        const F = st.faceoff, owners = foOwners(F.left), face = Number(a.face);
+        if (!F.on || F.phase !== 'roll' || !owners.length || !(face >= 0 && face < owners.length && face % 1 === 0)) return { changed: false };
+        F.pro = owners[face]; F.rseq++;
+        F.roll = { sides: owners.length, owners, face, key: F.pro, at: now, seq: F.rseq };
+        F.phase = 'duel';
+        break;
+      }
+      case 'foResult': {                       // { r: 'break' | 'fail' }
+        const F = st.faceoff, r = a.r === 'fail' ? 'fail' : 'break', side = r === 'break' ? 'pro' : 'def';
+        if (!F.on || F.phase !== 'duel' || !F.pro) return { changed: false };
+        F.score[side]++;
+        F.log.push({ speaker: F.speaker, role: F.role, pro: F.pro, r });
+        F.left = F.left.filter((k) => k !== F.pro);
+        F.hseq++;
+        F.hit = { r, side, at: now, seq: F.hseq, pro: F.pro, speaker: F.speaker };
+        if (F.score[side] >= FO_WIN || !F.left.length) {
+          F.phase = 'end'; F.result = F.score.pro > F.score.def ? 'pro' : 'def'; F.endAt = now;
+        } else { F.phase = 'defense'; F.speaker = null; F.role = null; F.pro = null; F.roll = null; }
+        break;
+      }
+      case 'foUndo': {                         // takes back the last BREAK / FAIL
+        const F = st.faceoff;
+        if (!F.on || !F.log.length) return { changed: false };
+        const L = F.log.pop();
+        F.score[L.r === 'break' ? 'pro' : 'def']--;
+        F.left = F.pros.filter((k) => k === L.pro || F.left.indexOf(k) >= 0);
+        Object.assign(F, { phase: 'duel', speaker: L.speaker, role: L.role, pro: L.pro, roll: null, hit: null, result: null, endAt: 0 });
+        break;
+      }
+      case 'foStop':
+        if (!st.faceoff.on) return { changed: false };
+        st.faceoff.on = false;
+        break;
+      /* ----- trial powers ----- */
+      case 'powerAdd': {                       // { id, npc? }
+        if (!validId(a.id) || findPower(st, a.id) || st.powers.length >= POWERS_MAX) return { changed: false };
+        st.powers.push(cleanPower({ id: a.id, npc: a.npc }));
+        persist = true;
+        break;
+      }
+      case 'powerEdit': {                      // { id, npc?, name?, text? }
+        const p = findPower(st, a.id);
+        if (!p) return { changed: false };
+        const q = cleanPower(Object.assign({}, p, a.npc != null ? { npc: a.npc } : {}, a.name != null ? { name: a.name } : {}, a.text != null ? { text: a.text } : {}));
+        Object.assign(p, { npc: q.npc, name: q.name, text: q.text });
+        if (st.vote && st.vote.state === 'open' && st.vote.power === p.id) st.vote.snap = powerSnap(p);
+        persist = true;
+        break;
+      }
+      case 'powerDelete': {
+        const i = st.powers.findIndex((p) => p.id === a.id);
+        if (i < 0) return { changed: false };
+        st.powers.splice(i, 1);
+        voteSettle(st, now);
+        persist = true;
+        break;
+      }
+      case 'powerUnlock': {                    // into the players' hands, with "You unlocked …" on every screen
+        const p = findPower(st, a.id);
+        if (!p || p.on || !powerName(p)) return { changed: false };
+        p.on = true;
+        st.powerFx = { seq: (st.powerFx.seq || 0) + 1, kind: 'unlock', power: powerSnap(p), at: now };
+        persist = true;
+        break;
+      }
+      case 'powerLock': {                      // the GM takes it back (no animation)
+        const p = findPower(st, a.id);
+        if (!p || !p.on) return { changed: false };
+        p.on = false;
+        voteSettle(st, now);
+        persist = true;
+        break;
+      }
+      case 'voteCancel':
+        if (!st.vote || st.vote.state !== 'open') return { changed: false };
+        st.vote.state = 'cancelled'; st.vote.endAt = now;
+        break;
       case 'allowReact':
         st.players.react = !!a.on;
         persist = true;
@@ -587,16 +824,17 @@
         st.players.speak = !!a.on;
         persist = true;
         break;
-      case 'emoteReset':                       // GM puts a PC back on their own sprite
-        if (PCS.indexOf(a.key) < 0) return { changed: false };
+      case 'emoteReset':                       // GM puts someone back on their own sprite
+        if (!BY_KEY[a.key]) return { changed: false };
         st.players.emoteOn[a.key] = 1;
         persist = true;
         break;
-      case 'emoteStored': {                    // internal: the server has stored the picture
-        if (PCS.indexOf(a.key) < 0 || EMOTE_SLOTS.indexOf(Number(a.n)) < 0) return { changed: false };
+      case 'emoteStored': {                    // internal: the server has stored the picture (a PC's emote or an NPC's sprite)
+        if (spriteSlots(a.key).indexOf(Number(a.n)) < 0) return { changed: false };
         const m = (st.players.emotes[a.key] = st.players.emotes[a.key] || {});
         const prev = m[a.n];
-        m[a.n] = { name: String(a.name || '').slice(0, 24), ver: (prev ? prev.ver : 0) + 1 };
+        // a new version number even after a delete, so no browser shows the old picture from its cache
+        m[a.n] = { name: String(a.name || '').slice(0, 24), ver: Math.max((prev ? prev.ver : 0) + 1, Math.floor(now / 1000) % 1e9) };
         persist = true;
         break;
       }
@@ -616,6 +854,7 @@
     now = now || Date.now();
     const P = st.players;
     if (!validCid(a.cid)) return { changed: false, error: 'no id' };
+    ensureNew(st);
     const mine = claimOf(st, a.cid);
     let persist = false;
     switch (a.action) {
@@ -626,14 +865,43 @@
         if (mine === key) return { changed: false };
         if (mine) delete P.claims[mine];
         P.claims[key] = a.cid;
+        voteSettle(st, now);
         persist = true;
         break;
       }
       case 'unclaim':
         if (!mine) return { changed: false };
         delete P.claims[mine];
+        voteSettle(st, now);
         persist = true;
         break;
+      /* ----- trial powers: propose one, vote ----- */
+      case 'propose': {                      // { id }
+        if (!mine) return { changed: false, error: 'pick a character first' };
+        const p = findPower(st, a.id);
+        if (!p || !p.on) return { changed: false, error: 'this power is not in your hands' };
+        if (st.vote && st.vote.state === 'open') return { changed: false, error: 'a vote is already open' };
+        st.vote = { id: (st.vote ? st.vote.id : 0) + 1, power: p.id, snap: powerSnap(p), by: mine, at: now,
+          need: claimedKeys(st), votes: { [mine]: true }, state: 'open', endAt: 0, deniedBy: null };
+        persist = voteSettle(st, now) && st.vote.state === 'passed';     // alone at the table: it passes at once
+        break;
+      }
+      case 'vote': {                         // { yes: true | false }
+        const V = st.vote;
+        if (!mine) return { changed: false, error: 'pick a character first' };
+        if (!V || V.state !== 'open') return { changed: false, error: 'no vote is open' };
+        if (V.need.indexOf(mine) < 0) return { changed: false, error: 'you joined after this vote started' };
+        if (V.votes[mine] != null) return { changed: false };
+        if (a.yes) { V.votes[mine] = true; persist = voteSettle(st, now) && V.state === 'passed'; }
+        else { V.votes[mine] = false; V.state = 'denied'; V.deniedBy = mine; V.endAt = now; }
+        break;
+      }
+      case 'withdraw': {                     // the proposer takes it back
+        const V = st.vote;
+        if (!V || V.state !== 'open' || V.by !== mine) return { changed: false };
+        V.state = 'withdrawn'; V.endAt = now;
+        break;
+      }
       case 'react': {
         if (!mine) return { changed: false, error: 'pick a character first' };
         if (!st.open) return { changed: false, error: 'the court is not in session' };
@@ -696,15 +964,23 @@
   }
 
   /* The public part of the players' state: who is taken (never by whom), the
-     emotes, and — for the asking player only — which character is theirs. */
-  function playersPublic(st, cid) {
+     emotes, and — for the asking player only — which character is theirs.
+     NPC sprites: players only learn about the one an NPC is wearing; the GM
+     (gm = true) gets them all, with their names. */
+  function playersPublic(st, cid, gm) {
     const P = st.players;
     const emotes = {};
     Object.keys(P.emotes).forEach((k) => {
-      emotes[k] = EMOTE_SLOTS.filter((n) => P.emotes[k][n]).map((n) => ({ n, name: P.emotes[k][n].name, ver: P.emotes[k][n].ver }));
+      let list = spriteSlots(k).filter((n) => P.emotes[k][n]).map((n) => ({ n, name: P.emotes[k][n].name, ver: P.emotes[k][n].ver }));
+      if (!gm && !isPC(k)) list = list.filter((e) => e.n === P.emoteOn[k]).map((e) => ({ n: e.n, ver: e.ver }));
+      if (list.length || isPC(k)) emotes[k] = list;
     });
     return { taken: Object.keys(P.claims), mine: claimOf(st, cid), react: P.react !== false, speak: P.speak !== false,
       emotes, emoteOn: Object.assign({}, P.emoteOn) };
+  }
+  /* what the players' screens get of the trial powers: only those in their hands */
+  function powersPublic(st) {
+    return (st.powers || []).filter((p) => p.on && powerName(p)).map(powerSnap);
   }
 
   /* The open check, as the table sees it: who rolls what, and the dice once
@@ -720,22 +996,26 @@
   /* Players get nothing about the room until the court is open. Skill checks
      work either way (the hourglass page uses them too). */
   function playerView(st, now, cid) {
+    ensureNew(st);
     const players = playersPublic(st, cid);
     const dice = dicePublic(st);
     const slides = slidesPublic(st);
-    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players, dice, slides };
+    const powers = powersPublic(st), vote = votePublic(st), powerFx = st.powerFx;
+    if (!st.open) return { rev: st.rev, open: false, serverNow: now, players, dice, slides, powers, vote, powerFx };
     return {
       rev: st.rev, open: true, route: st.route,
       slots: st.slots, focus: st.focus, fx: st.fx, sweep: st.sweep,
       waver: st.waver || {}, moves: st.moves || { seq: 0, list: [] }, serverNow: now, players, dice, slides,
       cp: st.cp == null ? CP_START : st.cp,
+      brain: st.brain, faceoff: st.faceoff, powers, vote, powerFx,
     };
   }
 
   /* The GM sees everything except the players' private ids. */
   function gmView(st, now) {
+    ensureNew(st);
     const out = Object.assign({}, st, { serverNow: now });
-    out.players = playersPublic(st, null);
+    out.players = playersPublic(st, null, true);
     return out;
   }
 
@@ -745,6 +1025,10 @@
     sideShift, canWaver,
     CP_START, CP_MIN, CP_MAX, SKILLS, OPENING_CHECKS, ROLL_MODES, makeRoll, activeCheck, dicePublic,
     SLIDES_MAX, IMAGE_MIME, AUDIO_MIME, validId, findShow, slidesPublic, fileVisible,
+    NPC_SPRITE_SLOTS, spriteSlots, isPC,
+    BRAIN_MS, BRAIN_Q_MAX, BRAIN_PAN_DELAY,
+    FO_WIN, FO_DIE, foOwners,
+    POWERS_MAX, findPower, powerSnap, powersPublic, votePublic, claimedKeys,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TrialCore = api;

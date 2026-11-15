@@ -43,6 +43,35 @@ Left column of the dashboard, under the players: **Slideshows**.
 - No peeking: a player's browser can only fetch the slides up to the next one, and nothing once the slideshow ends.
 - The pictures and the music are kept on the server and, with GH_TOKEN, on the GitHub `data` branch (`sablier-app/trial_slides/`), so they survive a restart; the list of slideshows lives in `trial.json`. Deleting a slide removes the server's copy (the GitHub copy stays in the branch's history).
 
+## NPC sprites (3 extra pictures per NPC)
+**Click an NPC's token** (seated or in the pool): a menu opens right under it — **Default** and three slots.
+- **+** on an empty slot: pick a picture. It is trimmed and shrunk in your browser (a PNG with a transparent background looks best), then kept on the server like the players' emotes (and on GitHub with GH_TOKEN). Uploading does not dress the NPC in it yet.
+- **Click a picture**: the NPC wears it on every screen (and in your preview). **Default** puts their own sprite back. Their token shows a small number (②) while they wear another picture.
+- **−**: deletes it (it asks "delete?" — click again within 3 s).
+- Esc, ✕ or a click elsewhere closes the menu. Clicking a seated token still gives them the floor as before.
+- No peeking: a player's browser can only fetch the picture an NPC is wearing right now (a "true form" stays hidden until you show it).
+
+## BRAINSTORMING
+**BRAINSTORMING** (last of the banner buttons) plays its banner (teal, "POLYCHROMA ASKS"); once it has played, the camera goes up to Polychroma (if she is seated). Players see "Polychroma prepares her question…".
+Under the banners a box opens: type the question, **Show the question · 60 s** (or Enter). On every screen the question shows big at the bottom of the stage with a 60-second countdown (a number and a bar; red and ticking for the last 10 s; **TIME'S UP!** with a buzzer at 0 — the question stays).
+Your box then has **⟲ 60 s again**, **+15 s**, **Change the question** (restarts the 60 s) and **■ End brainstorming** (the card leaves every screen). Typed words + BRAINSTORMING = your words on the banner.
+
+## ABOUT TO TIP: the face-off
+**ABOUT TO TIP** (or T) plays its banner, then the face-off: the courtroom fades back and the two sides face each other — the defense (seat **Defense**, L1) and its ally (seat **Support**, L2) on the left, the five PCs on the right, three empty sockets above each side.
+Under the banners, your face-off panel walks you through each round:
+1. **Defense speaks:** click the defense or the ally — they step forward.
+2. **🎲 ROLL**: the server throws a die carrying the faces of the prosecutors who have not spoken yet, each the same number of times: **d10** for five (2 faces each), **d12** for four (3 each), **d6** for three (2 each), **d20** for two (10 each). Every screen sees the same tumble and the same face: "ASKII! TAKES THE STAND". The last prosecutor needs no die: they come straight in after the defense speaks.
+3. The chosen prosecutor comes to the centre, face to face.
+4. **BREAK** (a Polychroma token flies to the prosecution's sockets) or **FAIL** (to the defense's). Back to step 1; whoever has spoken leaves the die (greyed, with BREAK / FAIL under them).
+
+First side to 3 tokens wins: "THE PROSECUTION / THE DEFENSE WINS THE FACE-OFF 3 – 1", then every screen goes back to the courtroom by itself; **Close** clears your panel. **↶ Undo last** takes back the last BREAK / FAIL (even after the end), **✕ Stop** ends it at once. While one is running, ABOUT TO TIP only replays the banner (Stop first to start a new one). With nobody in Defense or Support, only the banner plays. The face-off is a moment: a server restart forgets it.
+
+## Trial powers
+Below the courtroom, the **⚡ Trial powers** table: **+ Add a power**, then per row **Granted by** (an NPC), **Power** (its name), **What it does** (the players read it), and **⚡ Unlock**. Rows are saved as you type and survive a restart.
+- **⚡ Unlock**: every player's screen plays "YOU UNLOCKED [power]" (with what it does and who granted it), then it becomes a button top-left of the stage. Hovering it shows what it does. Players never see a locked power.
+- A player who clicks it **proposes** it: every player at the table gets "[PC] PROPOSES TO USE [power]" with **Accept / Deny** (the proposer counts as accepting, and can Withdraw). One **Deny** cancels it ("DENIED BY BARDIK") and the power stays theirs. When everyone at the table has accepted, "[power] ACTIVATED!" plays on every screen, the button disappears and your row goes back to **⚡ Unlock** ("used ×1"); you get a note at the top of your dashboard. Someone leaving the table during a vote no longer counts; spectators watch without voting; one vote at a time.
+- Your row shows the vote as it happens (**Cancel the vote**), **Take back** removes an unlocked power without any animation, 🗑 deletes a row (click twice).
+
 ## The stage
 The courtroom is seen from the front: **defense on the left, the jury in the centre, the prosecution on the right, and the bench (Polychroma + her two specialists) raised above the jury's centre**, in front of the three thrones of the tribunal.
 
@@ -72,13 +101,14 @@ Leave the box empty: each button plays its own words. **Type in the box, then cl
 | CLASS TRIAL | | gold on violet; `Title / subtitle` |
 | NON-STOP DEBATE | N | two pink bands sliding in from both sides |
 | BREAK! | B | red band, the words crack in two |
-| ABOUT TO TIP | T | amber band, the words rock like a scale |
+| ABOUT TO TIP | T | amber band, the words rock like a scale — **then the face-off** (see above) |
 | COUNTER! | C | the speaker's cut-in art (Askii, Bardik, Angèle, Müne, Pryah); with your words, a cyan band |
 | I AGREE! | A | green band |
 | Reveal | R | cinema bars, slow golden serif |
 | SHOCK! | X | red flash, sunburst, heavy shake |
 | whisper… | W | quiet line low on screen |
 | SLAM | | violet band |
+| BRAINSTORMING | | teal band with sparks, "POLYCHROMA ASKS" — then the question box (see above) |
 
 Keyboard letters always play the default words.
 
@@ -98,7 +128,7 @@ On your dashboard, **Players at the table** (under the defense) shows who is pla
 | File | Role |
 |---|---|
 | `trial_core.js` | Cast list, seats, the line order, banner styles, the GM reducer and the player actions. **Public file** — no GM secrets in it. |
-| `trial_server.js` | Shared state + emote pictures. Rolls the skill-check dice (crypto). Saves the room (seats, open/closed, who is wavering, the invitation, Credibility Points, the roll log) and the players' side (who plays whom, emote names, SPEAK/REACTION switches) to `trial.json`, the pictures to `trial_emotes/`, and — with GH_TOKEN — all of it to the GitHub `data` branch like the timeline and the board. Clicks, banners and side-change moments are never saved. |
+| `trial_server.js` | Shared state + emote pictures. Rolls the skill-check dice (crypto). Saves the room (seats, open/closed, who is wavering, the invitation, Credibility Points, the roll log) and the players' side (who plays whom, emote names, SPEAK/REACTION switches) to `trial.json`, the pictures to `trial_emotes/`, and — with GH_TOKEN — all of it to the GitHub `data` branch like the timeline and the board. Also the trial powers (the table) and the NPCs' extra sprites (`trial_emotes/<npc>_<n>.json`, like the emotes); it throws the face-off die. Clicks, banners, side-change moments, brainstorming, the face-off and votes are never saved. |
 | `trial_stage.js` | The stage renderer (camera, tilt, group shot, background, banners, emotes, synthesised sound). Used by both pages. |
 | `trial_gm.html`, `trial.html` | The two pages. |
 | `trial_bg.jpg` | The tribunal (`07_Citadel and maps/Scenes/X Class Trial Tribunal`), 2048 px wide. |
@@ -108,11 +138,13 @@ On your dashboard, **Players at the table** (under the defense) shows who is pla
 | `trial_dice.js` | Skill checks, players' side: the five d20s (3D, drawn on a canvas), the "Roll for …" window, the dice table, the "Who are you?" chip of the hourglass page. Loaded by `trial.html` and `player.html`. |
 | `trial_dice_gm.js` | Skill checks, GM side: the SKILL CHECK window and the roll log. Loaded by `trial_gm.html`; the server adds it to the cockpit as a dock. |
 | `trial_show.js` | Slideshows, players' side: full-screen pictures, the presenter's ◀ ▶, the hidden music (also the small copy in the GM preview). |
+| `trial_faceoff.js` | ABOUT TO TIP: the face-off scene on every stage, and its dice (d6, d10, d12, d20 with the PCs' tokens, drawn in code). |
+| `trial_powers.js` | Trial powers: the players' buttons, the vote window, "You unlocked …" / "… activated!", and your table. No secrets inside. |
 | `trial_show_gm.js` | Slideshows, GM side: the list, the editor (pictures, PDF pages, order, music), the play strip. |
 | `trial_slidestore.js` | The slideshow files on the server's disk + GitHub (fetched back after a restart), served with Range for the music. |
 | `store_github.js` | Durable copy on GitHub (timeline, board, trial) — now also binary files (`saveBinary` / `loadBinary`, read raw so files over 1 MB work). |
 | `player.html` | The hourglass screen: also plays the time-stop and shows JOIN CLASS TRIAL when you invite the players. |
-| `server.js` | Hooks: require, the invitation in `/state` (and the pause when you invite), public routes (`/trial`, `/trial/state`, `/trial/play`, `/trial/emote/…`, `/trial_core.js`, `/trial_stage.js`, `/trial_bg.jpg`, `/sprites/`, `/cutins/`), GM routes, POST. |
+| `server.js` | Hooks: require, the invitation in `/state` (and the pause when you invite), public routes (`/trial`, `/trial/state`, `/trial/play`, `/trial/emote/…`, `/trial_core.js`, `/trial_stage.js`, `/trial_bg.jpg`, `/sprites/`, `/cutins/`, `/trial_faceoff.js`, `/trial_powers.js`), GM routes (`GM_PATH/trial/emote/…` shows you every NPC sprite, worn or not), POST. |
 
 ## Changing things
 - **Add a character:** one line in `CAST` (`trial_core.js`) + `public/sprites/<key>.webp` (+ `public/cutins/<key>.webp` and `cutin: true` for a COUNTER card). Never add a hidden identity there: players' browsers load that file.
@@ -120,5 +152,8 @@ On your dashboard, **Players at the table** (under the defense) shows who is pla
 - **Camera feel:** `CFG` at the top of `trial_stage.js` — `hfov` = zoom, `lineSpan` = how wide the whole line is, `benchRise` / `benchDepth` / `benchSpread` = where the bench sits, `benchZoom`, `bgUpShift` (how far the hall slides as the camera looks up); pan speed in `startPan`.
 - **REACTION / SPEAK cooldowns:** `REACT_COOLDOWN` / `SPEAK_COOLDOWN` in `trial_core.js`.
 - **The skill list, the opening checks, CP limits:** `SKILLS`, `OPENING_CHECKS`, `CP_START` / `CP_MIN` / `CP_MAX` in `trial_core.js`.
-- **A die's look:** `STYLES` in `trial_dice.js` (colours, edge, number ink, texture recipe).
+- **A die's look:** `STYLES` in `trial_dice.js` (colours, edge, number ink, texture recipe). The face-off dice: `COLOR` and `drawSolid` in `trial_faceoff.js`.
+- **Brainstorming countdown:** `BRAIN_MS` (60 s) in `trial_core.js`; how long the camera waits for the banner: `BRAIN_PAN_DELAY`.
+- **Face-off:** tokens to win `FO_WIN` (3), which die for how many prosecutors `FO_DIE`, in `trial_core.js`; where everyone stands: `POS` in `trial_faceoff.js`.
+- **NPC sprites:** three slots, `NPC_SPRITE_SLOTS` in `trial_core.js`.
 - **Banner words for side changes:** `SIDE_FX` in `trial_stage.js`.

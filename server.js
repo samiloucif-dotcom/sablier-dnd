@@ -44,6 +44,8 @@ const STATIC = {
   '/trial_dice_gm.js': 'trial_dice_gm.js', // skill checks, GM side (SKILL CHECK window + log) — no secrets inside
   '/trial_show.js': 'trial_show.js',       // slideshows, players' side (full screen, the presenter's ◀ ▶, music)
   '/trial_show_gm.js': 'trial_show_gm.js', // slideshows, GM side (list, editor, play controls) — no secrets inside
+  '/trial_faceoff.js': 'trial_faceoff.js', // ABOUT TO TIP: the face-off scene and its prosecutor dice
+  '/trial_powers.js': 'trial_powers.js',   // trial powers: the players' buttons and votes, the GM's table — no secrets inside
 };
 const GM_STATIC = { '/data.js': 'data.js', '/locations.js': 'locations.js',
   '/board.css': 'board.css', '/board.js': 'board.js', '/warden.js': 'warden.js' };
@@ -506,6 +508,13 @@ const server = http.createServer((req, res) => {
       if (sub === '/warden') return serveFile(res, path.join(PUBLIC, 'warden.html'));
       if (sub === '/trial') return serveTrialGm(res);
       if (sub === '/trial/state') return sendJSON(res, TRIAL.gmView());
+      if (sub.startsWith('/trial/emote/')) {                     // every picture, NPC sprites not worn yet included (the GM's menus)
+        const [key, n] = sub.slice('/trial/emote/'.length).split('/');
+        const e = TRIAL.emote(decodeURIComponent(key || ''), n, true);
+        if (!e) { res.writeHead(404); return res.end('Not found'); }
+        res.writeHead(200, { 'Content-Type': e.mime, 'Cache-Control': 'private, max-age=86400' });
+        return res.end(e.buf);
+      }
       if (sub.startsWith('/trial/slide/')) {                     // any slideshow file (the editor's thumbnails)
         const id = sub.slice('/trial/slide/'.length), mime = TRIAL.slideMime(id);
         if (!mime) { res.writeHead(404); return res.end('Not found'); }
@@ -554,7 +563,7 @@ const server = http.createServer((req, res) => {
       if (!mime) { res.writeHead(404); return res.end('Not found'); }
       return SLIDES.serve(req, res, id, mime);
     }
-    if (pathname.startsWith('/trial/emote/')) {                 // pictures the players uploaded as emotes
+    if (pathname.startsWith('/trial/emote/')) {                 // the players' emotes, and an NPC's sprite while they wear it
       const [key, n] = pathname.slice('/trial/emote/'.length).split('/');
       const e = TRIAL.emote(decodeURIComponent(key || ''), n);
       if (!e) { res.writeHead(404); return res.end('Not found'); }
@@ -619,10 +628,10 @@ const server = http.createServer((req, res) => {
         if (isGmAction) { handleAction(payload); return sendJSON(res, snapshot(true)); }
         if (isGmBoard)  { BOARD.wardenAction(payload); return sendJSON(res, BOARD.wardenView()); }
         if (isGmTrial)  {
-          TRIAL.gmAction(payload);
+          const r = TRIAL.gmAction(payload) || {};
           // "Invite players" also stops the hourglass (the cockpit's own Play resumes it)
           if (payload.action === 'invite' && payload.on) handleAction({ action: 'pause' });
-          return sendJSON(res, TRIAL.gmView());
+          return sendJSON(res, r.error ? Object.assign(TRIAL.gmView(), { error: r.error }) : TRIAL.gmView());
         }
         if (isTrialPlayer) {
           const r = TRIAL.playerAction(payload);

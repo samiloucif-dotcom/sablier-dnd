@@ -190,6 +190,75 @@
     .help { margin: 0 16px 16px; color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
     .help b { color: var(--text); font-weight: 600; }
 
+    /* BRAINSTORMING button */
+    .fx.brain { background: linear-gradient(90deg, #05434a, #14a59a); border-color: #9ff7ee; }
+    /* live panels under the banners: brainstorming, the face-off */
+    .live { display: flex; flex-direction: column; gap: 8px; }
+    .live:empty { display: none; }
+    .lp { border-radius: 12px; padding: 10px 12px; border: 1px solid; display: flex; flex-direction: column; gap: 8px; }
+    .lp.brain { background: linear-gradient(180deg, rgba(79,224,208,.12), rgba(79,224,208,.03)); border-color: rgba(79,224,208,.55); }
+    .lp.fo { background: linear-gradient(90deg, rgba(226,70,92,.14), rgba(20,24,36,.4) 50%, rgba(63,208,234,.14)); border-color: #e8b559; }
+    .lp.note { background: rgba(232,181,89,.08); border-color: rgba(232,181,89,.5); color: #f3d9a0; font-size: 13px; }
+    .lp .hd { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .lp .hd b { font: 400 16px/1 Anton, Impact, sans-serif; letter-spacing: .12em; }
+    .lp.brain .hd b { color: #4fe0d0; } .lp.fo .hd b { color: #f7d684; }
+    .lp .hd .sp { flex: 1; }
+    .lp .hd small { color: var(--muted); font-size: 12px; }
+    .lp textarea { width: 100%; min-height: 58px; resize: vertical; background: #0e131d; border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; color: var(--text); font: 15px/1.4 system-ui, sans-serif; }
+    .lp .q { font: 700 16px/1.35 Cinzel, Georgia, serif; color: #fff; }
+    .lp .clock { font: 400 30px/1 Anton, Impact, sans-serif; color: #fff; min-width: 70px; text-align: right; }
+    .lp .clock.hurry { color: #ff7a8a; } .lp .clock.over { color: #ffd36b; font-size: 20px; }
+    .lp .btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .lp .go { border-radius: 10px; padding: 10px 16px; cursor: pointer; border: 2px solid; color: #fff; font: 400 18px/1 Anton, Impact, sans-serif; letter-spacing: .06em; }
+    .lp .go:disabled { opacity: .4; cursor: not-allowed; }
+    .lp .go.teal { background: linear-gradient(180deg, #14a59a, #05434a); border-color: #9ff7ee; }
+    .lp .go.def { background: linear-gradient(180deg, #c21f3c, #5a0c1a); border-color: #ff9db0; display: inline-flex; align-items: center; gap: 8px; }
+    .lp .go.def img { width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 2px #fff; }
+    .lp .go.def small { display: block; font: 600 10px/1 system-ui, sans-serif; letter-spacing: .12em; opacity: .85; text-align: left; }
+    .lp .go.roll { background: linear-gradient(180deg, #5b2a9c, #34165e); border-color: #f1c66e; font-size: 22px; padding: 12px 22px; }
+    .lp .go.brk { background: linear-gradient(180deg, #e0b13a, #8a5a00); border-color: #fff0b8; color: #2a1500; font-size: 24px; padding: 12px 26px; }
+    .lp .go.fail { background: linear-gradient(180deg, #9a1f33, #4a0610); border-color: #ff9db0; font-size: 24px; padding: 12px 26px; }
+    .lp .score { font: 400 20px/1 Anton, Impact, sans-serif; letter-spacing: .06em; }
+    .lp .score .d { color: #ff8296; } .lp .score .p { color: #7fe6f7; }
+    .lp .pros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+    .lp .pros span { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px 3px 3px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line2); color: var(--text); }
+    .lp .pros img { width: 22px; height: 22px; border-radius: 50%; }
+    .lp .pros span.done { opacity: .5; } .lp .pros span.now { border-color: #3fd0ea; box-shadow: 0 0 8px rgba(63,208,234,.5); }
+    .lp .pros em { font-style: normal; font-weight: 700; font-size: 10.5px; } .lp .pros em.break { color: #f1c66e; } .lp .pros em.fail { color: #ff7a8a; }
+    .lp .what { font: 600 14px/1.3 Cinzel, Georgia, serif; }
+    /* NPC sprites: the menu under a token */
+    .tok .spr { display: none; position: absolute; top: -6px; left: -6px; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 4px; z-index: 2;
+      background: #4fe0d0; color: #04282c; font: 800 11px/18px system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 1.5px #0b0d12; pointer-events: none; }
+    .tok.alt .spr { display: block; }
+    .dragghost .spr { display: none !important; }
+    .spmenu { position: fixed; z-index: 95; padding: 10px; border-radius: 14px; background: #141a28; border: 1px solid #4fe0d0;
+      box-shadow: 0 16px 40px rgba(0,0,0,.6); width: max-content; max-width: calc(100vw - 16px); }
+    .spmenu[hidden] { display: none; }
+    .spmenu::before { content: ''; position: absolute; left: var(--ax, 50%); top: -7px; width: 12px; height: 12px; margin-left: -6px; background: #141a28;
+      border-left: 1px solid #4fe0d0; border-top: 1px solid #4fe0d0; transform: rotate(45deg); }
+    .spmenu.above::before { top: auto; bottom: -7px; transform: rotate(225deg); }
+    .spmenu .sh { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font: 700 13px/1 Cinzel, Georgia, serif; }
+    .spmenu .sh span { color: var(--muted); font: 500 11px system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; flex: 1; }
+    .spmenu .sh button { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; }
+    .spmenu .row4 { display: flex; gap: 8px; }
+    .spmenu .sp { position: relative; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .spmenu .sp .pic { width: 70px; height: 86px; border-radius: 10px; overflow: hidden; display: grid; place-items: center; border: 2px solid var(--line2);
+      background: #0b0812 repeating-conic-gradient(#120d1b 0 25%, #0b0812 0 50%) 0 0 / 14px 14px; color: var(--muted); font-size: 30px; }
+    .spmenu .sp .pic img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    .spmenu .sp span { font-size: 10.5px; color: var(--muted); max-width: 74px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .spmenu .sp.on .pic { border-color: #4fe0d0; box-shadow: 0 0 12px rgba(79,224,208,.6); }
+    .spmenu .sp.on span { color: #4fe0d0; }
+    .spmenu .sp.empty .pic { border-style: dashed; }
+    .spmenu .sp:hover .pic { border-color: var(--amber); }
+    .spmenu .sp.busy .pic { opacity: .5; }
+    .spmenu .rm { position: absolute; top: -7px; right: -5px; min-width: 24px; height: 24px; border-radius: 12px; border: 1px solid var(--line2); background: #0e131d;
+      color: #ff9a9a; font: 700 15px/1 system-ui; cursor: pointer; padding: 0 6px; }
+    .spmenu .rm.armed { background: #7a0614; color: #fff; border-color: #ff9db0; font-size: 11px; }
+    .spmenu .err { color: #ff9a9a; font-size: 12px; margin-top: 6px; }
+    .spmenu .err:empty { display: none; }
+    /* trial powers (the table itself: trial_powers.js) */
+    .powersBox { margin: 0 16px 8px; }
+
     @media (max-width: 980px) {
       .room { grid-template-columns: 1fr; }
       .bank.left { order: 2; } .bank.right { order: 3; }
@@ -240,14 +309,16 @@
         <button class="fx trial" data-fx="trial">CLASS TRIAL</button>
         <button class="fx nsd" data-fx="nsd">NON-STOP DEBATE<kbd>N</kbd></button>
         <button class="fx break" data-fx="break">BREAK!<kbd>B</kbd></button>
-        <button class="fx tip" data-fx="tip">ABOUT TO TIP<kbd>T</kbd></button>
+        <button class="fx tip" data-fx="tip" title="The banner, then the face-off: the defense and its ally against the five prosecutors">ABOUT TO TIP<kbd>T</kbd><small>+ face-off</small></button>
         <button class="fx counter" data-fx="counter" id="counterBtn">COUNTER!<kbd>C</kbd></button>
         <button class="fx agree" data-fx="agree">I AGREE!<kbd>A</kbd></button>
         <button class="fx reveal" data-fx="reveal">Reveal<kbd>R</kbd></button>
         <button class="fx shock" data-fx="shock">SHOCK!<kbd>X</kbd></button>
         <button class="fx whisper" data-fx="whisper">whisper…<kbd>W</kbd></button>
         <button class="fx custom" data-fx="custom">SLAM</button>
+        <button class="fx brain" data-fx="brainstorm" title="The banner, the camera goes up to Polychroma, then you type her question: it shows big on every screen with a 60 s countdown">BRAINSTORMING</button>
       </div>
+      <div class="live" id="live"></div>
       <div>
         <div class="row jury" data-zone="B"></div>
         <div class="rowlab" style="--c: var(--jury); margin: 6px 0 0">Jury</div>
@@ -270,6 +341,11 @@
       <div id="dicePanel"></div>
     </section>
   </main>
+
+  <section class="powersBox" id="powersPanel"></section>
+
+  <div class="spmenu" id="spmenu" hidden></div>
+  <input type="file" id="spFile" accept="image/png,image/webp,image/jpeg,image/gif" hidden>
 
   <section class="sim" id="sim" hidden>
     <h4>Player screen — demo stand-in for what each player does on <b>/trial</b></h4>
@@ -294,14 +370,19 @@
     <span><b>Court in session</b>: moving an NPC to another area = the camera follows them + a banner</span>
     <span><b>✉ Invite players</b>: the hourglass stops and shows them a JOIN CLASS TRIAL button</span>
     <span><b>Players</b> join at <b>/trial</b>: they pick a character, press SPEAK or REACTION, wear emotes</span>
+    <span><b>Click an NPC's token</b>: their 3 extra sprites (+ to upload, − to delete, click one to dress them in it)</span>
+    <span><b>BRAINSTORMING</b>: type Polychroma's question under the banners, it shows big with 60 s</span>
+    <span><b>ABOUT TO TIP</b>: the face-off — defense speaks, roll, BREAK or FAIL; first to 3 tokens</span>
   </div>
 
   <script src="/trial_core.js"></script>
   <script src="/trial_stage.js"></script>
+  <script src="/trial_faceoff.js"></script>
   <script src="/trial_dice.js"></script>
   <script src="/trial_dice_gm.js"></script>
   <script src="/trial_show.js"></script>
   <script src="/trial_show_gm.js"></script>
+  <script src="/trial_powers.js"></script>
   <script>
   (function () {
     'use strict';
@@ -354,6 +435,9 @@
       nm.textContent = c.name;
       t.append(face, nm);
       if (c.group !== 'pc') {
+        const sp = document.createElement('span');
+        sp.className = 'spr';
+        t.appendChild(sp);
         const wv = document.createElement('button');
         wv.className = 'wv'; wv.type = 'button'; wv.textContent = '〰';
         wv.title = 'Wavering (Resolve 4): ' + c.name + ' trembles on every screen. Click again to stop.';
@@ -366,10 +450,13 @@
 
     let picked = null;   // tap-to-place
 
-    let diceGM = null, demoDice = null, showGM = null;
+    let diceGM = null, demoDice = null, showGM = null, powersGM = null;
     function render() {
       if (diceGM) diceGM.update(view());
       if (showGM) showGM.update();
+      if (powersGM) powersGM.update();
+      paintLive();
+      paintSprites();
       if (demoDice) demoDice.update(C.playerView(state, Date.now(), 'demo-player-0001'));
       const cpv = state.cp == null ? 10 : state.cp;
       $('#cpVal').textContent = cpv;
@@ -414,6 +501,10 @@
         tokCache[k].classList.toggle('focus', state.focus.key === k);
         tokCache[k].classList.toggle('picked', picked === k);
         tokCache[k].classList.toggle('waver', !!(state.waver || {})[k]);
+        const on = C.BY_KEY[k].group !== 'pc' ? ((view().players || {}).emoteOn || {})[k] || 1 : 1;
+        tokCache[k].classList.toggle('alt', on > 1);
+        const b = tokCache[k].querySelector('.spr');
+        if (b && b.textContent !== String(on)) b.textContent = String(on);
       });
       // top bar
       const inv = !!(state.invite && state.invite.on);
@@ -477,6 +568,10 @@
       paintSync();
     }
     function act(a) {
+      if (DEMO && a.action === 'foRoll') {           // the demo rolls here; the real app's server does
+        const n = C.foOwners((state.faceoff || {}).left || []).length;
+        a = Object.assign({}, a, { face: Math.floor(Math.random() * Math.max(1, n)) });
+      }
       C.reduce(state, a, Date.now());
       delete state.serverNow;
       render();
@@ -582,8 +677,10 @@
         if (picked && picked !== d.key) { const k = picked; picked = null; act({ action: 'place', key: k, slot: d.from }); return; }
         picked = null;
         act({ action: 'focus', key: d.key });
+        openSprites(d.key);                        // an NPC: their sprites, under the token
       } else {
         picked = picked === d.key ? null : d.key;
+        if (picked) openSprites(d.key); else closeSprites();
         render();
       }
     };
@@ -630,7 +727,15 @@
       $('#fxbar').classList.toggle('has-text', !!box.value.trim());
       $$('[data-fx]').forEach((b) => b.classList.toggle('last', b.dataset.fx === lastStyle && !!box.value.trim()));
     };
-    const fire = (kind, extra) => act(Object.assign({ action: 'fx', kind, key: state.focus.key }, extra || {}));
+    const fire = (kind, extra) => {
+      if (kind === 'tip') {                          // ABOUT TO TIP: the banner, then the face-off
+        if (!state.slots.L1 && !state.slots.L2) note('No one sits in Defense / Support: the banner plays, the face-off needs the defense.');
+        else if (state.faceoff && state.faceoff.on && state.faceoff.phase !== 'end') note('A face-off is running: the banner only. ✕ Stop it first to start a new one.');
+        return act(Object.assign({ action: 'faceoff' }, extra || {}));
+      }
+      if (kind === 'brainstorm') return act(Object.assign({ action: 'brainstorm' }, extra || {}));
+      return act(Object.assign({ action: 'fx', kind, key: state.focus.key }, extra || {}));
+    };
     const fireStyle = (kind) => {
       const t = box.value.trim();
       lastStyle = kind;
@@ -652,7 +757,7 @@
       const k = e.key.toLowerCase();
       if (map[k]) { fire(map[k]); e.preventDefault(); }
       else if (k === 's') { act({ action: 'sweep' }); e.preventDefault(); }
-      else if (e.key === 'Escape') { picked = null; $('#preview').classList.remove('big'); render(); }
+      else if (e.key === 'Escape') { picked = null; closeSprites(); $('#preview').classList.remove('big'); render(); }
     });
 
     /* ---------- Credibility Points & skill checks ---------- */
@@ -663,6 +768,238 @@
     /* ---------- slideshows (Closing Argument, Punishment…) ---------- */
     showGM = TrialShowGM.mount($('#showPanel'), { base: BASE, getState: () => view(), act, adopt, demo: DEMO, preview: $('#preview') });
     showGM.update();
+    /* ---------- trial powers ---------- */
+    powersGM = TrialPowers.mountGM($('#powersPanel'), { getState: () => view(), act });
+    powersGM.update();
+
+    /* ---------- live panels: BRAINSTORMING and the face-off ---------- */
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+    const nameOf = (k) => (C.BY_KEY[k] ? C.BY_KEY[k].name : '—');
+    const tokSrc = (k) => ASSETS + 'tokens/' + encodeURIComponent(C.BY_KEY[k].token);
+    let noteMsg = '', noteT = 0, brainEdit = false;
+    function note(m) { noteMsg = m; clearTimeout(noteT); noteT = setTimeout(() => { noteMsg = ''; paintLive(); }, 6000); paintLive(); }
+    function brainLeft() {
+      const B = state.brain;
+      if (!B || !B.on || !B.q) return null;
+      return B.qAt + B.ms - (state.serverNow ? state.serverNow + (Date.now() - lastOk) : Date.now());
+    }
+    function paintLive() {
+      const box = $('#live');
+      if (!box) return;
+      const B = state.brain || {}, F = state.faceoff || {};
+      const fo = !!F.on;
+      const sig = JSON.stringify([noteMsg, B.on && [B.seq, B.q, B.qseq, B.qAt, B.ms], brainEdit, fo && F, state.slots.T1, state.slots.T2, state.slots.T3]);
+      if (box._sig === sig) { tickLive(); return; }
+      const keepText = box.querySelector('#brainText');
+      const typed = keepText ? keepText.value : null, hadFocus = keepText && document.activeElement === keepText;
+      box._sig = sig;
+      let h = '';
+      if (noteMsg) h += '<div class="lp note">' + esc(noteMsg) + '</div>';
+      if (B.on) {
+        const poly = Object.values(state.slots).indexOf('polychroma') >= 0;
+        h += '<div class="lp brain"><div class="hd"><b>🧠 BRAINSTORMING</b><small>' + (poly ? 'the camera is on Polychroma' : 'Polychroma is not seated: the camera stays put') + '</small><span class="sp"></span>'
+          + (B.q && !brainEdit ? '<span class="clock" id="brainClock"></span>' : '') + '</div>';
+        if (!B.q || brainEdit) {
+          h += '<textarea id="brainText" maxlength="' + C.BRAIN_Q_MAX + '" placeholder="Polychroma\'s question — it shows big on every screen, then 60 seconds start"></textarea>'
+            + '<div class="btns"><button class="go teal" data-b="show">Show the question · 60 s</button>'
+            + (brainEdit ? '<button class="btn" data-b="noedit">Keep the old one</button>' : '') + '<span class="sp" style="flex:1"></span><button class="btn" data-b="end">✕ Cancel brainstorming</button></div>';
+        } else {
+          h += '<div class="q">“' + esc(B.q) + '”</div><div class="btns"><button class="btn" data-b="again">⟲ 60 s again</button><button class="btn" data-b="more">+15 s</button>'
+            + '<button class="btn" data-b="edit">Change the question</button><span class="sp" style="flex:1"></span><button class="go teal" data-b="end">■ End brainstorming</button></div>';
+        }
+        h += '</div>';
+      }
+      if (fo) h += foPanel(F);
+      box.innerHTML = h;
+      const ta = box.querySelector('#brainText');
+      if (ta) {
+        if (typed != null) ta.value = typed; else if (brainEdit) ta.value = B.q || '';
+        if (hadFocus || (!typed && !B.q)) setTimeout(() => ta.focus(), 0);
+        ta.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); box.querySelector('[data-b="show"]').click(); } };
+      }
+      tickLive();
+    }
+    function foPanel(F) {
+      const score = '<span class="score"><span class="d">Defense ' + F.score.def + '</span> – <span class="p">' + F.score.pro + ' Prosecution</span></span>';
+      const round = Math.min(F.pros.length, F.log.length + (F.phase === 'end' ? 0 : 1));
+      let h = '<div class="lp fo"><div class="hd"><b>⚖ FACE-OFF</b>' + score + '<small>' + (F.phase === 'end' ? 'over' : 'round ' + round) + ' · first to ' + C.FO_WIN + '</small><span class="sp"></span>'
+        + (F.log.length ? '<button class="btn" data-f="undo" title="Takes back the last BREAK / FAIL">↶ Undo last</button>' : '')
+        + '<button class="btn" data-f="stop" title="Ends the face-off now: back to the courtroom">✕ Stop</button></div>';
+      const who = (role) => {
+        const k = F[role];
+        return k ? '<button class="go def" data-f="speak" data-who="' + role + '"><img alt="" src="' + tokSrc(k) + '"><span><small>' + (role === 'def' ? 'DEFENSE' : 'ALLY') + '</small>' + esc(nameOf(k)) + '</span></button>' : '';
+      };
+      if (F.phase === 'defense') h += '<div class="btns"><span class="what">Defense speaks:</span>' + who('def') + who('ally') + '</div>';
+      else if (F.phase === 'roll') {
+        const n = F.left.length;
+        h += '<div class="btns"><span class="what">' + esc(nameOf(F.speaker)) + ' speaks.</span><button class="go roll" data-f="roll">🎲 ROLL · d' + C.FO_DIE[n] + '</button>'
+          + '<small style="color:var(--muted)">' + n + ' prosecutors on the die</small>'
+          + (F.def && F.ally ? '<button class="btn" data-f="speak" data-who="' + (F.role === 'def' ? 'ally' : 'def') + '">No — ' + esc(nameOf(F.role === 'def' ? F.ally : F.def)) + ' speaks</button>' : '') + '</div>';
+      } else if (F.phase === 'duel') {
+        h += '<div class="btns"><span class="what">' + esc(nameOf(F.speaker)) + ' vs ' + esc(nameOf(F.pro)) + (F.roll && F.roll.auto ? ' <small style="color:var(--muted)">(the last one)</small>' : '') + '</span>'
+          + '<button class="go brk" data-f="break" title="A Polychroma token for the prosecution">BREAK</button><button class="go fail" data-f="fail" title="A Polychroma token for the defense">FAIL</button></div>';
+      } else if (F.phase === 'end') {
+        h += '<div class="btns"><span class="what">' + (F.result === 'pro' ? 'The prosecution' : 'The defense') + ' wins the face-off ' + Math.max(F.score.pro, F.score.def) + ' – ' + Math.min(F.score.pro, F.score.def)
+          + '. The players\' screens go back to the courtroom.</span><button class="btn" data-f="stop">Close</button></div>';
+      }
+      h += '<div class="pros">Prosecutors: ' + F.pros.map((k) => {
+        const L = F.log.find((x) => x.pro === k);
+        return '<span class="' + (L ? 'done' : '') + (k === F.pro && F.phase === 'duel' ? ' now' : '') + '"><img alt="" src="' + tokSrc(k) + '">' + esc(nameOf(k))
+          + (L ? ' <em class="' + L.r + '">' + (L.r === 'break' ? 'BREAK' : 'FAIL') + '</em>' : '') + '</span>';
+      }).join('') + '</div></div>';
+      return h;
+    }
+    function tickLive() {
+      const c = $('#brainClock');
+      if (!c) return;
+      const left = brainLeft();
+      if (left == null) { c.textContent = ''; return; }
+      const s = Math.max(0, Math.ceil(left / 1000));
+      c.textContent = s > 0 ? s + ' s' : 'TIME’S UP';
+      c.className = 'clock' + (s === 0 ? ' over' : s <= 10 ? ' hurry' : '');
+    }
+    setInterval(tickLive, 250);
+    $('#live').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-b],[data-f]');
+      if (!b) return;
+      const x = b.dataset.b, f = b.dataset.f;
+      if (x === 'show') {
+        const t = ($('#brainText') || {}).value || '';
+        if (!t.trim()) { $('#brainText').focus(); return; }
+        brainEdit = false; $('#brainText').value = '';
+        act({ action: 'brainQ', text: t });
+      }
+      else if (x === 'again') act({ action: 'brainTime', restart: true });
+      else if (x === 'more') act({ action: 'brainTime', add: 15000 });
+      else if (x === 'edit') { brainEdit = true; paintLive(); }
+      else if (x === 'noedit') { brainEdit = false; paintLive(); }
+      else if (x === 'end') { brainEdit = false; act({ action: 'brainEnd' }); }
+      else if (f === 'speak') act({ action: 'foSpeak', who: b.dataset.who });
+      else if (f === 'roll') { b.disabled = true; act({ action: 'foRoll' }); }
+      else if (f === 'break') act({ action: 'foResult', r: 'break' });
+      else if (f === 'fail') act({ action: 'foResult', r: 'fail' });
+      else if (f === 'undo') act({ action: 'foUndo' });
+      else if (f === 'stop') act({ action: 'foStop' });
+    });
+
+    /* ---------- NPC sprites: the menu under the token ----------
+       Default + 3 slots. + uploads a picture (shrunk and trimmed here), − deletes
+       it (twice), a click dresses the NPC in it on every screen. */
+    let spKey = null, spN = 0, spBusy = 0, spErr = '';
+    const spMenu = $('#spmenu');
+    const spUrl = (k, n, ver) => (DEMO ? demoPics[k + '_' + n] : BASE + '/trial/emote/' + encodeURIComponent(k) + '/' + n + '?v=' + ver);
+    function openSprites(k) {
+      if (!C.BY_KEY[k] || C.BY_KEY[k].group === 'pc') { closeSprites(); return; }
+      if (spKey !== k) { spErr = ''; spMenu._sig = null; }
+      spKey = k;
+      spMenu.hidden = false;
+      paintSprites();
+    }
+    function closeSprites() { spKey = null; spMenu.hidden = true; }
+    function paintSprites() {
+      if (!spKey || spMenu.hidden) return;
+      const P = view().players || {}, k = spKey;
+      const list = (P.emotes || {})[k] || [], on = (P.emoteOn || {})[k] || 1;
+      const sig = JSON.stringify([k, list, on, spBusy, spErr]);
+      if (spMenu._sig !== sig) {
+        spMenu._sig = sig;
+        let h = '<div class="sh">' + esc(nameOf(k)) + '<span>sprites</span><button type="button" data-x title="Close (Esc)">✕</button></div><div class="row4">';
+        h += '<div class="sp' + (on === 1 ? ' on' : '') + '" data-n="1" title="Their own sprite"><div class="pic"><img alt="" src="' + ASSETS + 'sprites/' + k + '.webp"></div><span>Default</span></div>';
+        C.NPC_SPRITE_SLOTS.forEach((n) => {
+          const m = list.find((e) => e.n === n);
+          if (m) h += '<div class="sp' + (on === n ? ' on' : '') + '" data-n="' + n + '" title="Click: ' + esc(nameOf(k)) + ' wears it on every screen"><div class="pic"><img alt="" src="' + esc(spUrl(k, n, m.ver)) + '"></div>'
+            + '<span>' + esc(m.name || 'Sprite ' + n) + '</span><button type="button" class="rm" data-rm="' + n + '" title="Delete this sprite (click twice)">−</button></div>';
+          else h += '<div class="sp empty' + (spBusy === n ? ' busy' : '') + '" data-add="' + n + '" title="Upload a picture (a PNG with a transparent background looks best)"><div class="pic">' + (spBusy === n ? '…' : '+') + '</div><span>' + (spBusy === n ? 'uploading…' : 'Add') + '</span></div>';
+        });
+        spMenu.innerHTML = h + '</div><div class="err">' + esc(spErr) + '</div>';
+      }
+      placeSprites();
+    }
+    function placeSprites() {
+      const t = tokCache[spKey];
+      if (!t || !t.isConnected) { closeSprites(); return; }
+      const r = t.querySelector('.face').getBoundingClientRect(), w = spMenu.offsetWidth, hh = spMenu.offsetHeight;
+      let left = r.left + r.width / 2 - w / 2;
+      left = Math.max(8, Math.min(window.innerWidth - w - 8, left));
+      const below = r.bottom + 12 + hh < window.innerHeight || r.top - 12 - hh < 0;
+      spMenu.classList.toggle('above', !below);
+      spMenu.style.left = left + 'px';
+      spMenu.style.top = (below ? r.bottom + 12 : r.top - 12 - hh) + 'px';
+      spMenu.style.setProperty('--ax', Math.max(14, Math.min(w - 14, r.left + r.width / 2 - left)) + 'px');
+    }
+    window.addEventListener('scroll', () => { if (spKey) placeSprites(); }, { passive: true });
+    window.addEventListener('resize', () => { if (spKey) placeSprites(); });
+    document.addEventListener('pointerdown', (e) => {
+      if (!spKey || spMenu.contains(e.target) || e.target.closest('.tok')) return;
+      closeSprites();
+    });
+    spMenu.addEventListener('click', (e) => {
+      const k = spKey;
+      if (e.target.closest('[data-x]')) { closeSprites(); return; }
+      const rm = e.target.closest('[data-rm]');
+      if (rm) {
+        e.stopPropagation();
+        if (Date.now() - (rm._armed || 0) < 3000) { act({ action: 'npcSpriteDelete', key: k, n: Number(rm.dataset.rm) }); return; }
+        rm._armed = Date.now(); rm.classList.add('armed'); rm.textContent = 'delete?';
+        setTimeout(() => { if (rm.isConnected) { rm.classList.remove('armed'); rm.textContent = '−'; } }, 3000);
+        return;
+      }
+      const add = e.target.closest('[data-add]');
+      if (add) { if (spBusy) return; spN = Number(add.dataset.add); $('#spFile').click(); return; }
+      const sp = e.target.closest('[data-n]');
+      if (sp) act({ action: 'npcSprite', key: k, n: Number(sp.dataset.n) });
+    });
+    /* shrink the picture here: trim transparent edges, at most 900 px, WebP (keeps transparency) */
+    function shrink(file) {
+      return new Promise((resolve, reject) => {
+        if (!/^image\//.test(file.type)) return reject(new Error('That is not a picture.'));
+        const url = URL.createObjectURL(file), img = new Image();
+        img.onload = () => {
+          const w = img.naturalWidth, h = img.naturalHeight, cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+          const x = cv.getContext('2d'); x.drawImage(img, 0, 0);
+          let bx0 = 0, by0 = 0, bx1 = w, by1 = h;
+          try {
+            const d = x.getImageData(0, 0, w, h).data;
+            let minX = w, minY = h, maxX = -1, maxY = -1;
+            for (let yy = 0; yy < h; yy += 2) for (let xx = 0; xx < w; xx += 2) {
+              if (d[(yy * w + xx) * 4 + 3] > 16) { if (xx < minX) minX = xx; if (xx > maxX) maxX = xx; if (yy < minY) minY = yy; if (yy > maxY) maxY = yy; }
+            }
+            if (maxX >= 0) { bx0 = Math.max(0, minX - 2); by0 = Math.max(0, minY - 2); bx1 = Math.min(w, maxX + 3); by1 = Math.min(h, maxY + 3); }
+          } catch (e) {}
+          const cw = bx1 - bx0, ch = by1 - by0, k = Math.min(1, 900 / Math.max(cw, ch));
+          const out = document.createElement('canvas'); out.width = Math.max(1, Math.round(cw * k)); out.height = Math.max(1, Math.round(ch * k));
+          out.getContext('2d').drawImage(cv, bx0, by0, cw, ch, 0, 0, out.width, out.height);
+          let data = out.toDataURL('image/webp', 0.88);
+          if (data.indexOf('data:image/webp') !== 0) data = out.toDataURL('image/png');
+          if (data.length > 1150000) data = out.toDataURL('image/jpeg', 0.85);
+          URL.revokeObjectURL(url);
+          resolve(data);
+        };
+        img.onerror = () => reject(new Error('This picture could not be read.'));
+        img.src = url;
+      });
+    }
+    $('#spFile').onchange = async (e) => {
+      const f = e.target.files[0]; e.target.value = '';
+      const k = spKey, n = spN;
+      if (!f || !k) return;
+      spBusy = n; spErr = ''; paintSprites();
+      try {
+        const data = await shrink(f), name = f.name.replace(/\.[^.]+$/, '').slice(0, 24);
+        if (DEMO) {
+          demoPics[k + '_' + n] = data;
+          C.reduce(state, { action: 'emoteStored', key: k, n, name }, Date.now());
+          render(); stage.setState(view());
+        } else {
+          const r = await fetch(BASE + '/trial/act', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'npcSpriteSave', key: k, n, name, data }) });
+          const j = await r.json();
+          if (j.error) spErr = j.error;
+          adopt(j);
+        }
+      } catch (err) { spErr = err.message || 'Not saved.'; }
+      spBusy = 0; spMenu._sig = null; paintSprites();
+    };
 
     /* ---------- demo: a stand-in for one player's controls ---------- */
     if (DEMO) {
