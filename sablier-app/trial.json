@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:09:50.447Z",
+ "updated": "2026-11-15T18:09:56.517Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -616,7 +616,7 @@
    "id": "zayxh4pwy7",
    "npc": "nerasho",
    "name": "Find the path",
-   "text": "",
+   "text": "Show",
    "on": false,
    "used": 0
   }
