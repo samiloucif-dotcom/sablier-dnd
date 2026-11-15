@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-15T21:13:13.700Z",
+ "updated": "2026-11-15T21:13:23.035Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -634,6 +634,12 @@
      "name": "Paxelstartled",
      "ver": 794767971
     }
+   },
+   "citello": {
+    "2": {
+     "name": "citelloTShadowchroma",
+     "ver": 794777200
+    }
    }
   },
   "emoteOn": {
@@ -642,7 +648,8 @@
    "angele": 1,
    "askii": 1,
    "balerion": 1,
-   "paxel": 2
+   "paxel": 2,
+   "citello": 2
   }
  }
 }
