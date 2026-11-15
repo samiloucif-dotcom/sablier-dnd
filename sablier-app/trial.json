@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:16:16.595Z",
+ "updated": "2026-11-15T18:18:12.743Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -577,7 +577,7 @@
    "npc": "balerion",
    "name": "Shield the truth",
    "text": "Cancels one hit to CP",
-   "on": false,
+   "on": true,
    "used": 0
   },
   {
