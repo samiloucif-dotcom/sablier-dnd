@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:55:01.453Z",
+ "updated": "2026-11-15T19:55:39.770Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,61 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 16,
-  "active": 16,
+  "seq": 17,
+  "active": 17,
   "checks": [
-   {
-    "id": 5,
-    "at": 1794057314063,
-    "dc": 80,
-    "dcMode": "sum",
-    "items": {
-     "askii": {
-      "skill": "Persuasion",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        17
-       ],
-       "kept": 17,
-       "mod": -1,
-       "total": 16,
-       "at": 1794057335254
-      }
-     },
-     "angele": {
-      "skill": "Persuasion",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        1
-       ],
-       "kept": 1,
-       "mod": 7,
-       "total": 8,
-       "at": 1794057340997
-      }
-     },
-     "pryah": {
-      "skill": "Persuasion",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        15
-       ],
-       "kept": 15,
-       "mod": 0,
-       "total": 15,
-       "at": 1794057349188
-      }
-     }
-    },
-    "doneAt": 1794057349188,
-    "closed": true
-   },
    {
     "id": 6,
     "at": 1794066643710,
@@ -523,6 +471,30 @@
      }
     },
     "doneAt": 1794772501453,
+    "closed": true
+   },
+   {
+    "id": 17,
+    "at": 1794772535091,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Arcana",
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        7
+       ],
+       "kept": 7,
+       "mod": 8,
+       "total": 15,
+       "at": 1794772539770
+      }
+     }
+    },
+    "doneAt": 1794772539770,
     "closed": false
    }
   ]
