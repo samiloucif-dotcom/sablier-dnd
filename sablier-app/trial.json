@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T16:25:26.617Z",
+ "updated": "2026-11-15T16:27:47.347Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -113,6 +113,14 @@
    },
    "loop": true,
    "audioAll": false
+  },
+  {
+   "id": "zucmg7dfp9kybd",
+   "name": "Slideshow 2",
+   "slides": [],
+   "audio": null,
+   "loop": false,
+   "audioAll": true
   }
  ],
  "dice": {
