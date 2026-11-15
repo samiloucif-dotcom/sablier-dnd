@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T18:20:02.709Z",
+ "updated": "2026-11-15T18:39:14.978Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -699,6 +699,12 @@
     "2": {
      "name": "baleriondangan",
      "ver": 794765977
+    }
+   },
+   "paxel": {
+    "2": {
+     "name": "Paxelvictory",
+     "ver": 794767954
     }
    }
   },
