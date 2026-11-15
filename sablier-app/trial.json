@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:47:13.563Z",
+ "updated": "2026-11-15T19:47:46.395Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,34 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 12,
-  "active": 12,
+  "seq": 13,
+  "active": 13,
   "checks": [
-   {
-    "id": 1,
-    "at": 1794056340906,
-    "dc": null,
-    "dcMode": "each",
-    "items": {
-     "angele": {
-      "skill": "Persuasion",
-      "absent": false,
-      "roll": {
-       "mode": "adv",
-       "dice": [
-        6,
-        7
-       ],
-       "kept": 7,
-       "mod": 7,
-       "total": 14,
-       "at": 1794056352845
-      }
-     }
-    },
-    "doneAt": 1794056352845,
-    "closed": true
-   },
    {
     "id": 2,
     "at": 1794056429411,
@@ -608,6 +583,30 @@
      }
     },
     "doneAt": 1794772033563,
+    "closed": true
+   },
+   {
+    "id": 13,
+    "at": 1794772063242,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Perception",
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        8
+       ],
+       "kept": 8,
+       "mod": 0,
+       "total": 8,
+       "at": 1794772066395
+      }
+     }
+    },
+    "doneAt": 1794772066395,
     "closed": false
    }
   ]
