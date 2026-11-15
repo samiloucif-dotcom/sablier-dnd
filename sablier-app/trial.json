@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T18:39:34.265Z",
+ "updated": "2026-11-15T19:43:55.600Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,8 +191,8 @@
   }
  ],
  "dice": {
-  "seq": 10,
-  "active": 10,
+  "seq": 11,
+  "active": 11,
   "checks": [
    {
     "id": 1,
@@ -560,6 +560,21 @@
      }
     },
     "doneAt": 1794069887062,
+    "closed": true
+   },
+   {
+    "id": 11,
+    "at": 1794771835600,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Perception",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
