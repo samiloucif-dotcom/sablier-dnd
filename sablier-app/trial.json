@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:07:22.354Z",
+ "updated": "2026-11-15T18:08:01.067Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -568,7 +568,23 @@
    "id": "nfi8uan3ux",
    "npc": "framschtak",
    "name": "Know your craft",
-   "text": "Analyse",
+   "text": "Analyze a piece of physical evidence",
+   "on": false,
+   "used": 0
+  },
+  {
+   "id": "fsdvskvqbz",
+   "npc": "balerion",
+   "name": "Shield the truth",
+   "text": "Cancels one hit to CP",
+   "on": false,
+   "used": 0
+  },
+  {
+   "id": "ygus6wydbn",
+   "npc": "doulahex",
+   "name": "",
+   "text": "",
    "on": false,
    "used": 0
   }
