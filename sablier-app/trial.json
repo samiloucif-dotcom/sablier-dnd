@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:10:31.086Z",
+ "updated": "2026-11-15T18:10:51.144Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -630,7 +630,9 @@
   }
  ],
  "players": {
-  "claims": {},
+  "claims": {
+   "pryah": "2p66u7xxqyxfymig9a"
+  },
   "react": false,
   "speak": false,
   "emotes": {
