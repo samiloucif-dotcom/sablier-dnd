@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T18:39:14.978Z",
+ "updated": "2026-11-15T18:39:34.265Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -705,6 +705,14 @@
     "2": {
      "name": "Paxelvictory",
      "ver": 794767954
+    },
+    "3": {
+     "name": "Paxelthink",
+     "ver": 794767963
+    },
+    "4": {
+     "name": "Paxelstartled",
+     "ver": 794767971
     }
    }
   },
@@ -713,7 +721,8 @@
    "bardik": 1,
    "angele": 1,
    "askii": 1,
-   "balerion": 1
+   "balerion": 1,
+   "paxel": 1
   }
  }
 }
