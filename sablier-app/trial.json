@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T16:27:58.222Z",
+ "updated": "2026-11-15T16:28:36.443Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -117,7 +117,68 @@
   {
    "id": "zucmg7dfp9kybd",
    "name": "The Execution",
-   "slides": [],
+   "slides": [
+    {
+     "id": "3pxketwj446mj9yt",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "nzzb4htr23tsrp5k",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "tdkfipdwg965z7ha",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "4xjag688azh2xyz4",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "vknenxwku6dpx3e7",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "jctfznbs7fy4p2tk",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "yabee4d2q8bwgamk",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "9ekvqdyrbnfscrvu",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "b4mifaqzmsyabft9",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    },
+    {
+     "id": "xdkekqjgfnzfybvg",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
+    }
+   ],
    "audio": null,
    "loop": false,
    "audioAll": true
