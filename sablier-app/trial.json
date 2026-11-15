@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:49:38.477Z",
+ "updated": "2026-11-15T19:52:56.066Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,89 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 14,
-  "active": 14,
+  "seq": 15,
+  "active": 15,
   "checks": [
-   {
-    "id": 3,
-    "at": 1794056608375,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Intelligence",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        8
-       ],
-       "kept": 8,
-       "mod": 4,
-       "total": 12,
-       "at": 1794056643777
-      }
-     },
-     "bardik": {
-      "skill": "Dexterity",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        3
-       ],
-       "kept": 3,
-       "mod": 2,
-       "total": 5,
-       "at": 1794056658106
-      }
-     },
-     "angele": {
-      "skill": "Charisma",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        12
-       ],
-       "kept": 12,
-       "mod": 5,
-       "total": 17,
-       "at": 1794056625385
-      }
-     },
-     "mune": {
-      "skill": "Wisdom",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        15
-       ],
-       "kept": 15,
-       "mod": 4,
-       "total": 19,
-       "at": 1794056674356
-      }
-     },
-     "pryah": {
-      "skill": "Strength",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        20
-       ],
-       "kept": 20,
-       "mod": 1,
-       "total": 21,
-       "at": 1794056875762
-      }
-     }
-    },
-    "doneAt": 1794056875762,
-    "closed": true
-   },
    {
     "id": 4,
     "at": 1794057184073,
@@ -607,6 +527,21 @@
      }
     },
     "doneAt": 1794772178477,
+    "closed": true
+   },
+   {
+    "id": 15,
+    "at": 1794772376066,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Animal Handling",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
