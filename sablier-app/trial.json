@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:45:05.324Z",
+ "updated": "2026-11-15T19:45:46.688Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -571,10 +571,19 @@
      "angele": {
       "skill": "Perception",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        6
+       ],
+       "kept": 6,
+       "mod": 2,
+       "total": 8,
+       "at": 1794771946688
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794771946688,
     "closed": false
    }
   ]
@@ -647,7 +656,8 @@
  ],
  "players": {
   "claims": {
-   "bardik": "hgchfwdn2ma4cdg5j9"
+   "bardik": "hgchfwdn2ma4cdg5j9",
+   "angele": "4dpcrug7erfruax46e"
   },
   "react": false,
   "speak": true,
