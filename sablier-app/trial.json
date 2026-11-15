@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-15T21:13:23.035Z",
+ "updated": "2026-11-15T21:14:15.001Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -640,6 +640,20 @@
      "name": "citelloTShadowchroma",
      "ver": 794777200
     }
+   },
+   "carnage": {
+    "2": {
+     "name": "Carnagesprite1",
+     "ver": 794777225
+    },
+    "3": {
+     "name": "carnagesprite2",
+     "ver": 794777229
+    },
+    "4": {
+     "name": "carnagesprite3",
+     "ver": 794777233
+    }
    }
   },
   "emoteOn": {
@@ -649,7 +663,8 @@
    "askii": 1,
    "balerion": 1,
    "paxel": 2,
-   "citello": 2
+   "citello": 2,
+   "carnage": 1
   }
  }
 }
