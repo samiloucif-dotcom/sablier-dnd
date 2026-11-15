@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T20:38:58.723Z",
+ "updated": "2026-11-15T20:39:05.850Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -467,10 +467,19 @@
      "angele": {
       "skill": "Dexterity Saving Throw",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        5
+       ],
+       "kept": 5,
+       "mod": 2,
+       "total": 7,
+       "at": 1794775145850
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794775145850,
     "closed": false
    }
   ]
