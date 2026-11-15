@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:48:52.877Z",
+ "updated": "2026-11-15T19:49:38.477Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -594,10 +594,19 @@
      "bardik": {
       "skill": "Perception",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        3
+       ],
+       "kept": 3,
+       "mod": 2,
+       "total": 5,
+       "at": 1794772178477
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794772178477,
     "closed": false
    }
   ]
