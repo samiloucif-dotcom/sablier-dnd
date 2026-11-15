@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:53:10.639Z",
+ "updated": "2026-11-15T19:53:56.515Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,61 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 15,
-  "active": 15,
+  "seq": 16,
+  "active": 16,
   "checks": [
-   {
-    "id": 4,
-    "at": 1794057184073,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Wisdom Saving Throw",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        7
-       ],
-       "kept": 7,
-       "mod": 2,
-       "total": 9,
-       "at": 1794057208434
-      }
-     },
-     "angele": {
-      "skill": "Wisdom Saving Throw",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        12
-       ],
-       "kept": 12,
-       "mod": 2,
-       "total": 14,
-       "at": 1794057228561
-      }
-     },
-     "pryah": {
-      "skill": "Wisdom Saving Throw",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        1
-       ],
-       "kept": 1,
-       "mod": 3,
-       "total": 4,
-       "at": 1794057240652
-      }
-     }
-    },
-    "doneAt": 1794057240652,
-    "closed": true
-   },
    {
     "id": 5,
     "at": 1794057314063,
@@ -551,6 +499,21 @@
      }
     },
     "doneAt": 1794772390639,
+    "closed": true
+   },
+   {
+    "id": 16,
+    "at": 1794772436515,
+    "dc": 12,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Animal Handling",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
