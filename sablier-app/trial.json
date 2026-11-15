@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:05:55.055Z",
+ "updated": "2026-11-15T18:06:21.739Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -628,13 +628,20 @@
      "name": "Trump-Mugshot-Final",
      "ver": 2
     }
+   },
+   "balerion": {
+    "2": {
+     "name": "baleriondangan",
+     "ver": 794765977
+    }
    }
   },
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
    "angele": 1,
-   "askii": 1
+   "askii": 1,
+   "balerion": 1
   }
  }
 }
