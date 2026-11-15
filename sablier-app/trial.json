@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T19:52:56.066Z",
+ "updated": "2026-11-15T19:53:10.639Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -538,10 +538,19 @@
      "angele": {
       "skill": "Animal Handling",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        3
+       ],
+       "kept": 3,
+       "mod": 2,
+       "total": 5,
+       "at": 1794772390639
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1794772390639,
     "closed": false
    }
   ]
