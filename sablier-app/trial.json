@@ -21,7 +21,7 @@
   "B3": "doulahex",
   "T1": "jacques"
  },
- "updated": "2026-11-15T20:10:49.335Z",
+ "updated": "2026-11-15T20:37:11.721Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -191,33 +191,9 @@
   }
  ],
  "dice": {
-  "seq": 20,
-  "active": 20,
+  "seq": 21,
+  "active": 21,
   "checks": [
-   {
-    "id": 9,
-    "at": 1794069537744,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Investigation",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        11
-       ],
-       "kept": 11,
-       "mod": 7,
-       "total": 18,
-       "at": 1794069556299
-      }
-     }
-    },
-    "doneAt": 1794069556299,
-    "closed": true
-   },
    {
     "id": 10,
     "at": 1794069882109,
@@ -480,6 +456,21 @@
      }
     },
     "doneAt": 1794773449335,
+    "closed": true
+   },
+   {
+    "id": 21,
+    "at": 1794775031721,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "angele": {
+      "skill": "Strength",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
