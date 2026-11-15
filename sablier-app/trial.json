@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:06:21.739Z",
+ "updated": "2026-11-15T18:07:22.354Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -563,7 +563,16 @@
    }
   ]
  },
- "powers": [],
+ "powers": [
+  {
+   "id": "nfi8uan3ux",
+   "npc": "framschtak",
+   "name": "Know your craft",
+   "text": "Analyse",
+   "on": false,
+   "used": 0
+  }
+ ],
  "players": {
   "claims": {},
   "react": false,
