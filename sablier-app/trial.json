@@ -20,7 +20,7 @@
   "B4": "esteban",
   "B3": "doulahex"
  },
- "updated": "2026-11-15T18:09:56.517Z",
+ "updated": "2026-11-15T18:10:31.086Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -616,7 +616,15 @@
    "id": "zayxh4pwy7",
    "npc": "nerasho",
    "name": "Find the path",
-   "text": "Show",
+   "text": "Tells you where you're going the wrong way",
+   "on": false,
+   "used": 0
+  },
+  {
+   "id": "y7nu6b34nt",
+   "npc": "norvodavius",
+   "name": "Arcana master",
+   "text": "Provides informations about an unknown spell or magic use",
    "on": false,
    "used": 0
   }
