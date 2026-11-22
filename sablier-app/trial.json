@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T22:49:40.110Z",
+ "updated": "2026-11-22T22:54:43.299Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -816,7 +816,7 @@
    "balerion": 1,
    "paxel": 1,
    "citello": 2,
-   "carnage": 3,
+   "carnage": 1,
    "mune": 3
   }
  }
