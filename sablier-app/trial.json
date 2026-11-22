@@ -13,16 +13,16 @@
   "L1": "carnage",
   "L2": "paxel",
   "B9": "norvodavius",
-  "B8": "nerasho",
   "B7": "hayeva",
   "B6": "gasper",
   "B5": "framschtak",
   "B4": "esteban",
   "B3": "doulahex",
   "T1": "jacques",
-  "B2": "citello"
+  "B2": "citello",
+  "R6": "nerasho"
  },
- "updated": "2026-11-22T20:48:55.089Z",
+ "updated": "2026-11-22T20:50:14.114Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -740,7 +740,7 @@
    "pryah": 4,
    "bardik": 1,
    "angele": 5,
-   "askii": 4,
+   "askii": 3,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
