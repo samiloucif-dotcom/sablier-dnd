@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:42:16.589Z",
+ "updated": "2026-11-22T21:42:34.224Z",
  "waver": {
   "gasper": 1
  },
@@ -194,34 +194,9 @@
   }
  ],
  "dice": {
-  "seq": 30,
-  "active": 30,
+  "seq": 31,
+  "active": 31,
   "checks": [
-   {
-    "id": 19,
-    "at": 1794772953198,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Intelligence",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        2
-       ],
-       "kept": 2,
-       "mod": 4,
-       "guid": 0,
-       "total": 6,
-       "at": 1794772956303
-      }
-     }
-    },
-    "doneAt": 1794772956303,
-    "closed": true
-   },
    {
     "id": 20,
     "at": 1794773446405,
@@ -556,6 +531,31 @@
      }
     },
     "doneAt": 1795383736589,
+    "closed": true
+   },
+   {
+    "id": 31,
+    "at": 1795383752350,
+    "dc": 13,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "History",
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        14
+       ],
+       "kept": 14,
+       "mod": 7,
+       "guid": 0,
+       "total": 21,
+       "at": 1795383754224
+      }
+     }
+    },
+    "doneAt": 1795383754224,
     "closed": false
    }
   ]
