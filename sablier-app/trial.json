@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T18:33:50.003Z",
+ "updated": "2026-11-22T18:37:35.243Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -211,6 +211,7 @@
        ],
        "kept": 7,
        "mod": 0,
+       "guid": 0,
        "total": 7,
        "at": 1794772033563
       }
@@ -235,6 +236,7 @@
        ],
        "kept": 8,
        "mod": 0,
+       "guid": 0,
        "total": 8,
        "at": 1794772066395
       }
@@ -259,6 +261,7 @@
        ],
        "kept": 3,
        "mod": 2,
+       "guid": 0,
        "total": 5,
        "at": 1794772178477
       }
@@ -283,6 +286,7 @@
        ],
        "kept": 3,
        "mod": 2,
+       "guid": 0,
        "total": 5,
        "at": 1794772390639
       }
@@ -307,6 +311,7 @@
        ],
        "kept": 13,
        "mod": 0,
+       "guid": 0,
        "total": 13,
        "at": 1794772501453
       }
@@ -331,6 +336,7 @@
        ],
        "kept": 7,
        "mod": 8,
+       "guid": 0,
        "total": 15,
        "at": 1794772539770
       }
@@ -355,6 +361,7 @@
        ],
        "kept": 4,
        "mod": 4,
+       "guid": 0,
        "total": 8,
        "at": 1794772938300
       }
@@ -379,6 +386,7 @@
        ],
        "kept": 2,
        "mod": 4,
+       "guid": 0,
        "total": 6,
        "at": 1794772956303
       }
@@ -403,6 +411,7 @@
        ],
        "kept": 8,
        "mod": 3,
+       "guid": 0,
        "total": 11,
        "at": 1794773449335
       }
@@ -427,6 +436,7 @@
        ],
        "kept": 20,
        "mod": -1,
+       "guid": 0,
        "total": 19,
        "at": 1794775063544
       }
@@ -451,6 +461,7 @@
        ],
        "kept": 5,
        "mod": 2,
+       "guid": 0,
        "total": 7,
        "at": 1794775145850
       }
@@ -475,6 +486,7 @@
        ],
        "kept": 12,
        "mod": 2,
+       "guid": 0,
        "total": 14,
        "at": 1794775438345
       }
@@ -555,8 +567,7 @@
   "claims": {
    "bardik": "hgchfwdn2ma4cdg5j9",
    "angele": "4dpcrug7erfruax46e",
-   "askii": "ubpgd6q42i83q6zi96",
-   "pryah": "2p66u7xxqyxfymig9a"
+   "askii": "ubpgd6q42i83q6zi96"
   },
   "react": false,
   "speak": true,
