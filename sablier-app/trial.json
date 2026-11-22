@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T19:45:01.590Z",
+ "updated": "2026-11-22T19:45:16.800Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -480,10 +480,20 @@
      "askii": {
       "skill": "Arcana",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        10
+       ],
+       "kept": 10,
+       "mod": 8,
+       "guid": 0,
+       "total": 18,
+       "at": 1795376716800
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1795376716800,
     "closed": false
    }
   ]
