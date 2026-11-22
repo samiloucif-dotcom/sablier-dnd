@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T22:33:19.583Z",
+ "updated": "2026-11-22T22:49:16.616Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -105,6 +105,12 @@
      "mime": "image/webp",
      "w": 1920,
      "h": 930
+    },
+    {
+     "id": "pcjynt3zygctnmxr",
+     "mime": "image/webp",
+     "w": 1920,
+     "h": 1072
     }
    ],
    "audio": {
