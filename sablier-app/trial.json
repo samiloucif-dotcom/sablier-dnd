@@ -22,7 +22,7 @@
   "R10": "gasper",
   "R11": "balerion"
  },
- "updated": "2026-11-22T22:07:50.134Z",
+ "updated": "2026-11-22T22:11:01.952Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -687,10 +687,10 @@
  "players": {
   "claims": {
    "mune": "7ta54nestapycj6tm9",
-   "bardik": "2p66u7xxqyxfymig9a",
    "pryah": "gwuepm2pe6q5wecxtn",
    "askii": "ubpgd6q42i83q6zi96",
-   "angele": "4dpcrug7erfruax46e"
+   "angele": "4dpcrug7erfruax46e",
+   "bardik": "hgchfwdn2ma4cdg5j9"
   },
   "react": false,
   "speak": true,
