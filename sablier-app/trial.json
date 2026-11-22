@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:37:17.792Z",
+ "updated": "2026-11-22T21:38:19.480Z",
  "waver": {
   "gasper": 1
  },
@@ -646,6 +646,10 @@
      "name": "tebboune",
      "ver": 795381617
     },
+    "4": {
+     "name": "carnage",
+     "ver": 795383496
+    },
     "5": {
      "name": "polychroma",
      "ver": 795382121
@@ -739,7 +743,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
    "angele": 3,
    "askii": 1,
