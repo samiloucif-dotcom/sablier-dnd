@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:05:54.047Z",
+ "updated": "2026-11-22T23:06:18.775Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -632,8 +632,8 @@
    "npc": "balerion",
    "name": "Shield the truth",
    "text": "Cancels one hit to CP",
-   "on": true,
-   "used": 1
+   "on": false,
+   "used": 2
   },
   {
    "id": "ygus6wydbn",
