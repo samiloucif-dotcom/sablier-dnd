@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:54:34.034Z",
+ "updated": "2026-11-22T21:54:57.434Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -540,12 +540,32 @@
      "askii": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        13
+       ],
+       "kept": 13,
+       "mod": -1,
+       "guid": 0,
+       "total": 12,
+       "at": 1795384482706
+      }
      },
      "bardik": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        11
+       ],
+       "kept": 11,
+       "mod": 0,
+       "guid": 0,
+       "total": 11,
+       "at": 1795384481606
+      }
      },
      "angele": {
       "skill": "Persuasion",
@@ -565,15 +585,35 @@
      "mune": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        6
+       ],
+       "kept": 6,
+       "mod": 0,
+       "guid": 0,
+       "total": 6,
+       "at": 1795384480426
+      }
      },
      "pryah": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        7
+       ],
+       "kept": 7,
+       "mod": 0,
+       "guid": 0,
+       "total": 7,
+       "at": 1795384480412
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1795384482706,
     "closed": false
    }
   ]
@@ -769,10 +809,10 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
+   "pryah": 3,
    "bardik": 1,
    "angele": 3,
-   "askii": 1,
+   "askii": 5,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
