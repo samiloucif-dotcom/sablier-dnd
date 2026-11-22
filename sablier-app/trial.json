@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T22:57:16.949Z",
+ "updated": "2026-11-22T22:57:46.039Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -692,8 +692,8 @@
    "angele": "4dpcrug7erfruax46e",
    "bardik": "hgchfwdn2ma4cdg5j9"
   },
-  "react": true,
-  "speak": false,
+  "react": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
@@ -812,7 +812,7 @@
    "pryah": 4,
    "bardik": 1,
    "angele": 4,
-   "askii": 4,
+   "askii": 5,
    "balerion": 1,
    "paxel": 1,
    "citello": 2,
