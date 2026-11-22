@@ -22,8 +22,10 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:12:06.667Z",
- "waver": {},
+ "updated": "2026-11-22T21:12:44.370Z",
+ "waver": {
+  "gasper": 1
+ },
  "invite": {
   "on": true,
   "at": 1795379691368
