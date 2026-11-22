@@ -22,7 +22,7 @@
   "R7": "framschtak",
   "R8": "esteban"
  },
- "updated": "2026-11-22T21:06:34.573Z",
+ "updated": "2026-11-22T21:06:41.920Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -640,10 +640,6 @@
      "name": "bazooka",
      "ver": 2
     },
-    "3": {
-     "name": "no thats wrong",
-     "ver": 1
-    },
     "4": {
      "name": "middle",
      "ver": 1
@@ -741,7 +737,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
    "angele": 4,
    "askii": 4,
