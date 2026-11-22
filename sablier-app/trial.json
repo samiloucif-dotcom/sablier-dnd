@@ -22,7 +22,7 @@
   "R10": "gasper",
   "R11": "balerion"
  },
- "updated": "2026-11-22T22:06:09.695Z",
+ "updated": "2026-11-22T22:06:17.913Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -632,7 +632,7 @@
    "npc": "balerion",
    "name": "Shield the truth",
    "text": "Cancels one hit to CP",
-   "on": false,
+   "on": true,
    "used": 1
   },
   {
