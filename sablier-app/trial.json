@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:36:55.687Z",
+ "updated": "2026-11-22T20:37:18.003Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -500,7 +500,17 @@
      "pryah": {
       "skill": "Intimidation",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        19
+       ],
+       "kept": 19,
+       "mod": 0,
+       "guid": 0,
+       "total": 19,
+       "at": 1795379838003
+      }
      }
     },
     "doneAt": 0,
