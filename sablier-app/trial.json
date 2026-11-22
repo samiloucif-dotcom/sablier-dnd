@@ -22,7 +22,7 @@
   "R7": "framschtak",
   "R8": "esteban"
  },
- "updated": "2026-11-22T21:06:41.920Z",
+ "updated": "2026-11-22T21:07:00.386Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -639,6 +639,10 @@
     "2": {
      "name": "bazooka",
      "ver": 2
+    },
+    "3": {
+     "name": "tebboune",
+     "ver": 795381617
     },
     "4": {
      "name": "middle",
