@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": false,
+ "open": true,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:36:00.676Z",
+ "updated": "2026-11-22T20:36:26.804Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -605,6 +605,10 @@
     "4": {
      "name": "happy",
      "ver": 1
+    },
+    "5": {
+     "name": "Jeune fille anime en uni",
+     "ver": 795379783
     }
    },
    "askii": {
@@ -669,7 +673,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 1,
+   "angele": 4,
    "askii": 1,
    "balerion": 1,
    "paxel": 1,
