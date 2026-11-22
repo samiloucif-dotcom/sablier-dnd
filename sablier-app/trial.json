@@ -22,7 +22,7 @@
   "R6": "nerasho",
   "R7": "framschtak"
  },
- "updated": "2026-11-22T20:57:35.753Z",
+ "updated": "2026-11-22T20:57:48.417Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -740,12 +740,12 @@
    "pryah": 2,
    "bardik": 1,
    "angele": 5,
-   "askii": 2,
+   "askii": 1,
    "balerion": 1,
    "paxel": 3,
    "citello": 2,
    "carnage": 3,
-   "mune": 2
+   "mune": 1
   }
  }
 }
