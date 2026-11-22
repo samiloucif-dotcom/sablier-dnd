@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:06:18.775Z",
+ "updated": "2026-11-22T23:06:30.105Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -624,8 +624,8 @@
    "npc": "framschtak",
    "name": "Know your craft",
    "text": "Analyze a piece of physical evidence",
-   "on": true,
-   "used": 2
+   "on": false,
+   "used": 3
   },
   {
    "id": "fsdvskvqbz",
