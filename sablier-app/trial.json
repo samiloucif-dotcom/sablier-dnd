@@ -22,7 +22,7 @@
   "R7": "framschtak",
   "R8": "esteban"
  },
- "updated": "2026-11-22T21:05:59.511Z",
+ "updated": "2026-11-22T21:06:34.573Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 28,
-  "active": 28,
+  "seq": 29,
+  "active": 29,
   "checks": [
-   {
-    "id": 17,
-    "at": 1794772535091,
-    "dc": 12,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Arcana",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        7
-       ],
-       "kept": 7,
-       "mod": 8,
-       "guid": 0,
-       "total": 15,
-       "at": 1794772539770
-      }
-     }
-    },
-    "doneAt": 1794772539770,
-    "closed": true
-   },
    {
     "id": 18,
     "at": 1794772934085,
@@ -554,6 +529,31 @@
      }
     },
     "doneAt": 1795379884720,
+    "closed": true
+   },
+   {
+    "id": 29,
+    "at": 1795381585543,
+    "dc": 10,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Arcana",
+      "absent": false,
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        15
+       ],
+       "kept": 15,
+       "mod": 8,
+       "guid": 0,
+       "total": 23,
+       "at": 1795381588511
+      }
+     }
+    },
+    "doneAt": 1795381588511,
     "closed": false
    }
   ]
@@ -741,10 +741,10 @@
    }
   },
   "emoteOn": {
-   "pryah": 5,
+   "pryah": 3,
    "bardik": 1,
    "angele": 4,
-   "askii": 1,
+   "askii": 4,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
