@@ -22,7 +22,7 @@
   "R10": "gasper",
   "R11": "balerion"
  },
- "updated": "2026-11-22T22:07:29.528Z",
+ "updated": "2026-11-22T22:07:43.115Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -809,14 +809,14 @@
    }
   },
   "emoteOn": {
-   "pryah": 5,
+   "pryah": 4,
    "bardik": 1,
    "angele": 4,
    "askii": 3,
    "balerion": 1,
    "paxel": 4,
    "citello": 2,
-   "carnage": 4,
+   "carnage": 3,
    "mune": 3
   }
  }
