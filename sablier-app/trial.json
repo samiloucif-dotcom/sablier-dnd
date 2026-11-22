@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:42:03.065Z",
+ "updated": "2026-11-22T21:42:16.589Z",
  "waver": {
   "gasper": 1
  },
@@ -542,10 +542,20 @@
      "askii": {
       "skill": "History",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        2
+       ],
+       "kept": 2,
+       "mod": 7,
+       "guid": 0,
+       "total": 9,
+       "at": 1795383736589
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1795383736589,
     "closed": false
    }
   ]
