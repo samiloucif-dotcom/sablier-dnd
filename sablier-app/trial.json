@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:09:41.791Z",
+ "updated": "2026-11-22T21:10:33.902Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -620,7 +620,7 @@
    "npc": "norvodavius",
    "name": "Arcana master",
    "text": "Provides informations about an unknown spell or magic use",
-   "on": false,
+   "on": true,
    "used": 1
   }
  ],
