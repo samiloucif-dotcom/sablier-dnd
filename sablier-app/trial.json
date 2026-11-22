@@ -22,7 +22,7 @@
   "R10": "gasper",
   "R11": "balerion"
  },
- "updated": "2026-11-22T22:07:43.115Z",
+ "updated": "2026-11-22T22:07:50.134Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -816,7 +816,7 @@
    "balerion": 1,
    "paxel": 4,
    "citello": 2,
-   "carnage": 3,
+   "carnage": 1,
    "mune": 3
   }
  }
