@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:38:43.280Z",
+ "updated": "2026-11-22T20:40:41.271Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -633,7 +633,7 @@
    "angele": "4dpcrug7erfruax46e"
   },
   "react": false,
-  "speak": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
