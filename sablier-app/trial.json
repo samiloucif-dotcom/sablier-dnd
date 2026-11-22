@@ -22,7 +22,7 @@
   "R12": "doulahex",
   "R13": "hayeva"
  },
- "updated": "2026-11-22T22:31:43.295Z",
+ "updated": "2026-11-22T22:32:10.321Z",
  "waver": {
   "paxel": 1
  },
@@ -811,15 +811,15 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 2,
    "bardik": 1,
    "angele": 4,
    "askii": 5,
    "balerion": 1,
-   "paxel": 2,
+   "paxel": 4,
    "citello": 2,
    "carnage": 1,
-   "mune": 2
+   "mune": 3
   }
  }
 }
