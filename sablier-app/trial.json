@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T22:58:32.887Z",
+ "updated": "2026-11-22T22:58:40.399Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -738,7 +738,7 @@
     },
     "3": {
      "name": "an-iq-too-high",
-     "ver": 795384520
+     "ver": 795388320
     },
     "4": {
      "name": "101_300x300_Front_Color-",
@@ -818,7 +818,7 @@
    "pryah": 5,
    "bardik": 2,
    "angele": 5,
-   "askii": 1,
+   "askii": 3,
    "balerion": 1,
    "paxel": 1,
    "citello": 2,
