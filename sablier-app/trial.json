@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:53:51.915Z",
+ "updated": "2026-11-22T21:54:08.670Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -749,9 +749,9 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 1,
    "bardik": 1,
-   "angele": 4,
+   "angele": 3,
    "askii": 1,
    "balerion": 1,
    "paxel": 2,
