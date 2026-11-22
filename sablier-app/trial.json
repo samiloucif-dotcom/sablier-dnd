@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T22:03:24.601Z",
+ "updated": "2026-11-22T22:04:53.799Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -692,8 +692,8 @@
    "askii": "ubpgd6q42i83q6zi96",
    "angele": "4dpcrug7erfruax46e"
   },
-  "react": true,
-  "speak": false,
+  "react": false,
+  "speak": true,
   "emotes": {
    "pryah": {
     "2": {
