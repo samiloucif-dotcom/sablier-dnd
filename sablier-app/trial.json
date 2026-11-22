@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:54:24.427Z",
+ "updated": "2026-11-22T21:54:34.034Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -550,7 +550,17 @@
      "angele": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        16
+       ],
+       "kept": 16,
+       "mod": 7,
+       "guid": 0,
+       "total": 23,
+       "at": 1795384474034
+      }
      },
      "mune": {
       "skill": "Persuasion",
