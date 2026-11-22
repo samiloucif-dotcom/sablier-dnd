@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:45:24.989Z",
+ "updated": "2026-11-22T20:45:44.055Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -678,7 +678,7 @@
     },
     "3": {
      "name": "an-iq-too-high",
-     "ver": 1
+     "ver": 795380344
     },
     "4": {
      "name": "101_300x300_Front_Color-",
@@ -731,10 +731,10 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
+   "pryah": 1,
    "bardik": 1,
    "angele": 2,
-   "askii": 4,
+   "askii": 3,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
