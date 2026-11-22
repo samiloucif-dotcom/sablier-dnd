@@ -9,7 +9,6 @@
   "R4": "angele",
   "R5": "askii",
   "T2": "polychroma",
-  "B1": "balerion",
   "L1": "carnage",
   "L2": "paxel",
   "B7": "hayeva",
@@ -20,9 +19,10 @@
   "R7": "framschtak",
   "R8": "esteban",
   "R9": "norvodavius",
-  "R10": "gasper"
+  "R10": "gasper",
+  "R11": "balerion"
  },
- "updated": "2026-11-22T22:04:53.799Z",
+ "updated": "2026-11-22T22:06:09.695Z",
  "waver": {},
  "invite": {
   "on": true,
