@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:37:24.939Z",
+ "updated": "2026-11-22T20:37:40.354Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -480,7 +480,17 @@
      "askii": {
       "skill": "Intelligence",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        17
+       ],
+       "kept": 17,
+       "mod": 4,
+       "guid": 0,
+       "total": 21,
+       "at": 1795379860354
+      }
      },
      "bardik": {
       "skill": "Insight",
@@ -490,7 +500,17 @@
      "angele": {
       "skill": "Persuasion",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        10
+       ],
+       "kept": 10,
+       "mod": 7,
+       "guid": 0,
+       "total": 17,
+       "at": 1795379857119
+      }
      },
      "mune": {
       "skill": "Investigation",
