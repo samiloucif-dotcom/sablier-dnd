@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:35:52.426Z",
+ "updated": "2026-11-22T20:36:00.676Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -605,10 +605,6 @@
     "4": {
      "name": "happy",
      "ver": 1
-    },
-    "5": {
-     "name": "Fureur aux cheveux d’arg",
-     "ver": 2
     }
    },
    "askii": {
