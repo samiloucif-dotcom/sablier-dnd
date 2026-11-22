@@ -13,19 +13,17 @@
   "L1": "carnage",
   "L2": "paxel",
   "B7": "hayeva",
-  "B6": "gasper",
   "B3": "doulahex",
   "T1": "jacques",
   "B2": "citello",
   "R6": "nerasho",
   "R7": "framschtak",
   "R8": "esteban",
-  "R9": "norvodavius"
+  "R9": "norvodavius",
+  "R10": "gasper"
  },
- "updated": "2026-11-22T21:43:44.206Z",
- "waver": {
-  "gasper": 1
- },
+ "updated": "2026-11-22T21:44:22.885Z",
+ "waver": {},
  "invite": {
   "on": true,
   "at": 1795379691368
@@ -598,7 +596,7 @@
    "npc": "gasper",
    "name": "Reverse the odds",
    "text": "Turn a 1 dice roll into a 20",
-   "on": false,
+   "on": true,
    "used": 0
   },
   {
@@ -746,7 +744,7 @@
    "pryah": 1,
    "bardik": 1,
    "angele": 5,
-   "askii": 1,
+   "askii": 4,
    "balerion": 1,
    "paxel": 4,
    "citello": 2,
