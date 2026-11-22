@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,13 +22,13 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T18:39:53.067Z",
+ "updated": "2026-11-22T18:40:07.031Z",
  "waver": {},
  "invite": {
   "on": false,
   "at": 1794242687127
  },
- "cp": 9,
+ "cp": 10,
  "shows": [
   {
    "id": "5g6vr9rj5wgxvz",
