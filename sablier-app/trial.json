@@ -22,8 +22,10 @@
   "R12": "doulahex",
   "R13": "hayeva"
  },
- "updated": "2026-11-22T22:17:46.092Z",
- "waver": {},
+ "updated": "2026-11-22T22:17:55.596Z",
+ "waver": {
+  "paxel": 1
+ },
  "invite": {
   "on": true,
   "at": 1795379691368
