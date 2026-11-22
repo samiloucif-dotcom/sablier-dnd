@@ -22,11 +22,11 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:11:16.990Z",
+ "updated": "2026-11-22T20:35:08.456Z",
  "waver": {},
  "invite": {
-  "on": false,
-  "at": 1794242687127
+  "on": true,
+  "at": 1795379691368
  },
  "cp": 10,
  "shows": [
@@ -566,10 +566,7 @@
  ],
  "players": {
   "claims": {
-   "bardik": "hgchfwdn2ma4cdg5j9",
-   "angele": "4dpcrug7erfruax46e",
    "askii": "ubpgd6q42i83q6zi96",
-   "pryah": "gwuepm2pe6q5wecxtn",
    "mune": "7ta54nestapycj6tm9"
   },
   "react": false,
