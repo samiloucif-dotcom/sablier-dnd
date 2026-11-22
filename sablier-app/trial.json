@@ -22,7 +22,7 @@
   "B2": "citello",
   "R6": "nerasho"
  },
- "updated": "2026-11-22T20:50:14.114Z",
+ "updated": "2026-11-22T20:51:11.929Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -674,7 +674,7 @@
    "askii": {
     "2": {
      "name": "cockbar",
-     "ver": 1
+     "ver": 795380671
     },
     "3": {
      "name": "an-iq-too-high",
@@ -740,7 +740,7 @@
    "pryah": 4,
    "bardik": 1,
    "angele": 5,
-   "askii": 3,
+   "askii": 2,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
