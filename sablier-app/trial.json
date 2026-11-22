@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:46:15.873Z",
+ "updated": "2026-11-22T21:46:27.784Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -640,6 +640,10 @@
      "name": "angele",
      "ver": 795383604
     },
+    "3": {
+     "name": "kirk",
+     "ver": 795383986
+    },
     "4": {
      "name": "carnage",
      "ver": 795383496
@@ -737,7 +741,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 2,
    "bardik": 1,
    "angele": 5,
    "askii": 5,
