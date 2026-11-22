@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:00:48.658Z",
+ "updated": "2026-11-22T23:00:55.641Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -656,8 +656,8 @@
    "npc": "gasper",
    "name": "Reverse the odds",
    "text": "Turn a 1 dice roll into a 20",
-   "on": true,
-   "used": 0
+   "on": false,
+   "used": 1
   },
   {
    "id": "6cjpud9xre",
