@@ -22,7 +22,7 @@
   "R6": "nerasho",
   "R7": "framschtak"
  },
- "updated": "2026-11-22T20:58:38.900Z",
+ "updated": "2026-11-22T20:59:10.488Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -737,7 +737,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
+   "pryah": 1,
    "bardik": 1,
    "angele": 5,
    "askii": 1,
