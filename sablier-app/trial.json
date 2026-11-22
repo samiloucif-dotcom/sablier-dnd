@@ -22,7 +22,7 @@
   "R7": "framschtak",
   "R8": "esteban"
  },
- "updated": "2026-11-22T21:01:59.501Z",
+ "updated": "2026-11-22T21:02:08.945Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -588,7 +588,7 @@
    "npc": "esteban",
    "name": "Charm the jury",
    "text": "Makes one member of the jury like the prosecution",
-   "on": false,
+   "on": true,
    "used": 0
   },
   {
