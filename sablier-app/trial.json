@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:11:10.695Z",
+ "updated": "2026-11-22T20:11:16.990Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -480,10 +480,20 @@
      "askii": {
       "skill": "Investigation",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "normal",
+       "dice": [
+        9
+       ],
+       "kept": 9,
+       "mod": 7,
+       "guid": 0,
+       "total": 16,
+       "at": 1795378276990
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1795378276990,
     "closed": false
    }
   ]
