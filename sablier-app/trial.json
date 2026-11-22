@@ -22,7 +22,7 @@
   "R12": "doulahex",
   "R13": "hayeva"
  },
- "updated": "2026-11-22T22:18:36.429Z",
+ "updated": "2026-11-22T22:21:39.260Z",
  "waver": {
   "paxel": 1
  },
@@ -666,8 +666,8 @@
    "npc": "hayeva",
    "name": "Circle of truth",
    "text": "One person answers truthfully one question",
-   "on": true,
-   "used": 0
+   "on": false,
+   "used": 1
   },
   {
    "id": "zayxh4pwy7",
