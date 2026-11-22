@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T18:37:44.772Z",
+ "updated": "2026-11-22T18:38:12.872Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 23,
-  "active": 23,
+  "seq": 24,
+  "active": 24,
   "checks": [
-   {
-    "id": 12,
-    "at": 1794772018647,
-    "dc": 12,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Perception",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        7
-       ],
-       "kept": 7,
-       "mod": 0,
-       "guid": 0,
-       "total": 7,
-       "at": 1794772033563
-      }
-     }
-    },
-    "doneAt": 1794772033563,
-    "closed": true
-   },
    {
     "id": 13,
     "at": 1794772063242,
@@ -493,6 +468,21 @@
      }
     },
     "doneAt": 1794775438345,
+    "closed": true
+   },
+   {
+    "id": 24,
+    "at": 1795372692872,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "mune": {
+      "skill": "Investigation",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
