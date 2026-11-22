@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T19:26:43.801Z",
+ "updated": "2026-11-22T19:40:17.050Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 24,
-  "active": 24,
+  "seq": 25,
+  "active": 25,
   "checks": [
-   {
-    "id": 13,
-    "at": 1794772063242,
-    "dc": 12,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Perception",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        8
-       ],
-       "kept": 8,
-       "mod": 0,
-       "guid": 0,
-       "total": 8,
-       "at": 1794772066395
-      }
-     }
-    },
-    "doneAt": 1794772066395,
-    "closed": true
-   },
    {
     "id": 14,
     "at": 1794772132877,
@@ -494,6 +469,21 @@
      }
     },
     "doneAt": 1795372701549,
+    "closed": true
+   },
+   {
+    "id": 25,
+    "at": 1795376417050,
+    "dc": 10,
+    "dcMode": "each",
+    "items": {
+     "pryah": {
+      "skill": "Intimidation",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
