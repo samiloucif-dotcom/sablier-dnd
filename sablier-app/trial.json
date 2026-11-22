@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T22:59:20.065Z",
+ "updated": "2026-11-22T23:00:36.400Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -815,7 +815,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 4,
    "bardik": 2,
    "angele": 5,
    "askii": 1,
