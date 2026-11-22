@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:38:19.480Z",
+ "updated": "2026-11-22T21:39:52.674Z",
  "waver": {
   "gasper": 1
  },
@@ -638,10 +638,6 @@
   "speak": true,
   "emotes": {
    "pryah": {
-    "2": {
-     "name": "bazooka",
-     "ver": 2
-    },
     "3": {
      "name": "tebboune",
      "ver": 795381617
