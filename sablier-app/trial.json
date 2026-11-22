@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:46:32.632Z",
+ "updated": "2026-11-22T20:47:48.312Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -728,6 +728,12 @@
      "name": "carnagesprite3",
      "ver": 794777233
     }
+   },
+   "mune": {
+    "2": {
+     "name": "smbau-v0-j2yhs93d9zmf1",
+     "ver": 795380466
+    }
    }
   },
   "emoteOn": {
@@ -738,7 +744,8 @@
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
-   "carnage": 1
+   "carnage": 1,
+   "mune": 1
   }
  }
 }
