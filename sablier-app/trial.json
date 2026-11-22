@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:04:16.601Z",
+ "updated": "2026-11-22T23:05:54.047Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -702,7 +702,7 @@
     },
     "3": {
      "name": "kirk",
-     "ver": 795383986
+     "ver": 795388754
     },
     "4": {
      "name": "carnage",
@@ -819,7 +819,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 3,
    "bardik": 3,
    "angele": 5,
    "askii": 5,
