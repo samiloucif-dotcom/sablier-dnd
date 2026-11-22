@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T19:45:16.800Z",
+ "updated": "2026-11-22T20:11:10.695Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 26,
-  "active": 26,
+  "seq": 27,
+  "active": 27,
   "checks": [
-   {
-    "id": 15,
-    "at": 1794772376066,
-    "dc": 12,
-    "dcMode": "each",
-    "items": {
-     "angele": {
-      "skill": "Animal Handling",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        3
-       ],
-       "kept": 3,
-       "mod": 2,
-       "guid": 0,
-       "total": 5,
-       "at": 1794772390639
-      }
-     }
-    },
-    "doneAt": 1794772390639,
-    "closed": true
-   },
    {
     "id": 16,
     "at": 1794772436515,
@@ -494,6 +469,21 @@
      }
     },
     "doneAt": 1795376716800,
+    "closed": true
+   },
+   {
+    "id": 27,
+    "at": 1795378270695,
+    "dc": 16,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Investigation",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
