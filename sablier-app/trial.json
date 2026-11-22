@@ -22,7 +22,7 @@
   "R12": "doulahex",
   "R13": "hayeva"
  },
- "updated": "2026-11-22T22:29:01.751Z",
+ "updated": "2026-11-22T22:29:28.235Z",
  "waver": {
   "paxel": 1
  },
@@ -642,8 +642,8 @@
    "npc": "doulahex",
    "name": "One second of space-time",
    "text": "Conjure a vague vision about a specific moment in the citadel ",
-   "on": true,
-   "used": 0
+   "on": false,
+   "used": 1
   },
   {
    "id": "naz5i9crv8",
@@ -811,7 +811,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 3,
+   "pryah": 1,
    "bardik": 1,
    "angele": 4,
    "askii": 3,
