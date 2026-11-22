@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:36:26.804Z",
+ "updated": "2026-11-22T20:36:55.687Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 27,
-  "active": 27,
+  "seq": 28,
+  "active": 28,
   "checks": [
-   {
-    "id": 16,
-    "at": 1794772436515,
-    "dc": 12,
-    "dcMode": "each",
-    "items": {
-     "askii": {
-      "skill": "Animal Handling",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        13
-       ],
-       "kept": 13,
-       "mod": 0,
-       "guid": 0,
-       "total": 13,
-       "at": 1794772501453
-      }
-     }
-    },
-    "doneAt": 1794772501453,
-    "closed": true
-   },
    {
     "id": 17,
     "at": 1794772535091,
@@ -494,6 +469,41 @@
      }
     },
     "doneAt": 1795378276990,
+    "closed": true
+   },
+   {
+    "id": 28,
+    "at": 1795379815631,
+    "dc": 15,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Intelligence",
+      "absent": false,
+      "roll": null
+     },
+     "bardik": {
+      "skill": "Insight",
+      "absent": false,
+      "roll": null
+     },
+     "angele": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     },
+     "mune": {
+      "skill": "Investigation",
+      "absent": false,
+      "roll": null
+     },
+     "pryah": {
+      "skill": "Intimidation",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
@@ -604,7 +614,7 @@
     },
     "4": {
      "name": "happy",
-     "ver": 1
+     "ver": 795379815
     },
     "5": {
      "name": "Jeune fille anime en uni",
