@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:58:00.183Z",
+ "updated": "2026-11-22T21:58:23.707Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -793,6 +793,10 @@
     "2": {
      "name": "smbau-v0-j2yhs93d9zmf1",
      "ver": 795380466
+    },
+    "3": {
+     "name": "i-love-the-he-made-a-sta",
+     "ver": 795384702
     },
     "4": {
      "name": "shy",
