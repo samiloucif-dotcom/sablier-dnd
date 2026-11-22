@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:12:44.370Z",
+ "updated": "2026-11-22T21:13:30.782Z",
  "waver": {
   "gasper": 1
  },
@@ -743,15 +743,15 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 4,
    "bardik": 1,
    "angele": 4,
-   "askii": 4,
+   "askii": 1,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
    "carnage": 2,
-   "mune": 2
+   "mune": 1
   }
  }
 }
