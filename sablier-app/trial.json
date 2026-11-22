@@ -12,7 +12,6 @@
   "L1": "carnage",
   "L2": "paxel",
   "B7": "hayeva",
-  "B3": "doulahex",
   "T1": "jacques",
   "B2": "citello",
   "R6": "nerasho",
@@ -20,9 +19,10 @@
   "R8": "esteban",
   "R9": "norvodavius",
   "R10": "gasper",
-  "R11": "balerion"
+  "R11": "balerion",
+  "R12": "doulahex"
  },
- "updated": "2026-11-22T22:12:24.722Z",
+ "updated": "2026-11-22T22:12:46.494Z",
  "waver": {},
  "invite": {
   "on": true,
