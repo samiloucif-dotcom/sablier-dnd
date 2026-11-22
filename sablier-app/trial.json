@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:58:23.707Z",
+ "updated": "2026-11-22T21:58:59.588Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -816,7 +816,7 @@
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
-   "carnage": 1,
+   "carnage": 4,
    "mune": 1
   }
  }
