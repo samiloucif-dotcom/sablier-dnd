@@ -22,7 +22,7 @@
   "R11": "balerion",
   "R12": "doulahex"
  },
- "updated": "2026-11-22T22:15:29.593Z",
+ "updated": "2026-11-22T22:15:58.740Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -809,7 +809,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
+   "pryah": 3,
    "bardik": 1,
    "angele": 3,
    "askii": 3,
