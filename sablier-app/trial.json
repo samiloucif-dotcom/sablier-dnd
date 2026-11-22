@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T18:38:12.872Z",
+ "updated": "2026-11-22T18:38:21.549Z",
  "waver": {},
  "invite": {
   "on": false,
@@ -479,10 +479,21 @@
      "mune": {
       "skill": "Investigation",
       "absent": false,
-      "roll": null
+      "roll": {
+       "mode": "adv",
+       "dice": [
+        14,
+        12
+       ],
+       "kept": 14,
+       "mod": 0,
+       "guid": 4,
+       "total": 18,
+       "at": 1795372701549
+      }
      }
     },
-    "doneAt": 0,
+    "doneAt": 1795372701549,
     "closed": false
    }
   ]
