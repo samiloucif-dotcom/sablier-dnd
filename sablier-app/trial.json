@@ -10,7 +10,6 @@
   "R5": "askii",
   "T2": "polychroma",
   "L1": "carnage",
-  "L2": "paxel",
   "T1": "jacques",
   "B2": "citello",
   "R6": "nerasho",
@@ -20,12 +19,11 @@
   "R10": "gasper",
   "R11": "balerion",
   "R12": "doulahex",
-  "R13": "hayeva"
+  "R13": "hayeva",
+  "R14": "paxel"
  },
- "updated": "2026-11-22T22:32:10.321Z",
- "waver": {
-  "paxel": 1
- },
+ "updated": "2026-11-22T22:32:43.473Z",
+ "waver": {},
  "invite": {
   "on": true,
   "at": 1795379691368
@@ -811,7 +809,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 2,
+   "pryah": 1,
    "bardik": 1,
    "angele": 4,
    "askii": 5,
