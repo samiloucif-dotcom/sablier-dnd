@@ -22,7 +22,7 @@
   "R7": "framschtak",
   "R8": "esteban"
  },
- "updated": "2026-11-22T21:05:46.955Z",
+ "updated": "2026-11-22T21:05:59.511Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -733,6 +733,10 @@
     "2": {
      "name": "smbau-v0-j2yhs93d9zmf1",
      "ver": 795380466
+    },
+    "3": {
+     "name": "c10",
+     "ver": 795381558
     }
    }
   },
