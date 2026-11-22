@@ -22,7 +22,7 @@
   "R11": "balerion",
   "R12": "doulahex"
  },
- "updated": "2026-11-22T22:12:46.494Z",
+ "updated": "2026-11-22T22:12:54.505Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -640,7 +640,7 @@
    "npc": "doulahex",
    "name": "One second of space-time",
    "text": "Conjure a vague vision about a specific moment in the citadel ",
-   "on": false,
+   "on": true,
    "used": 0
   },
   {
