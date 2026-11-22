@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:51:59.178Z",
+ "updated": "2026-11-22T21:52:56.370Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -752,12 +752,12 @@
    "pryah": 5,
    "bardik": 1,
    "angele": 4,
-   "askii": 4,
+   "askii": 1,
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
    "carnage": 1,
-   "mune": 1
+   "mune": 3
   }
  }
 }
