@@ -1041,10 +1041,14 @@
       $('#simSpeak').onclick = () => simAct({ action: 'speak' });
       /* the dice as the demo player sees them (the server rolls in the real app) */
       const d20 = () => 1 + Math.floor(Math.random() * 20);
-      const demoRoll = (key, mode, mod) => C.reduce(state, { action: 'diceRolled', key, roll: C.makeRoll(mode, mod, d20) }, Date.now());
+      const dN = (sides) => 1 + Math.floor(Math.random() * sides);
+      const demoRoll = (key, mode, mod, guid) => C.reduce(state, { action: 'diceRolled', key,
+        roll: C.makeRoll(mode, mod, d20, guid ? () => dN(4) : null) }, Date.now());
       demoDice = TrialDice.mount({
         post: async (a) => {
-          if (a.action === 'roll') { const k = C.claimOf(state, SIM); if (k) demoRoll(k, a.mode, a.mod); }
+          const me = C.claimOf(state, SIM);
+          if (a.action === 'roll') { if (me) demoRoll(me, a.mode, a.mod, a.guid); }
+          else if (a.action === 'freeRoll') { if (me) C.reduce(state, { action: 'diceFree', key: me, roll: C.makeFree(a.die, a.n, a.mod, dN) }, Date.now()); }
           else C.playerAct(state, Object.assign({ cid: SIM }, a), Date.now());
           render(); stage.setState(view()); paintSim();
           return { ok: true, state: C.playerView(state, Date.now(), SIM) };

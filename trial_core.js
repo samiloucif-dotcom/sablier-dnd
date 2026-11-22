@@ -158,13 +158,46 @@
   const DICE_KEEP = 12;                    // checks kept in the GM's log
   const ROLL_MODES = ['normal', 'adv', 'dis'];
   const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
-  /* one roll; d20() gives 1..20 (the server passes a crypto one) */
-  function makeRoll(mode, mod, d20) {
+  /* One roll; d20() gives 1..20 (the server passes a crypto one). Pass a d4()
+     as well when the character was Guided: the spell's extra d4 is thrown here
+     with the rest, so every screen sees the same number and the total already
+     includes it. No d4 passed, no guidance — guid stays 0. */
+  function makeRoll(mode, mod, d20, d4) {
     mode = ROLL_MODES.indexOf(mode) >= 0 ? mode : 'normal';
     mod = clampInt(mod, -20, 30);
     const dice = mode === 'normal' ? [d20()] : [d20(), d20()];
     const kept = mode === 'adv' ? Math.max(dice[0], dice[1]) : mode === 'dis' ? Math.min(dice[0], dice[1]) : dice[0];
-    return { mode, dice, kept, mod, total: kept + mod };
+    const guid = typeof d4 === 'function' ? clampInt(d4(), 1, 4) : 0;
+    return { mode, dice, kept, mod, guid, total: kept + mod + guid };
+  }
+
+  /* ---------- a player's own roll ----------
+     Not asked by anyone: the player picks a die, how many, and an optional
+     modifier, and the table sees it land. d100 is thrown the way it is at a
+     real table — a tens d10 reading 00–90 and a units d10 reading 0–9, with
+     00 + 0 counting as 100 — so `dice` carries the two faces actually shown
+     and `vals` the number each die contributed. */
+  const DIE_TYPES = [4, 6, 8, 10, 12, 100];
+  const FREE_KEEP = 10;            // free rolls kept in the log
+  const FREE_MAX = 12;             // dice in one throw
+  function makeFree(die, n, mod, rnd) {
+    die = DIE_TYPES.indexOf(Number(die)) >= 0 ? Number(die) : 6;
+    n = clampInt(n, 1, FREE_MAX);
+    mod = clampInt(mod, -99, 99);
+    const dice = [], vals = [];
+    for (let i = 0; i < n; i++) {
+      if (die === 100) {
+        const t = rnd(10) - 1, u = rnd(10) - 1;            // 0..9 each
+        dice.push({ s: 100, f: t }, { s: 10, f: u });      // the tens die, then the units die
+        vals.push(t * 10 + u === 0 ? 100 : t * 10 + u);
+      } else {
+        const v = rnd(die);
+        dice.push({ s: die, f: v });
+        vals.push(v);
+      }
+    }
+    const sum = vals.reduce((a, b) => a + b, 0);
+    return { die, n, mod, dice, vals, sum, total: sum + mod };
   }
   const isPlayed = (st, key) => st.players.claims ? !!st.players.claims[key] : (st.players.taken || []).indexOf(key) >= 0;
   const activeCheck = (st) => {
@@ -180,7 +213,8 @@
       const r = it.roll;
       items[k] = { skill: it.skill, absent: !!it.absent, roll: r && Array.isArray(r.dice) ? {
         mode: ROLL_MODES.indexOf(r.mode) >= 0 ? r.mode : 'normal', dice: r.dice.slice(0, 2).map((d) => clampInt(d, 1, 20)),
-        kept: clampInt(r.kept, 1, 20), mod: clampInt(r.mod, -20, 30), total: clampInt(r.total, -19, 50), at: Number(r.at) || 0 } : null };
+        kept: clampInt(r.kept, 1, 20), mod: clampInt(r.mod, -20, 30), guid: clampInt(r.guid, 0, 4),
+        total: clampInt(r.total, -19, 54), at: Number(r.at) || 0 } : null };
     });
     if (!Object.keys(items).length) return null;
     return { id: clampInt(c.id, 1, 1e9), at: Number(c.at) || 0, dc: c.dc == null ? null : clampInt(c.dc, 1, 300),
@@ -317,7 +351,7 @@
       cp: CP_START,                  // the prosecution's Credibility Points
       shows: [],                     // slideshows: [{ id, name, slides: [{ id, mime, w, h }], audio, loop, audioAll }]
       show: { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true },   // the one playing (a moment, not saved)
-      dice: { seq: 0, active: null, checks: [] },   // skill checks (the last DICE_KEEP, newest last)
+      dice: { seq: 0, active: null, checks: [], fseq: 0, free: [] },   // skill checks (the last DICE_KEEP, newest last) + the players' own rolls
       brain: brainInit(),            // BRAINSTORMING: Polychroma's question and its countdown (a moment)
       faceoff: foInit(),             // ABOUT TO TIP: the face-off (a moment)
       powers: [],                    // trial powers: [{ id, npc, name, text, on (in the players' hands), used }]
@@ -337,7 +371,8 @@
       invite: { on: !!(st.invite && st.invite.on), at: (st.invite && st.invite.at) || 0 },
       cp: st.cp == null ? CP_START : st.cp,
       shows: JSON.parse(JSON.stringify(st.shows || [])),
-      dice: JSON.parse(JSON.stringify(st.dice || { seq: 0, active: null, checks: [] })),
+      dice: { seq: (st.dice && st.dice.seq) || 0, active: (st.dice && st.dice.active) || null,
+        checks: JSON.parse(JSON.stringify((st.dice && st.dice.checks) || [])) },   // free rolls stay out: a damage roll is not worth a commit
       powers: (st.powers || []).map(cleanPower).filter(Boolean),
       players: { claims: Object.assign({}, p.claims), react: p.react !== false, speak: p.speak !== false,
         emotes: JSON.parse(JSON.stringify(p.emotes)), emoteOn: Object.assign({}, p.emoteOn) },
@@ -363,7 +398,7 @@
       const checks = raw.dice.checks.map(cleanCheck).filter(Boolean).slice(-DICE_KEEP);
       const seq = Math.max(clampInt(raw.dice.seq, 0, 1e9), checks.reduce((m, c) => Math.max(m, c.id), 0));
       const active = checks.some((c) => c.id === raw.dice.active && !c.closed) ? raw.dice.active : null;
-      st.dice = { seq, active, checks };
+      st.dice = { seq, active, checks, fseq: 0, free: [] };
     }
     const rp = raw.players || {};
     const used = {};
@@ -419,7 +454,8 @@
     if (!st.moves) st.moves = { seq: 0, list: [] };
     if (!st.invite) st.invite = { on: false, at: 0 };
     if (st.cp == null) st.cp = CP_START;
-    if (!st.dice) st.dice = { seq: 0, active: null, checks: [] };
+    if (!st.dice) st.dice = { seq: 0, active: null, checks: [], fseq: 0, free: [] };
+    if (!st.dice.free) { st.dice.free = []; st.dice.fseq = st.dice.fseq || 0; }
     if (!st.shows) st.shows = [];
     if (!st.show) st.show = { on: false, id: null, idx: 0, ctrl: null, seq: 0, audioAt: 0, music: true };
     ensureNew(st);
@@ -558,6 +594,17 @@
         persist = true;
         break;
       }
+      case 'diceFree': {                       // internal: the server rolled a player's own dice
+        if (PCS.indexOf(a.key) < 0 || !a.roll) return { changed: false };
+        const D = st.dice;
+        D.fseq = (D.fseq || 0) + 1;
+        D.free = (D.free || []).concat([Object.assign({ id: D.fseq, key: a.key, at: now }, a.roll)]).slice(-FREE_KEEP);
+        break;                                 // a moment, like a gesture: never worth a save
+      }
+      case 'freeClear':
+        if (!(st.dice.free || []).length) return { changed: false };
+        st.dice.free = [];
+        break;
       case 'checkClose': {                     // the GM ends the check: the windows close everywhere
         const c = activeCheck(st);
         if (!c) return { changed: false };
@@ -986,11 +1033,12 @@
   /* The open check, as the table sees it: who rolls what, and the dice once
      thrown. No DC (that stays with the GM). */
   function dicePublic(st) {
+    const free = ((st.dice && st.dice.free) || []).slice(-FREE_KEEP);
     const c = activeCheck(st);
-    if (!c) return { check: null };
+    if (!c) return { check: null, free };
     const items = {};
     Object.keys(c.items).forEach((k) => { const it = c.items[k]; items[k] = { skill: it.skill, absent: it.absent, roll: it.roll }; });
-    return { check: { id: c.id, at: c.at, doneAt: c.doneAt, items } };
+    return { check: { id: c.id, at: c.at, doneAt: c.doneAt, items }, free };
   }
 
   /* Players get nothing about the room until the court is open. Skill checks
@@ -1024,6 +1072,7 @@
     initialState, persistable, sanitize, reduce, playerAct, playerView, gmView, playersPublic, slotOf, claimOf, validCid,
     sideShift, canWaver,
     CP_START, CP_MIN, CP_MAX, SKILLS, OPENING_CHECKS, ROLL_MODES, makeRoll, activeCheck, dicePublic,
+    DIE_TYPES, FREE_MAX, FREE_KEEP, makeFree,
     SLIDES_MAX, IMAGE_MIME, AUDIO_MIME, validId, findShow, slidesPublic, fileVisible,
     NPC_SPRITE_SLOTS, spriteSlots, isPC,
     BRAIN_MS, BRAIN_Q_MAX, BRAIN_PAN_DELAY,

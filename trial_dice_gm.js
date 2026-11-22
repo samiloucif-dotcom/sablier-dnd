@@ -40,6 +40,10 @@
 .dg-r.new{animation:dgNew 1.4s ease-out}
 @keyframes dgNew{0%{background:rgba(241,198,110,.35)}100%{background:transparent}}
 .dg-ok{color:#5fe0a0}.dg-ko{color:#ff7a8a}.dg-n20{color:#ffd45a}.dg-n1{color:#ff5a6e}
+.dg-gd{color:#c3a8ff}
+.dg-chk.free{border-color:rgba(241,198,110,.3)}
+.dg-chk.free .dg-h b{color:#f1c66e}
+.dg-r.free .sk{color:#f1c66e;letter-spacing:.04em}
 .dg-m{font-size:9.5px;font-weight:700;letter-spacing:.1em;padding:1px 5px;border-radius:5px;margin-left:4px;vertical-align:2px}
 .dg-m.adv{background:#1d4d33;color:#9ff0c1}.dg-m.dis{background:#5a1622;color:#ffb3bf}
 .dg-f{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;padding-top:5px;border-top:1px solid #2a2238;font-size:12px;color:#cfc4e8}
@@ -102,11 +106,27 @@
         ? r.dice.map((d, i) => (i === r.dice.indexOf(r.kept) ? d : '<s>' + d + '</s>')).join(' · ') : String(r.kept);
       const nat = r.kept === 20 ? ' <span class="dg-n20">nat 20</span>' : r.kept === 1 ? ' <span class="dg-n1">nat 1</span>' : '';
       const pf = c.dc != null && c.dcMode === 'each' ? (r.total >= c.dc ? ' <span class="dg-ok">✓</span>' : ' <span class="dg-ko">✗</span>') : '';
-      res = '<span class="tot">' + r.total + pf + '</span><span class="det">' + dice + ' ' + sign + nat + '</span>';
+      const gd = r.guid ? ' <span class="dg-gd">+' + r.guid + ' guid</span>' : '';
+      res = '<span class="tot">' + r.total + pf + '</span><span class="det">' + dice + ' ' + sign + gd + nat + '</span>';
     }
     const mode = r && r.mode !== 'normal' ? '<span class="dg-m ' + r.mode + '">' + (r.mode === 'adv' ? 'ADV' : 'DIS') + '</span>' : '';
     return '<div class="dg-r' + (fresh ? ' new' : '') + '"><img src="' + tokenSrc(k) + '" alt=""><div class="who"><b>' + esc(C.BY_KEY[k].name) + '</b>' + mode
       + '<span class="sk">' + esc(it.skill) + '</span></div><div class="res">' + res + '</div></div>';
+  }
+  /* A roll no one asked for: the player's own dice. Shown above the checks so
+     the GM sees the damage roll that just landed without hunting for it. */
+  function freeHtml(f, fresh) {
+    const sign = f.mod ? (f.mod > 0 ? ' +' + f.mod : ' −' + Math.abs(f.mod)) : '';
+    const each = f.vals.length > 1 ? f.vals.join(' · ') : '';
+    return '<div class="dg-r free' + (fresh ? ' new' : '') + '"><img src="' + tokenSrc(f.key) + '" alt=""><div class="who"><b>'
+      + esc(C.BY_KEY[f.key].name) + '</b><span class="sk">' + f.n + 'd' + f.die + sign + '</span></div>'
+      + '<div class="res"><span class="tot">' + f.total + '</span><span class="det">' + (each || f.sum) + '</span></div></div>';
+  }
+  function freeLogHtml(free, seen) {
+    if (!free.length) return '';
+    return '<div class="dg-chk free"><div class="dg-h"><b>Their own dice</b><span class="sp"></span>'
+      + '<button type="button" data-freeclear="1" title="Clear these">Clear</button></div>'
+      + free.slice().reverse().map((f) => freeHtml(f, seen && !seen['f' + f.id])).join('') + '</div>';
   }
   function checkHtml(c, active, seen) {
     const keys = C.PCS.filter((k) => c.items[k]);
@@ -213,18 +233,22 @@
     box.querySelector('.dg-btn').onclick = () => openWindow(o.getState(), o.act);
     box.addEventListener('click', (e) => {
       if (e.target.closest('[data-close]')) o.act({ action: 'checkClose' });
+      if (e.target.closest('[data-freeclear]')) o.act({ action: 'freeClear' });
       if (e.target.closest('[data-clear]') && confirm('Clear the roll log?')) o.act({ action: 'diceClear' });
     });
     function update(state) {
-      const D = (state && state.dice) || { checks: [], active: null };
-      const s = JSON.stringify([D.active, D.checks]);
+      const D = (state && state.dice) || { checks: [], active: null, free: [] };
+      const free = D.free || [];
+      const s = JSON.stringify([D.active, D.checks, free.map((f) => f.id)]);
       if (s === sig) return;
       sig = s;
       const checks = D.checks.slice().reverse();
-      log.innerHTML = checks.length ? checks.map((c) => checkHtml(c, D.active, first ? null : seen)).join('')
-        + '<button type="button" class="dg-clear" data-clear>Clear the log</button>'
+      log.innerHTML = (checks.length || free.length)
+        ? freeLogHtml(free, first ? null : seen) + checks.map((c) => checkHtml(c, D.active, first ? null : seen)).join('')
+          + '<button type="button" class="dg-clear" data-clear>Clear the log</button>'
         : '<div class="dg-empty">No rolls yet.</div>';
       checks.forEach((c) => Object.keys(c.items).forEach((k) => { if (c.items[k].roll) seen[c.id + k] = 1; }));
+      free.forEach((f) => { seen['f' + f.id] = 1; });
       first = false;
       if (o.onCount) o.onCount(D.active ? 1 : 0);
     }

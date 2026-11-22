@@ -94,8 +94,11 @@ function saveEmote(id) {
   } catch (e2) {}
 }
 
-/* a fair d20, rolled here so every screen shows the same dice */
+/* Fair dice, rolled here so every screen shows the same throw — and so a
+   player cannot pick their own number by editing the page. */
 const d20 = () => crypto.randomInt(1, 21);
+const d4 = () => crypto.randomInt(1, 5);
+const die = (sides) => crypto.randomInt(1, sides + 1);
 
 /* every file the slideshows use: id -> mime */
 function slideFiles() {
@@ -110,15 +113,25 @@ function slideFiles() {
 function playerAction(body) {
   body = body || {};
   const now = Date.now();
-  if (body.action === 'roll') {                       // { cid, mode: normal|adv|dis, mod }
+  if (body.action === 'roll') {                       // { cid, mode: normal|adv|dis, mod, guid }
     const key = CORE.claimOf(st, body.cid);
     if (!key) return { ok: false, error: 'pick a character first' };
     const c = CORE.activeCheck(st), it = c && c.items[key];
     if (!it) return { ok: false, error: 'no roll asked of you' };
     if (it.roll) return { ok: false, error: 'already rolled' };
-    const roll = CORE.makeRoll(body.mode, body.mod, d20);
+    const roll = CORE.makeRoll(body.mode, body.mod, d20, body.guid ? d4 : null);
     CORE.reduce(st, { action: 'diceRolled', key, roll }, now);
     persist();
+    return { ok: true, roll };
+  }
+  /* A roll nobody asked for: damage, healing, a wild d100. Always allowed once
+     the player has a character — it never touches an open skill check. */
+  if (body.action === 'freeRoll') {                   // { cid, die, n, mod }
+    const key = CORE.claimOf(st, body.cid);
+    if (!key) return { ok: false, error: 'pick a character first' };
+    if (CORE.DIE_TYPES.indexOf(Number(body.die)) < 0) return { ok: false, error: 'unknown die' };
+    const roll = CORE.makeFree(body.die, body.n, body.mod, die);
+    CORE.reduce(st, { action: 'diceFree', key, roll }, now);
     return { ok: true, roll };
   }
   if (body.action === 'emoteSave') {
