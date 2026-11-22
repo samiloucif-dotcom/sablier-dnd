@@ -1,6 +1,6 @@
 {
  "v": 1,
- "open": true,
+ "open": false,
  "route": "jury",
  "slots": {
   "R1": "bardik",
@@ -22,11 +22,11 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:06:42.898Z",
+ "updated": "2026-11-22T23:07:25.109Z",
  "waver": {},
  "invite": {
-  "on": true,
-  "at": 1795379691368
+  "on": false,
+  "at": 1795388845109
  },
  "cp": 12,
  "shows": [
