@@ -22,7 +22,7 @@
   "R13": "hayeva",
   "R14": "paxel"
  },
- "updated": "2026-11-22T23:00:36.400Z",
+ "updated": "2026-11-22T23:00:48.658Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -811,19 +811,23 @@
     "2": {
      "name": "please-speed-i-need-this",
      "ver": 795388312
+    },
+    "3": {
+     "name": "ishowspeed-crying",
+     "ver": 795388442
     }
    }
   },
   "emoteOn": {
    "pryah": 4,
-   "bardik": 2,
+   "bardik": 3,
    "angele": 5,
-   "askii": 1,
+   "askii": 4,
    "balerion": 1,
    "paxel": 1,
    "citello": 2,
    "carnage": 1,
-   "mune": 3
+   "mune": 2
   }
  }
 }
