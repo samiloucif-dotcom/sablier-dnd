@@ -22,7 +22,7 @@
   "B2": "citello",
   "R6": "nerasho"
  },
- "updated": "2026-11-22T20:54:40.142Z",
+ "updated": "2026-11-22T20:54:49.512Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -744,7 +744,7 @@
    "balerion": 1,
    "paxel": 3,
    "citello": 2,
-   "carnage": 2,
+   "carnage": 3,
    "mune": 2
   }
  }
