@@ -22,7 +22,7 @@
   "R9": "norvodavius",
   "R10": "gasper"
  },
- "updated": "2026-11-22T21:54:08.670Z",
+ "updated": "2026-11-22T21:54:24.427Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -192,34 +192,9 @@
   }
  ],
  "dice": {
-  "seq": 31,
-  "active": 31,
+  "seq": 32,
+  "active": 32,
   "checks": [
-   {
-    "id": 20,
-    "at": 1794773446405,
-    "dc": 15,
-    "dcMode": "each",
-    "items": {
-     "bardik": {
-      "skill": "Investigation",
-      "absent": false,
-      "roll": {
-       "mode": "normal",
-       "dice": [
-        8
-       ],
-       "kept": 8,
-       "mod": 3,
-       "guid": 0,
-       "total": 11,
-       "at": 1794773449335
-      }
-     }
-    },
-    "doneAt": 1794773449335,
-    "closed": true
-   },
    {
     "id": 21,
     "at": 1794775031721,
@@ -554,6 +529,41 @@
      }
     },
     "doneAt": 1795383754224,
+    "closed": true
+   },
+   {
+    "id": 32,
+    "at": 1795384464427,
+    "dc": 13,
+    "dcMode": "each",
+    "items": {
+     "askii": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     },
+     "bardik": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     },
+     "angele": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     },
+     "mune": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     },
+     "pryah": {
+      "skill": "Persuasion",
+      "absent": false,
+      "roll": null
+     }
+    },
+    "doneAt": 0,
     "closed": false
    }
   ]
@@ -749,7 +759,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 2,
    "bardik": 1,
    "angele": 3,
    "askii": 1,
