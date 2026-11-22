@@ -22,7 +22,7 @@
   "R12": "doulahex",
   "R13": "hayeva"
  },
- "updated": "2026-11-22T22:25:55.023Z",
+ "updated": "2026-11-22T22:26:32.648Z",
  "waver": {
   "paxel": 1
  },
@@ -694,8 +694,8 @@
    "angele": "4dpcrug7erfruax46e",
    "bardik": "hgchfwdn2ma4cdg5j9"
   },
-  "react": false,
-  "speak": true,
+  "react": true,
+  "speak": false,
   "emotes": {
    "pryah": {
     "2": {
