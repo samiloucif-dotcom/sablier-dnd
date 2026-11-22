@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:41:53.245Z",
+ "updated": "2026-11-22T20:43:07.024Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -731,7 +731,7 @@
    }
   },
   "emoteOn": {
-   "pryah": 1,
+   "pryah": 2,
    "bardik": 1,
    "angele": 2,
    "askii": 1,
