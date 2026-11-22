@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:38:19.015Z",
+ "updated": "2026-11-22T20:38:43.280Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -664,7 +664,7 @@
     },
     "4": {
      "name": "happy",
-     "ver": 795379815
+     "ver": 795379921
     },
     "5": {
      "name": "Jeune fille anime en uni",
@@ -733,7 +733,7 @@
   "emoteOn": {
    "pryah": 1,
    "bardik": 1,
-   "angele": 4,
+   "angele": 1,
    "askii": 1,
    "balerion": 1,
    "paxel": 1,
