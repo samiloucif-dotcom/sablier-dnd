@@ -22,7 +22,7 @@
   "T1": "jacques",
   "B2": "citello"
  },
- "updated": "2026-11-22T20:35:26.928Z",
+ "updated": "2026-11-22T20:35:40.235Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -566,11 +566,10 @@
  ],
  "players": {
   "claims": {
-   "askii": "ubpgd6q42i83q6zi96",
    "mune": "7ta54nestapycj6tm9",
    "bardik": "2p66u7xxqyxfymig9a",
    "pryah": "gwuepm2pe6q5wecxtn",
-   "angele": "4dpcrug7erfruax46e"
+   "askii": "ubpgd6q42i83q6zi96"
   },
   "react": false,
   "speak": false,
