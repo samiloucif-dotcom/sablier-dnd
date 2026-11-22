@@ -22,7 +22,7 @@
   "R6": "nerasho",
   "R7": "framschtak"
  },
- "updated": "2026-11-22T20:56:45.041Z",
+ "updated": "2026-11-22T20:57:22.115Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -564,7 +564,7 @@
    "npc": "framschtak",
    "name": "Know your craft",
    "text": "Analyze a piece of physical evidence",
-   "on": false,
+   "on": true,
    "used": 2
   },
   {
@@ -674,7 +674,7 @@
    "askii": {
     "2": {
      "name": "cockbar",
-     "ver": 795380671
+     "ver": 795381038
     },
     "3": {
      "name": "an-iq-too-high",
@@ -739,8 +739,8 @@
   "emoteOn": {
    "pryah": 2,
    "bardik": 1,
-   "angele": 5,
-   "askii": 1,
+   "angele": 2,
+   "askii": 2,
    "balerion": 1,
    "paxel": 3,
    "citello": 2,
