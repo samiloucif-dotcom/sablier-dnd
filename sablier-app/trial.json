@@ -22,7 +22,7 @@
   "B2": "citello",
   "R6": "nerasho"
  },
- "updated": "2026-11-22T20:52:15.987Z",
+ "updated": "2026-11-22T20:52:33.403Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -737,9 +737,9 @@
    }
   },
   "emoteOn": {
-   "pryah": 4,
+   "pryah": 3,
    "bardik": 1,
-   "angele": 2,
+   "angele": 5,
    "askii": 1,
    "balerion": 1,
    "paxel": 2,
