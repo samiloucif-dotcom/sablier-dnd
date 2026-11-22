@@ -22,7 +22,7 @@
   "R8": "esteban",
   "R9": "norvodavius"
  },
- "updated": "2026-11-22T21:10:41.747Z",
+ "updated": "2026-11-22T21:11:30.927Z",
  "waver": {},
  "invite": {
   "on": true,
@@ -748,7 +748,7 @@
    "balerion": 1,
    "paxel": 2,
    "citello": 2,
-   "carnage": 3,
+   "carnage": 2,
    "mune": 2
   }
  }
